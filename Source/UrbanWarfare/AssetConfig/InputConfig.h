@@ -1,0 +1,34 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "Engine/DataAsset.h"
+#include "InputAction.h"
+#include "InputActionValue.h"
+#include "InputMappingContext.h"
+#include "EnhancedInputComponent.h"
+#include "EnhancedInputSubsystems.h"
+#include "InputConfig.generated.h"
+
+/**
+ * 
+ */
+UCLASS()
+class URBANWARFARE_API UInputConfig : public UDataAsset
+{
+	GENERATED_BODY()
+	
+public:
+	virtual void PostLoad() override;
+
+public:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Input")
+	TObjectPtr<class UInputMappingContext> InputMappingContext;
+
+public:
+	// When adding an InputAction, please write null checks and log output code in .cpp
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Input")
+	TObjectPtr<class UInputAction> MyInputAction;
+};
