@@ -2,6 +2,9 @@
 
 
 #include "PlayerBase.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "Components/SkeletalMeshComponent.h"
+#include "../AssetConfig/MeshConfig.h"
 
 // Sets default values
 APlayerBase::APlayerBase()
@@ -11,7 +14,22 @@ APlayerBase::APlayerBase()
 
 	PlayerInitilize();
 
+	if (!MeshConfig)
+	{
+		ConstructorHelpers::FObjectFinder<UMeshConfig> DefaultMeshConfig(TEXT("/Game/Blueprints/AssetConfigs/MeshConfig.MeshConfig"));
+		if (DefaultMeshConfig.Succeeded())
+			MeshConfig = DefaultMeshConfig.Object;
+		else
+			UE_LOG(LogTemp, Log, TEXT("[APlayerBase::APlayerBase] MeshConfig is null."));
+	}
+
 	Movement = GetCharacterMovement();
+	Movement->MaxWalkSpeed = 250.f;
+
+	Mesh = GetMesh();
+	Mesh->SetSkeletalMesh(MeshConfig->CounterTerrorist);
+	Mesh->SetRelativeLocation(FVector(0.f, 0.f, -90.f));
+
 }
 
 // Called when the game starts or when spawned

@@ -3,3 +3,8 @@
 
 #include "PlayerTerrorist.h"
 
+APlayerTerrorist::APlayerTerrorist()
+{
+	if (!MeshConfig)
+		UE_LOG(LogTemp, Log, TEXT("[APlayerTerrorist::APlayerTerrorist] MeshConfig is null."));
+}

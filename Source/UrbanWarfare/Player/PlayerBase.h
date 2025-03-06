@@ -33,10 +33,13 @@ protected:
 protected:
 	// Data Configs
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Config")
-	TObjectPtr<class UMeshConfig> MeshConfig;
+	TObjectPtr<UMeshConfig> MeshConfig;
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Player Movement")
 	TObjectPtr<class UCharacterMovementComponent> Movement;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Player Mesh")
+	TObjectPtr<class USkeletalMeshComponent> Mesh;
 
 };

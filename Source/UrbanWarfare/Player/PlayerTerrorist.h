@@ -13,5 +13,8 @@ UCLASS()
 class URBANWARFARE_API APlayerTerrorist : public APlayerBase
 {
 	GENERATED_BODY()
+
+public:
+	APlayerTerrorist();
 	
 };
