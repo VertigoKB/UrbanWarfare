@@ -7,4 +7,7 @@ APlayerTerrorist::APlayerTerrorist()
 {
 	if (!MeshConfig)
 		UE_LOG(LogTemp, Log, TEXT("[APlayerTerrorist::APlayerTerrorist] MeshConfig is null."));
+
+	if (MeshConfig)
+		TheMesh->SetSkeletalMesh(MeshConfig->Terrorist);
 }

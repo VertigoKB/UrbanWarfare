@@ -3,8 +3,10 @@
 
 #include "PlayerBase.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "GameFramework/SpringArmComponent.h"
+#include "Camera/CameraComponent.h"
 #include "Components/SkeletalMeshComponent.h"
-#include "../AssetConfig/MeshConfig.h"
+#include "Components/CapsuleComponent.h"
 
 // Sets default values
 APlayerBase::APlayerBase()
@@ -23,12 +25,27 @@ APlayerBase::APlayerBase()
 			UE_LOG(LogTemp, Log, TEXT("[APlayerBase::APlayerBase] MeshConfig is null."));
 	}
 
-	Movement = GetCharacterMovement();
-	Movement->MaxWalkSpeed = 250.f;
+	TheCapsule = GetCapsuleComponent();
+	TheCapsule->SetCapsuleRadius(34.f);
+	TheCapsule->SetCapsuleHalfHeight(93.f);
 
-	Mesh = GetMesh();
-	Mesh->SetSkeletalMesh(MeshConfig->CounterTerrorist);
-	Mesh->SetRelativeLocation(FVector(0.f, 0.f, -90.f));
+	TheMovement = GetCharacterMovement();
+	TheMovement->MaxWalkSpeed = 250.f;
+
+	TheMesh = GetMesh();
+	if (MeshConfig)
+		TheMesh->SetSkeletalMesh(MeshConfig->CounterTerrorist);
+	TheMesh->SetRelativeLocation(FVector(0.f, 0.f, -93.5f));
+	TheMesh->SetRelativeRotation(FRotator(0.f, -90.f, 0.f));
+
+	TheSpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
+	TheSpringArm->SetupAttachment(TheMesh);
+	TheSpringArm->SetRelativeLocation(FVector());
+	TheSpringArm->SetRelativeRotation(FRotator(0.f, 90.f, 0.f));
+	TheSpringArm->TargetArmLength = 600.f;
+
+	TheCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
+	TheCamera->SetupAttachment(TheSpringArm);
 
 }
 

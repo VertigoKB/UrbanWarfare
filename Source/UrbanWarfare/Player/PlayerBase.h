@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "../AssetConfig/MeshConfig.h"
 #include "PlayerBase.generated.h"
 
 UCLASS()
@@ -32,14 +33,26 @@ protected:
 
 protected:
 	// Data Configs
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Config")
-	TObjectPtr<UMeshConfig> MeshConfig;
+	TObjectPtr<class UMeshConfig> MeshConfig;
 
 protected:
+	// Basic Components
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Player Capsule")
+	TObjectPtr<class UCapsuleComponent> TheCapsule;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Player Movement")
-	TObjectPtr<class UCharacterMovementComponent> Movement;
+	TObjectPtr<class UCharacterMovementComponent> TheMovement;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Player Mesh")
-	TObjectPtr<class USkeletalMeshComponent> Mesh;
+	TObjectPtr<class USkeletalMeshComponent> TheMesh;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Camera")
+	TObjectPtr<class USpringArmComponent> TheSpringArm;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Camera")
+	TObjectPtr<class UCameraComponent> TheCamera;
 
 };
