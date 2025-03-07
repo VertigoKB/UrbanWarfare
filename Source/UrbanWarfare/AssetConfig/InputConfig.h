@@ -24,11 +24,14 @@ public:
 
 public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Input")
-	TObjectPtr<class UInputMappingContext> InputMappingContext;
+	TObjectPtr<class UInputMappingContext> DefaultMappingContext;
 
 public:
 	// When adding an InputAction, please write null checks and log output code in .cpp
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Input")
-	TObjectPtr<class UInputAction> MyInputAction;
+	TObjectPtr<class UInputAction> Movement;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Input")
+	TObjectPtr<class UInputAction> Look;
 };

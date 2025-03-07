@@ -2,6 +2,8 @@
 
 
 #include "RegisterInputComponent.h"
+#include "../AssetConfig/InputConfig.h"
+#include "../Common/ErrorLogger.h"
 
 // Sets default values for this component's properties
 URegisterInputComponent::URegisterInputComponent()
@@ -10,7 +12,17 @@ URegisterInputComponent::URegisterInputComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = false;
 
-	// ...
+	if (!InputConfig)
+	{
+		ConstructorHelpers::FObjectFinder<UInputConfig> DefaultConfig(TEXT("/Game/Blueprints/AssetConfigs/InputConfig.InputConfig"));
+		if (DefaultConfig.Succeeded())
+		{
+			InputConfig = DefaultConfig.Object;
+			bInputConfigChecker = true;
+		}
+	}
+
+
 }
 
 
@@ -37,10 +49,9 @@ bool URegisterInputComponent::CachAndInit()
 
 	if (!InputConfig)
 	{
-		UE_LOG(LogTemp, Log, TEXT("[URegisterInputComponent::CachAndInit] Initialize failed. Please register InputConfig.]"));
+		LOG_NULL(InputConfig);
 		return false;
 	}
-
 	return true;
 }
 
@@ -48,16 +59,30 @@ void URegisterInputComponent::SetupEnhancedInput()
 {
 	UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(MyController->GetLocalPlayer());
 	Subsystem->ClearAllMappings();
-	Subsystem->AddMappingContext(InputConfig->InputMappingContext, 0);
+	Subsystem->AddMappingContext(InputConfig->DefaultMappingContext, 0);
 	UEnhancedInputComponent* Input = Cast<UEnhancedInputComponent>(MyController->InputComponent);
 	if (Input)
 	{
-		Input->BindAction(InputConfig->MyInputAction, ETriggerEvent::Started, this, &URegisterInputComponent::MyBindAction);
+		Input->BindAction(InputConfig->Movement, ETriggerEvent::Triggered, this, &URegisterInputComponent::InputMove);
+		Input->BindAction(InputConfig->Look, ETriggerEvent::Triggered, this, &URegisterInputComponent::InputLook);
 	}
 }
 
-void URegisterInputComponent::MyBindAction(const FInputActionValue& Value)
+void URegisterInputComponent::InputMove(const FInputActionValue& Value)
 {
-	UE_LOG(LogTemp, Log, TEXT("Bind action Success"));
+	FVector2D Input = Value.Get<FVector2D>();
+
+	FVector ForwardVector = PlayerPawn->GetActorForwardVector();
+	FVector RightVector = PlayerPawn->GetActorRightVector();
+
+	PlayerPawn->AddMovementInput(ForwardVector, Input.X);
+	PlayerPawn->AddMovementInput(RightVector, Input.Y);
 }
 
+void URegisterInputComponent::InputLook(const FInputActionValue& Value)
+{
+	FVector2D Input = Value.Get<FVector2D>();
+
+	PlayerPawn->AddControllerYawInput(Input.X);
+	PlayerPawn->AddControllerPitchInput(Input.Y);
+}

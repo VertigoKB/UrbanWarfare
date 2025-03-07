@@ -30,12 +30,15 @@ protected:
 	
 protected:
 	UFUNCTION()
-	void MyBindAction(const FInputActionValue& Value);
+	void InputMove(const FInputActionValue& Value);
 
+	UFUNCTION()
+	void InputLook(const FInputActionValue& Value);
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "InputConfig")
 	TObjectPtr<class UInputConfig> InputConfig;
 
+	bool bInputConfigChecker = false;
 protected:
 	UPROPERTY()
 	TObjectPtr<APawn> PlayerPawn;

@@ -4,13 +4,18 @@ void UInputConfig::PostLoad()
 {
 	Super::PostLoad();
 
-	if (!InputMappingContext)
+	if (!DefaultMappingContext)
 	{
-		UE_LOG(LogTemp, Log, TEXT("[UInputConfig::PostLoad] InputMappingContext is null."));
+		UE_LOG(LogTemp, Log, TEXT("[UInputConfig::PostLoad] DefaultMappingContext is null."));
 	}
 
-	if (!MyInputAction)
+	if (!Movement)
 	{
-		UE_LOG(LogTemp, Log, TEXT("[UInputConfig::PostLoad] MyInputAction is null."));
+		UE_LOG(LogTemp, Log, TEXT("[UInputConfig::PostLoad] Movement is null."));
+	}
+
+	if (!Look)
+	{
+		UE_LOG(LogTemp, Log, TEXT("[UInputConfig::PostLoad] Look is null."));
 	}
 }

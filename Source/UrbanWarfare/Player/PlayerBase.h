@@ -31,6 +31,12 @@ protected:
 	UFUNCTION()
 	bool PlayerInitilize();
 
+	UFUNCTION()
+	void SetupBasicComponents();
+
+	UFUNCTION()
+	void SetupCustomComponents();
+
 protected:
 	// Data Configs
 
@@ -55,4 +61,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Camera")
 	TObjectPtr<class UCameraComponent> TheCamera;
 
+protected:
+	// Custom Components
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Custom Components")
+	TObjectPtr<class URegisterInputComponent> RegisterInputComponent;
 };

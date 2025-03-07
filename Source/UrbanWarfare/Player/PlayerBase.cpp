@@ -8,6 +8,8 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/CapsuleComponent.h"
 
+#include "RegisterInputComponent.h"
+
 // Sets default values
 APlayerBase::APlayerBase()
 {
@@ -25,28 +27,8 @@ APlayerBase::APlayerBase()
 			UE_LOG(LogTemp, Log, TEXT("[APlayerBase::APlayerBase] MeshConfig is null."));
 	}
 
-	TheCapsule = GetCapsuleComponent();
-	TheCapsule->SetCapsuleRadius(34.f);
-	TheCapsule->SetCapsuleHalfHeight(93.f);
-
-	TheMovement = GetCharacterMovement();
-	TheMovement->MaxWalkSpeed = 250.f;
-
-	TheMesh = GetMesh();
-	if (MeshConfig)
-		TheMesh->SetSkeletalMesh(MeshConfig->CounterTerrorist);
-	TheMesh->SetRelativeLocation(FVector(0.f, 0.f, -93.5f));
-	TheMesh->SetRelativeRotation(FRotator(0.f, -90.f, 0.f));
-
-	TheSpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
-	TheSpringArm->SetupAttachment(TheMesh);
-	TheSpringArm->SetRelativeLocation(FVector());
-	TheSpringArm->SetRelativeRotation(FRotator(0.f, 90.f, 0.f));
-	TheSpringArm->TargetArmLength = 600.f;
-
-	TheCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
-	TheCamera->SetupAttachment(TheSpringArm);
-
+	SetupBasicComponents();
+	SetupCustomComponents();
 }
 
 // Called when the game starts or when spawned
@@ -73,5 +55,36 @@ void APlayerBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 bool APlayerBase::PlayerInitilize()
 {
 	return false;
+}
+
+void APlayerBase::SetupBasicComponents()
+{
+	TheCapsule = GetCapsuleComponent();
+	TheCapsule->SetCapsuleRadius(34.f);
+	TheCapsule->SetCapsuleHalfHeight(93.f);
+
+	TheMovement = GetCharacterMovement();
+	TheMovement->MaxWalkSpeed = 250.f;
+
+	TheMesh = GetMesh();
+	if (MeshConfig)
+		TheMesh->SetSkeletalMesh(MeshConfig->CounterTerrorist);
+	TheMesh->SetRelativeLocation(FVector(0.f, 0.f, -93.5f));
+	TheMesh->SetRelativeRotation(FRotator(0.f, -90.f, 0.f));
+
+	TheSpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
+	TheSpringArm->SetupAttachment(TheMesh);
+	TheSpringArm->SetRelativeLocation(FVector(0.f, 0.f, 142.f));
+	TheSpringArm->SetRelativeRotation(FRotator(0.f, 90.f, 0.f));
+	TheSpringArm->TargetArmLength = 600.f;
+	TheSpringArm->bUsePawnControlRotation = true;
+
+	TheCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
+	TheCamera->SetupAttachment(TheSpringArm);
+}
+
+void APlayerBase::SetupCustomComponents()
+{
+	RegisterInputComponent = CreateDefaultSubobject<URegisterInputComponent>(TEXT("RegisterInputComponent"));
 }
 
