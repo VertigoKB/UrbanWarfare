@@ -7,16 +7,20 @@
 #include "Camera/CameraComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Net/UnrealNetwork.h"
 
+#include "PlayerBehavior.h"
 #include "RegisterInputComponent.h"
+#include "../Common/ErrorLogger.h"
+
 
 // Sets default values
 APlayerBase::APlayerBase()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+	bReplicates = true;
 
-	PlayerInitilize();
 
 	if (!MeshConfig)
 	{
@@ -24,7 +28,16 @@ APlayerBase::APlayerBase()
 		if (DefaultMeshConfig.Succeeded())
 			MeshConfig = DefaultMeshConfig.Object;
 		else
-			UE_LOG(LogTemp, Log, TEXT("[APlayerBase::APlayerBase] MeshConfig is null."));
+			LOG_NULL(MeshConfig);
+	}
+	
+	if (!BlueprintConfig)
+	{
+		ConstructorHelpers::FObjectFinder<UBlueprintConfig> DefualtBpConfig(TEXT("/Game/Blueprints/AssetConfigs/BlueprintConfig.BlueprintConfig"));
+		if (DefualtBpConfig.Succeeded())
+			BlueprintConfig = DefualtBpConfig.Object;
+		else
+			LOG_NULL(BlueprintConfig);
 	}
 
 	SetupBasicComponents();
@@ -36,6 +49,15 @@ void APlayerBase::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	PlayerBehavior = NewObject<UPlayerBehavior>(this);
+	PlayerBehavior->InitConstruct(this);
+
+}
+
+void APlayerBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	Super::EndPlay(EndPlayReason);
+	PlayerBehavior = nullptr;
 }
 
 // Called every frame
@@ -52,11 +74,6 @@ void APlayerBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 
 }
 
-bool APlayerBase::PlayerInitilize()
-{
-	return false;
-}
-
 void APlayerBase::SetupBasicComponents()
 {
 	TheCapsule = GetCapsuleComponent();
@@ -64,11 +81,15 @@ void APlayerBase::SetupBasicComponents()
 	TheCapsule->SetCapsuleHalfHeight(93.f);
 
 	TheMovement = GetCharacterMovement();
-	TheMovement->MaxWalkSpeed = 250.f;
+	TheMovement->MaxWalkSpeed = 600.f;
+	TheMovement->GetNavAgentPropertiesRef().bCanCrouch = true;
+	TheMovement->bCanWalkOffLedgesWhenCrouching = true;
 
 	TheMesh = GetMesh();
 	if (MeshConfig)
 		TheMesh->SetSkeletalMesh(MeshConfig->CounterTerrorist);
+	if (BlueprintConfig)
+		TheMesh->AnimClass = BlueprintConfig->PlayerAnimBP;
 	TheMesh->SetRelativeLocation(FVector(0.f, 0.f, -93.5f));
 	TheMesh->SetRelativeRotation(FRotator(0.f, -90.f, 0.f));
 
@@ -88,3 +109,17 @@ void APlayerBase::SetupCustomComponents()
 	RegisterInputComponent = CreateDefaultSubobject<URegisterInputComponent>(TEXT("RegisterInputComponent"));
 }
 
+void APlayerBase::ServerCrouch_Implementation(bool bCrouch)
+{
+	PlayerBehavior->ExecuteCrouch(bCrouch);
+}
+
+UActorComponent* APlayerBase::GetRegInputComp()
+{
+	return RegisterInputComponent;
+}
+
+UObject* APlayerBase::GetPlayerBehavior()
+{
+	return PlayerBehavior;
+}

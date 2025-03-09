@@ -8,6 +8,7 @@
 #include "../AssetConfig/InputConfig.h"
 #include "RegisterInputComponent.generated.h"
 
+DECLARE_DELEGATE_OneParam(FOnInputCrouch, bool)
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class URBANWARFARE_API URegisterInputComponent : public UActorComponent
@@ -34,6 +35,9 @@ protected:
 
 	UFUNCTION()
 	void InputLook(const FInputActionValue& Value);
+
+	UFUNCTION()
+	void InputCrouch(const FInputActionValue& Value);
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "InputConfig")
 	TObjectPtr<class UInputConfig> InputConfig;
@@ -45,5 +49,6 @@ protected:
 	UPROPERTY()
 	TObjectPtr<APlayerController> MyController;
 
-		
+public:
+	FOnInputCrouch OnInputCrouch;
 };

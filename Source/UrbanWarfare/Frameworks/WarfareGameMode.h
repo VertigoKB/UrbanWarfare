@@ -14,4 +14,9 @@ class URBANWARFARE_API AWarfareGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
 	
+public:
+	AWarfareGameMode();
+
+protected:
+	virtual void BeginPlay() override;
 };

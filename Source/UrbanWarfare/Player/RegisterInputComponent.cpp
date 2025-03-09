@@ -4,6 +4,7 @@
 #include "RegisterInputComponent.h"
 #include "../AssetConfig/InputConfig.h"
 #include "../Common/ErrorLogger.h"
+#include "PlayerBase.h"
 
 // Sets default values for this component's properties
 URegisterInputComponent::URegisterInputComponent()
@@ -20,6 +21,8 @@ URegisterInputComponent::URegisterInputComponent()
 			InputConfig = DefaultConfig.Object;
 			bInputConfigChecker = true;
 		}
+		else
+			LOG_NULL(InputConfig);
 	}
 
 
@@ -65,6 +68,7 @@ void URegisterInputComponent::SetupEnhancedInput()
 	{
 		Input->BindAction(InputConfig->Movement, ETriggerEvent::Triggered, this, &URegisterInputComponent::InputMove);
 		Input->BindAction(InputConfig->Look, ETriggerEvent::Triggered, this, &URegisterInputComponent::InputLook);
+		Input->BindAction(InputConfig->Crouch, ETriggerEvent::Triggered, this, &URegisterInputComponent::InputCrouch);
 	}
 }
 
@@ -84,5 +88,12 @@ void URegisterInputComponent::InputLook(const FInputActionValue& Value)
 	FVector2D Input = Value.Get<FVector2D>();
 
 	PlayerPawn->AddControllerYawInput(Input.X);
-	PlayerPawn->AddControllerPitchInput(Input.Y);
+	PlayerPawn->AddControllerPitchInput(-Input.Y);
+}
+
+void URegisterInputComponent::InputCrouch(const FInputActionValue& Value)
+{
+	bool Input = Value.Get<bool>();
+
+	OnInputCrouch.ExecuteIfBound(Input);
 }
