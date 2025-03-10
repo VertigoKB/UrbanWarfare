@@ -1,5 +1,5 @@
 #include "InputConfig.h"
-#include "../Common/ErrorLogger.h"
+#include "../Common/WarfareLogger.h"
 
 void UInputConfig::PostLoad()
 {

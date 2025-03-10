@@ -7,11 +7,10 @@
 #include "Camera/CameraComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/CapsuleComponent.h"
-#include "Net/UnrealNetwork.h"
 
-#include "PlayerBehavior.h"
-#include "RegisterInputComponent.h"
-#include "../Common/ErrorLogger.h"
+#include "Components/RegisterInputComponent.h"
+#include "Components/PlayerBehaviorComponent.h"
+#include "../Common/WarfareLogger.h"
 
 
 // Sets default values
@@ -48,16 +47,12 @@ APlayerBase::APlayerBase()
 void APlayerBase::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	PlayerBehavior = NewObject<UPlayerBehavior>(this);
-	PlayerBehavior->InitConstruct(this);
 
 }
 
 void APlayerBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	Super::EndPlay(EndPlayReason);
-	PlayerBehavior = nullptr;
 }
 
 // Called every frame
@@ -72,6 +67,14 @@ void APlayerBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+}
+
+void APlayerBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	
+	DOREPLIFETIME(APlayerBase, RegisterInputComponent);
+	DOREPLIFETIME(APlayerBase, PlayerBehavior);
 }
 
 void APlayerBase::SetupBasicComponents()
@@ -107,19 +110,17 @@ void APlayerBase::SetupBasicComponents()
 void APlayerBase::SetupCustomComponents()
 {
 	RegisterInputComponent = CreateDefaultSubobject<URegisterInputComponent>(TEXT("RegisterInputComponent"));
+	PlayerBehavior = CreateDefaultSubobject<UPlayerBehaviorComponent>(TEXT("PlayerBehaviorComponent"));
 }
 
-void APlayerBase::ServerCrouch_Implementation(bool bCrouch)
-{
-	PlayerBehavior->ExecuteCrouch(bCrouch);
-}
+
 
 UActorComponent* APlayerBase::GetRegInputComp()
 {
 	return RegisterInputComponent;
 }
 
-UObject* APlayerBase::GetPlayerBehavior()
+UActorComponent* APlayerBase::GetPlayerBehavior()
 {
 	return PlayerBehavior;
 }

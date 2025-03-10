@@ -4,7 +4,7 @@
 #include "WarfareAnim.h"
 #include "KismetAnimationLibrary.h"
 
-#include "../Common/ErrorLogger.h"
+#include "../Common/WarfareLogger.h"
 
 UWarfareAnim::UWarfareAnim()
 {
@@ -35,7 +35,7 @@ void UWarfareAnim::NativeInitializeAnimation()
 			}
 			else
 			{
-				LOG_SPFUNC(TEXT("Failed to cach ThePawn."))
+				LOG_EFUNC(TEXT("Failed to cach ThePawn."))
 			}
 			}), 0.3f, true);
 	}

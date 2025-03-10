@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "Net/UnrealNetwork.h"
 
 #include "../AssetConfig/MeshConfig.h"
 #include "../AssetConfig/BlueprintConfig.h"
@@ -21,7 +22,7 @@ class URBANWARFARE_API IDataProvider
 
 public:
 	virtual UActorComponent* GetRegInputComp() = 0;
-	virtual UObject* GetPlayerBehavior() = 0;
+	virtual UActorComponent* GetPlayerBehavior() = 0;
 };
 
 
@@ -45,6 +46,8 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
 protected:
 	UFUNCTION()
 	void SetupBasicComponents();
@@ -53,15 +56,11 @@ protected:
 	void SetupCustomComponents();
 
 public:
-	UFUNCTION(Server, Reliable)
-	void ServerCrouch(bool bCrouch);
-
-public:
 	inline bool GetHasAuthority() { return HasAuthority(); }
 	
 public:
 	virtual UActorComponent* GetRegInputComp() override;
-	virtual UObject* GetPlayerBehavior() ;
+	virtual UActorComponent* GetPlayerBehavior() ;
 
 protected:
 	// Data Configs
@@ -93,12 +92,10 @@ protected:
 protected:
 	// Custom Components
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Custom Components")
+	UPROPERTY(Replicated, EditDefaultsOnly, BlueprintReadWrite, Category = "Custom Components")
 	TObjectPtr<class URegisterInputComponent> RegisterInputComponent;
 
-protected:
-	// Custom Objects
+	UPROPERTY(Replicated, EditDefaultsOnly, BlueprintReadWrite, Category = "Custom Components")
+	TObjectPtr<class UPlayerBehaviorComponent> PlayerBehavior;
 
-	UPROPERTY()
-	TObjectPtr<class UPlayerBehavior> PlayerBehavior;
 };

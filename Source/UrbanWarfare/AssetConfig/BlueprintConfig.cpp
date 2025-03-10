@@ -2,7 +2,7 @@
 
 
 #include "BlueprintConfig.h"
-#include "../Common/ErrorLogger.h"
+#include "../Common/WarfareLogger.h"
 
 void UBlueprintConfig::PostLoad()
 {
