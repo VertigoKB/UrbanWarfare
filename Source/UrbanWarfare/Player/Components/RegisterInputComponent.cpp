@@ -68,6 +68,7 @@ void URegisterInputComponent::SetupEnhancedInput()
 		Input->BindAction(InputConfig->Movement, ETriggerEvent::Triggered, this, &URegisterInputComponent::InputMove);
 		Input->BindAction(InputConfig->Look, ETriggerEvent::Triggered, this, &URegisterInputComponent::InputLook);
 		Input->BindAction(InputConfig->Crouch, ETriggerEvent::Triggered, this, &URegisterInputComponent::InputCrouch);
+		Input->BindAction(InputConfig->Walk, ETriggerEvent::Triggered, this, &URegisterInputComponent::InputWalk);
 	}
 }
 
@@ -96,4 +97,11 @@ void URegisterInputComponent::InputCrouch(const FInputActionValue& Value)
 
 	OnInputCrouch.ExecuteIfBound(Input);
 
+}
+
+void URegisterInputComponent::InputWalk(const FInputActionValue& Value)
+{
+	bool Input = Value.Get<bool>();
+
+	OnInputWalk.ExecuteIfBound(Input);
 }

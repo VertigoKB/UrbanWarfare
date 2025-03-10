@@ -115,6 +115,11 @@ void APlayerBase::SetupCustomComponents()
 
 
 
+void APlayerBase::SetWalkSpeed(bool bWalk)
+{
+	bWalk ? TheMovement->MaxWalkSpeed = WalkSpeed : TheMovement->MaxWalkSpeed = RunSpeed;
+}
+
 UActorComponent* APlayerBase::GetRegInputComp()
 {
 	return RegisterInputComponent;

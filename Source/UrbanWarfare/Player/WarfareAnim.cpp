@@ -5,6 +5,8 @@
 #include "KismetAnimationLibrary.h"
 
 #include "../Common/WarfareLogger.h"
+#include "PlayerBase.h"
+#include "Components/PlayerBehaviorComponent.h"
 
 UWarfareAnim::UWarfareAnim()
 {
@@ -48,19 +50,35 @@ void UWarfareAnim::NativeUpdateAnimation(float DeltaSeconds)
 	if (!bInitFlag)
 		return;
 
-	FVector CurrentVelocity = ThePawn->GetVelocity();
-	FRotator CurrentRotation = ThePawn->GetActorRotation();
+	SetMovementProperty();
+	SetTransitionProperty();
 
-	MovementSpeed = CurrentVelocity.Length();
-	MovementDirection = UKismetAnimationLibrary::CalculateDirection(CurrentVelocity, CurrentRotation);
-		
 }
 
 bool UWarfareAnim::CacheAndInit()
 {
-	ThePawn = TryGetPawnOwner();
-	if (!ThePawn)
+	ThePlayer = Cast<APlayerBase>(TryGetPawnOwner());
+	if (!ThePlayer)
+		return false;
+
+	PlayerBehavior = Cast<UPlayerBehaviorComponent>(ThePlayer->GetPlayerBehavior());
+	if (!ThePlayer)
 		return false;
 
 	return true;
+}
+
+void UWarfareAnim::SetMovementProperty()
+{
+	FVector CurrentVelocity = ThePlayer->GetVelocity();
+	FRotator CurrentRotation = ThePlayer->GetActorRotation();
+
+	MovementSpeed = CurrentVelocity.Length();
+	MovementDirection = UKismetAnimationLibrary::CalculateDirection(CurrentVelocity, CurrentRotation);
+}
+
+void UWarfareAnim::SetTransitionProperty()
+{
+	bCrouching = PlayerBehavior->bCrouching;
+	bWalking = PlayerBehavior->bWalking;
 }

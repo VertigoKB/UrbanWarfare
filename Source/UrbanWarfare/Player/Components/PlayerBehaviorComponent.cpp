@@ -2,6 +2,7 @@
 
 
 #include "PlayerBehaviorComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "../PlayerBase.h"
 #include "RegisterInputComponent.h"
 #include "../../Common/WarfareLogger.h"
@@ -46,6 +47,11 @@ void UPlayerBehaviorComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 void UPlayerBehaviorComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(UPlayerBehaviorComponent, bCrouching)
+	DOREPLIFETIME(UPlayerBehaviorComponent, bWalking)
+	//DOREPLIFETIME(UPlayerBehaviorComponent, WalkSpeed)
+	//DOREPLIFETIME(UPlayerBehaviorComponent, RunSpeed)
 }
 
 bool UPlayerBehaviorComponent::InitConstruct()
@@ -59,6 +65,7 @@ bool UPlayerBehaviorComponent::InitConstruct()
 		return false;
 
 	RegInputComp->OnInputCrouch.BindUObject(this, &UPlayerBehaviorComponent::ExecuteCrouch);
+	RegInputComp->OnInputWalk.BindUObject(this, &UPlayerBehaviorComponent::ExecuteWalk);
 
 	return true;
 }
@@ -67,18 +74,18 @@ void UPlayerBehaviorComponent::ExecuteCrouch(bool bCrouch)
 {
 	bool IsAuth = ThePlayer->HasAuthority();
 
-	LOG_NETSIMPLE(TEXT("[%s]_Execute"), *FString(ThePlayer->GetName()))
-
 	if (IsAuth)
 	{
 		ClientCrouch(bCrouch);
 		bCrouching = bCrouch;
 	}
 	else
-	{
-		LOG_NETSIMPLE(TEXT("__NoAuth"))
 		ServerCrouch(bCrouch);
-	}
+}
+
+void UPlayerBehaviorComponent::ServerCrouch_Implementation(bool bCrouch)
+{
+	ExecuteCrouch(bCrouch);
 }
 
 void UPlayerBehaviorComponent::ClientCrouch_Implementation(bool bCrouch)
@@ -86,8 +93,25 @@ void UPlayerBehaviorComponent::ClientCrouch_Implementation(bool bCrouch)
 	bCrouch ? ThePlayer->Crouch() : ThePlayer->UnCrouch();
 }
 
-void UPlayerBehaviorComponent::ServerCrouch_Implementation(bool bCrouch)
+void UPlayerBehaviorComponent::ExecuteWalk(bool bWalk)
 {
-	LOG_NETSIMPLE(TEXT("___Try remote"))
-	ExecuteCrouch(bCrouch);
+	bool IsAuth = ThePlayer->HasAuthority();
+
+	if (IsAuth)
+	{
+		ClientWalk(bWalk);
+		bWalking = bWalk;
+	}
+	else
+		ServerWalk(bWalk);
+}
+
+void UPlayerBehaviorComponent::ServerWalk_Implementation(bool bWalk)
+{
+	ExecuteWalk(bWalk);
+}
+
+void UPlayerBehaviorComponent::ClientWalk_Implementation(bool bWalk)
+{
+	ThePlayer->SetWalkSpeed(bWalk);
 }

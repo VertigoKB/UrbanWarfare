@@ -8,5 +8,6 @@ void UInputConfig::PostLoad()
 	LOG_NULL(DefaultMappingContext);
 	LOG_NULL(Movement);
 	LOG_NULL(Look);
-	LOG_NULL(DefaultMappingContext);
+	LOG_NULL(Crouch);
+	LOG_NULL(Walk);
 }

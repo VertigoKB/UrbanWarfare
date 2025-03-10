@@ -30,6 +30,8 @@ private:
 	bool InitConstruct();
 
 protected:
+	// Crouch
+
 	UFUNCTION()
 	void ExecuteCrouch(bool bCrouch);
 
@@ -39,8 +41,23 @@ protected:
 	UFUNCTION(Client, Reliable)
 	void ClientCrouch(bool bCrouch);
 
+protected:
+	// Walk
+
+	UFUNCTION()
+	void ExecuteWalk(bool bWalk);
+	UFUNCTION(Server, Reliable)
+	void ServerWalk(bool bWalk);
+	UFUNCTION(Client, Reliable)
+	void ClientWalk(bool bWalk);
+	
+
 public:
+	UPROPERTY(Replicated)
 	bool bCrouching = false;
+
+	UPROPERTY(Replicated)
+	bool bWalking = false;
 
 protected:
 	UPROPERTY()
@@ -48,5 +65,11 @@ protected:
 
 	UPROPERTY()
 	TObjectPtr<class URegisterInputComponent> RegInputComp;
+
+protected:
+	//UPROPERTY(Replicated, EditDefaultsOnly, BlueprintReadWrite, Category = "Constant")
+	//float WalkSpeed = 200.f;
+	//UPROPERTY(Replicated ,EditDefaultsOnly, BlueprintReadWrite, Category = "Constant")
+	//float RunSpeed = 600.f;
 
 };

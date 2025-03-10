@@ -59,6 +59,8 @@ public:
 	inline bool GetHasAuthority() { return HasAuthority(); }
 	
 public:
+	void SetWalkSpeed(bool bWalk);
+public:
 	virtual UActorComponent* GetRegInputComp() override;
 	virtual UActorComponent* GetPlayerBehavior() ;
 
@@ -71,14 +73,17 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Config")
 	TObjectPtr<class UBlueprintConfig> BlueprintConfig;
 
-protected:
-	// Basic Components
+public:
+	// Public Basic Components
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Player Movement")
+	TObjectPtr<class UCharacterMovementComponent> TheMovement;
 
+protected:
+	//Protected Basic Components
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Player Capsule")
 	TObjectPtr<class UCapsuleComponent> TheCapsule;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Player Movement")
-	TObjectPtr<class UCharacterMovementComponent> TheMovement;
+
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Player Mesh")
 	TObjectPtr<class USkeletalMeshComponent> TheMesh;
@@ -98,4 +103,11 @@ protected:
 	UPROPERTY(Replicated, EditDefaultsOnly, BlueprintReadWrite, Category = "Custom Components")
 	TObjectPtr<class UPlayerBehaviorComponent> PlayerBehavior;
 
+protected:
+	// Constants
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	float WalkSpeed = 200.f;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	float RunSpeed = 600.f;
 };

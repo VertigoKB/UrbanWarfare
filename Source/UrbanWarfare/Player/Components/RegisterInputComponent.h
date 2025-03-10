@@ -9,6 +9,7 @@
 #include "RegisterInputComponent.generated.h"
 
 DECLARE_DELEGATE_OneParam(FOnInputCrouch, bool)
+DECLARE_DELEGATE_OneParam(FOnInputWalk, bool)
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class URBANWARFARE_API URegisterInputComponent : public UActorComponent
@@ -38,6 +39,9 @@ protected:
 
 	UFUNCTION()
 	void InputCrouch(const FInputActionValue& Value);
+
+	UFUNCTION()
+	void InputWalk(const FInputActionValue& Value);
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "InputConfig")
 	TObjectPtr<class UInputConfig> InputConfig;
@@ -52,4 +56,5 @@ protected:
 
 public:
 	FOnInputCrouch OnInputCrouch;
+	FOnInputWalk OnInputWalk;
 };

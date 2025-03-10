@@ -25,8 +25,17 @@ protected:
 	bool CacheAndInit();
 
 protected:
+	UFUNCTION()
+	void SetMovementProperty();
+	UFUNCTION()
+	void SetTransitionProperty();
+
+protected:
 	UPROPERTY()
-	TObjectPtr<APawn> ThePawn;
+	TObjectPtr<class APlayerBase> ThePlayer;
+
+	UPROPERTY()
+	TObjectPtr<class UPlayerBehaviorComponent> PlayerBehavior;
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "UrbanWarfare")
@@ -34,6 +43,12 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "UrbanWarfare")
 	float MovementDirection = 0.f;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "UrbanWarfare")
+	bool bCrouching = false;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "UrbanWarfare")
+	bool bWalking = false;
 	
 	bool bInitFlag = false;
 	FTimerHandle InitTimer;
