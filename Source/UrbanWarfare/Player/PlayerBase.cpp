@@ -75,6 +75,7 @@ void APlayerBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifet
 	
 	DOREPLIFETIME(APlayerBase, RegisterInputComponent);
 	DOREPLIFETIME(APlayerBase, PlayerBehavior);
+	DOREPLIFETIME(APlayerBase, CurrentSpeed);
 }
 
 void APlayerBase::SetupBasicComponents()
@@ -102,6 +103,7 @@ void APlayerBase::SetupBasicComponents()
 	TheSpringArm->SetRelativeRotation(FRotator(0.f, 90.f, 0.f));
 	TheSpringArm->TargetArmLength = 600.f;
 	TheSpringArm->bUsePawnControlRotation = true;
+	TheSpringArm->bEnableCameraLag = true;
 
 	TheCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	TheCamera->SetupAttachment(TheSpringArm);
@@ -115,9 +117,10 @@ void APlayerBase::SetupCustomComponents()
 
 
 
-void APlayerBase::SetWalkSpeed(bool bWalk)
+void APlayerBase::ServerSetWalkSpeed_Implementation(bool bWalk)
 {
-	bWalk ? TheMovement->MaxWalkSpeed = WalkSpeed : TheMovement->MaxWalkSpeed = RunSpeed;
+	CurrentSpeed = bWalk ? WalkSpeed : RunSpeed;
+	TheMovement->MaxWalkSpeed = CurrentSpeed;
 }
 
 UActorComponent* APlayerBase::GetRegInputComp()
@@ -128,4 +131,9 @@ UActorComponent* APlayerBase::GetRegInputComp()
 UActorComponent* APlayerBase::GetPlayerBehavior()
 {
 	return PlayerBehavior;
+}
+
+void APlayerBase::OnRep_ChangeMaxWalkSpeed()
+{
+	TheMovement->MaxWalkSpeed = CurrentSpeed;
 }

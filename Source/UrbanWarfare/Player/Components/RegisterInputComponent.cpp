@@ -54,6 +54,10 @@ bool URegisterInputComponent::CachAndInit()
 		LOG_NULL(InputConfig);
 		return false;
 	}
+
+	if (!PlayerPawn->IsLocallyControlled())
+		return false;
+
 	return true;
 }
 

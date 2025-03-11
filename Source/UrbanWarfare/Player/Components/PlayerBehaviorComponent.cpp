@@ -113,5 +113,5 @@ void UPlayerBehaviorComponent::ServerWalk_Implementation(bool bWalk)
 
 void UPlayerBehaviorComponent::ClientWalk_Implementation(bool bWalk)
 {
-	ThePlayer->SetWalkSpeed(bWalk);
+	ThePlayer->ServerSetWalkSpeed(bWalk);
 }
