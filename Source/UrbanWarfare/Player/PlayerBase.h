@@ -59,15 +59,8 @@ public:
 	inline bool GetHasAuthority() { return HasAuthority(); }
 	
 public:
-	UFUNCTION(Server, Reliable)
-	void ServerSetWalkSpeed(bool bWalk);
-public:
 	virtual UActorComponent* GetRegInputComp() override;
 	virtual UActorComponent* GetPlayerBehavior() ;
-
-protected:
-	UFUNCTION()
-	void OnRep_ChangeMaxWalkSpeed();
 
 protected:
 	// Data Configs
@@ -102,20 +95,10 @@ protected:
 protected:
 	// Custom Components
 
-	UPROPERTY(Replicated, EditDefaultsOnly, BlueprintReadWrite, Category = "Custom Components")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Custom Components")
 	TObjectPtr<class URegisterInputComponent> RegisterInputComponent;
 
-	UPROPERTY(Replicated, EditDefaultsOnly, BlueprintReadWrite, Category = "Custom Components")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Custom Components")
 	TObjectPtr<class UPlayerBehaviorComponent> PlayerBehavior;
 
-protected:
-	// Constants
-	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	float WalkSpeed = 200.f;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	float RunSpeed = 600.f;
-
-	UPROPERTY(ReplicatedUsing = OnRep_ChangeMaxWalkSpeed)
-	float CurrentSpeed = RunSpeed;
 };

@@ -73,9 +73,8 @@ void APlayerBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifet
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	
-	DOREPLIFETIME(APlayerBase, RegisterInputComponent);
-	DOREPLIFETIME(APlayerBase, PlayerBehavior);
-	DOREPLIFETIME(APlayerBase, CurrentSpeed);
+	//DOREPLIFETIME(APlayerBase, RegisterInputComponent);
+	//DOREPLIFETIME(APlayerBase, PlayerBehavior);
 }
 
 void APlayerBase::SetupBasicComponents()
@@ -115,14 +114,6 @@ void APlayerBase::SetupCustomComponents()
 	PlayerBehavior = CreateDefaultSubobject<UPlayerBehaviorComponent>(TEXT("PlayerBehaviorComponent"));
 }
 
-
-
-void APlayerBase::ServerSetWalkSpeed_Implementation(bool bWalk)
-{
-	CurrentSpeed = bWalk ? WalkSpeed : RunSpeed;
-	TheMovement->MaxWalkSpeed = CurrentSpeed;
-}
-
 UActorComponent* APlayerBase::GetRegInputComp()
 {
 	return RegisterInputComponent;
@@ -131,9 +122,4 @@ UActorComponent* APlayerBase::GetRegInputComp()
 UActorComponent* APlayerBase::GetPlayerBehavior()
 {
 	return PlayerBehavior;
-}
-
-void APlayerBase::OnRep_ChangeMaxWalkSpeed()
-{
-	TheMovement->MaxWalkSpeed = CurrentSpeed;
 }

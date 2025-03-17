@@ -70,14 +70,23 @@ bool UPlayerBehaviorComponent::InitConstruct()
 	return true;
 }
 
+void UPlayerBehaviorComponent::OnRep_Crouch()
+{
+	if (bCrouching)
+		ThePlayer->Crouch();
+	else
+		ThePlayer->UnCrouch();
+}
+
 void UPlayerBehaviorComponent::ExecuteCrouch(bool bCrouch)
 {
 	bool IsAuth = ThePlayer->HasAuthority();
 
 	if (IsAuth)
 	{
-		ClientCrouch(bCrouch);
 		bCrouching = bCrouch;
+		if (ThePlayer->IsLocallyControlled())
+			OnRep_Crouch();
 	}
 	else
 		ServerCrouch(bCrouch);
@@ -88,9 +97,10 @@ void UPlayerBehaviorComponent::ServerCrouch_Implementation(bool bCrouch)
 	ExecuteCrouch(bCrouch);
 }
 
-void UPlayerBehaviorComponent::ClientCrouch_Implementation(bool bCrouch)
+void UPlayerBehaviorComponent::OnRep_Walk()
 {
-	bCrouch ? ThePlayer->Crouch() : ThePlayer->UnCrouch();
+	float CurrentSpeed = bWalking ? WalkSpeed : RunSpeed;
+	ThePlayer->TheMovement->MaxWalkSpeed = CurrentSpeed;
 }
 
 void UPlayerBehaviorComponent::ExecuteWalk(bool bWalk)
@@ -99,8 +109,9 @@ void UPlayerBehaviorComponent::ExecuteWalk(bool bWalk)
 
 	if (IsAuth)
 	{
-		ClientWalk(bWalk);
 		bWalking = bWalk;
+		if (ThePlayer->IsLocallyControlled())
+			OnRep_Walk();
 	}
 	else
 		ServerWalk(bWalk);
@@ -109,9 +120,4 @@ void UPlayerBehaviorComponent::ExecuteWalk(bool bWalk)
 void UPlayerBehaviorComponent::ServerWalk_Implementation(bool bWalk)
 {
 	ExecuteWalk(bWalk);
-}
-
-void UPlayerBehaviorComponent::ClientWalk_Implementation(bool bWalk)
-{
-	ThePlayer->ServerSetWalkSpeed(bWalk);
 }
