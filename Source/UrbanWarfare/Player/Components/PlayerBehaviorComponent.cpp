@@ -27,11 +27,13 @@ void UPlayerBehaviorComponent::BeginPlay()
 
 	if (!InitConstruct())
 	{
-		LOG_EFUNC(TEXT("Failed to Initialize component"))
+		LOG_EFUNC(TEXT("Failed to initialize component"))
 		SetComponentTickEnabled(false);
 		return;
 	}
 
+	MovementState.Reserve(5);
+	MovementState.Insert(EMovementState::Running, 0);
 	
 }
 
@@ -48,10 +50,7 @@ void UPlayerBehaviorComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProper
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(UPlayerBehaviorComponent, bCrouching)
-	DOREPLIFETIME(UPlayerBehaviorComponent, bWalking)
-	//DOREPLIFETIME(UPlayerBehaviorComponent, WalkSpeed)
-	//DOREPLIFETIME(UPlayerBehaviorComponent, RunSpeed)
+	DOREPLIFETIME(UPlayerBehaviorComponent, MovementState)
 }
 
 bool UPlayerBehaviorComponent::InitConstruct()
@@ -64,43 +63,66 @@ bool UPlayerBehaviorComponent::InitConstruct()
 	if (!RegInputComp)
 		return false;
 
-	RegInputComp->OnInputCrouch.BindUObject(this, &UPlayerBehaviorComponent::ExecuteCrouch);
+	PlayerMovement = ThePlayer->GetCharacterMovement();
+	if (!PlayerMovement)
+		return false;
+
+	RegInputComp->OnInputCrouch.BindUObject(this, &UPlayerBehaviorComponent::TriggerCrouch);
 	RegInputComp->OnInputWalk.BindUObject(this, &UPlayerBehaviorComponent::ExecuteWalk);
+	RegInputComp->OnInputJump.BindUObject(this, &UPlayerBehaviorComponent::ExecuteJump);
 
 	return true;
 }
 
-void UPlayerBehaviorComponent::OnRep_Crouch()
+void UPlayerBehaviorComponent::ServerExecuteApplyingMovementState_Implementation()
 {
-	if (bCrouching)
-		ThePlayer->Crouch();
-	else
-		ThePlayer->UnCrouch();
+	if (MovementState.Last() != EMovementState::Crouching)
+		GetOwner<ACharacter>()->UnCrouch();
+
+	switch (MovementState.Last())
+	{
+	case EMovementState::Running:
+		GetOwner<ACharacter>()->GetCharacterMovement()->MaxWalkSpeed = RunSpeed;
+		break;
+	case EMovementState::Walking:
+		GetOwner<ACharacter>()->GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
+		break;
+	case EMovementState::Crouching:
+		GetOwner<ACharacter>()->Crouch();
+		break;
+	}
 }
 
-void UPlayerBehaviorComponent::ExecuteCrouch(bool bCrouch)
+void UPlayerBehaviorComponent::TriggerCrouch(bool bCrouch)
 {
-	bool IsAuth = ThePlayer->HasAuthority();
-
-	if (IsAuth)
+	if (GetOwner()->HasAuthority())
 	{
-		bCrouching = bCrouch;
-		if (ThePlayer->IsLocallyControlled())
-			OnRep_Crouch();
+		if (bCrouch)
+		{
+			GetOwner<ACharacter>()->Crouch();
+		}
+		else
+		{
+			GetOwner<ACharacter>()->UnCrouch();
+		}
 	}
 	else
 		ServerCrouch(bCrouch);
 }
 
-void UPlayerBehaviorComponent::ServerCrouch_Implementation(bool bCrouch)
+void UPlayerBehaviorComponent::ExecuteCrouch(bool bCrouch)
 {
-	ExecuteCrouch(bCrouch);
+	if (bCrouch)
+		GetOwner<ACharacter>()->Crouch();
+	else
+		GetOwner<ACharacter>()->UnCrouch();
+		//MovementState.Add(EMovementState::Crouching);
+		//MovementState.Remove(EMovementState::Crouching);
 }
 
-void UPlayerBehaviorComponent::OnRep_Walk()
+void UPlayerBehaviorComponent::ServerCrouch_Implementation(bool bCrouch)
 {
-	float CurrentSpeed = bWalking ? WalkSpeed : RunSpeed;
-	ThePlayer->TheMovement->MaxWalkSpeed = CurrentSpeed;
+	TriggerCrouch(bCrouch);
 }
 
 void UPlayerBehaviorComponent::ExecuteWalk(bool bWalk)
@@ -109,9 +131,12 @@ void UPlayerBehaviorComponent::ExecuteWalk(bool bWalk)
 
 	if (IsAuth)
 	{
-		bWalking = bWalk;
-		if (ThePlayer->IsLocallyControlled())
-			OnRep_Walk();
+		if (bWalk)
+			MovementState.Add(EMovementState::Walking);
+		else
+			MovementState.Remove(EMovementState::Walking);
+
+		//ServerSetMovementByState();
 	}
 	else
 		ServerWalk(bWalk);
@@ -120,4 +145,10 @@ void UPlayerBehaviorComponent::ExecuteWalk(bool bWalk)
 void UPlayerBehaviorComponent::ServerWalk_Implementation(bool bWalk)
 {
 	ExecuteWalk(bWalk);
+	//ServerSetMovementByState();
+}
+
+void UPlayerBehaviorComponent::ExecuteJump(bool Jump)
+{
+	ThePlayer->Jump();
 }

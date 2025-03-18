@@ -2,8 +2,8 @@
 
 
 #include "PlayerBase.h"
-#include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -69,12 +69,15 @@ void APlayerBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 
 }
 
+void APlayerBase::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+}
+
 void APlayerBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	
-	//DOREPLIFETIME(APlayerBase, RegisterInputComponent);
-	//DOREPLIFETIME(APlayerBase, PlayerBehavior);
+	DOREPLIFETIME(UPlayerBehaviorComponent, PlayerBehavior);
 }
 
 void APlayerBase::SetupBasicComponents()
@@ -87,6 +90,7 @@ void APlayerBase::SetupBasicComponents()
 	TheMovement->MaxWalkSpeed = 600.f;
 	TheMovement->GetNavAgentPropertiesRef().bCanCrouch = true;
 	TheMovement->bCanWalkOffLedgesWhenCrouching = true;
+	TheMovement->SetIsReplicated(true);
 
 	TheMesh = GetMesh();
 	if (MeshConfig)
@@ -112,6 +116,7 @@ void APlayerBase::SetupCustomComponents()
 {
 	RegisterInputComponent = CreateDefaultSubobject<URegisterInputComponent>(TEXT("RegisterInputComponent"));
 	PlayerBehavior = CreateDefaultSubobject<UPlayerBehaviorComponent>(TEXT("PlayerBehaviorComponent"));
+	PlayerBehavior->SetIsReplicated(true);
 }
 
 UActorComponent* APlayerBase::GetRegInputComp()
@@ -122,4 +127,9 @@ UActorComponent* APlayerBase::GetRegInputComp()
 UActorComponent* APlayerBase::GetPlayerBehavior()
 {
 	return PlayerBehavior;
+}
+
+bool APlayerBase::IsPlayerFalling()
+{
+	return TheMovement->IsFalling();
 }

@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "Animation/AnimInstance.h"
+#include "PlayerBase.h"
+#include "Components/PlayerBehaviorComponent.h"
 #include "WarfareAnim.generated.h"
 
 /**
@@ -45,11 +47,11 @@ protected:
 	float MovementDirection = 0.f;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "UrbanWarfare")
-	bool bCrouching = false;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "UrbanWarfare")
-	bool bWalking = false;
+	bool bInAir = false;
 	
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "UrbanWarfare")
+	TArray<EMovementState> MovementState;
+
 	bool bInitFlag = false;
 	FTimerHandle InitTimer;
 	

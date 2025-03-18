@@ -5,8 +5,6 @@
 #include "KismetAnimationLibrary.h"
 
 #include "../Common/WarfareLogger.h"
-#include "PlayerBase.h"
-#include "Components/PlayerBehaviorComponent.h"
 
 UWarfareAnim::UWarfareAnim()
 {
@@ -65,6 +63,9 @@ bool UWarfareAnim::CacheAndInit()
 	if (!ThePlayer)
 		return false;
 
+	if (PlayerBehavior->MovementState.Num() <= 0)
+		return false;
+
 	return true;
 }
 
@@ -79,6 +80,6 @@ void UWarfareAnim::SetMovementProperty()
 
 void UWarfareAnim::SetTransitionProperty()
 {
-	bCrouching = PlayerBehavior->bCrouching;
-	bWalking = PlayerBehavior->bWalking;
+	MovementState = PlayerBehavior->MovementState;
+	bInAir = ThePlayer->IsPlayerFalling();
 }

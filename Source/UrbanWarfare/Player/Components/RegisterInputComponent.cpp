@@ -41,7 +41,7 @@ void URegisterInputComponent::BeginPlay()
 
 bool URegisterInputComponent::CachAndInit()
 {
-	PlayerPawn = Cast<APawn>(GetOwner());
+	PlayerPawn = Cast<APlayerBase>(GetOwner());
 	if (!PlayerPawn)
 		return false;
 
@@ -73,6 +73,7 @@ void URegisterInputComponent::SetupEnhancedInput()
 		Input->BindAction(InputConfig->Look, ETriggerEvent::Triggered, this, &URegisterInputComponent::InputLook);
 		Input->BindAction(InputConfig->Crouch, ETriggerEvent::Triggered, this, &URegisterInputComponent::InputCrouch);
 		Input->BindAction(InputConfig->Walk, ETriggerEvent::Triggered, this, &URegisterInputComponent::InputWalk);
+		Input->BindAction(InputConfig->Jump, ETriggerEvent::Triggered, this, &URegisterInputComponent::InputJump);
 	}
 }
 
@@ -108,4 +109,14 @@ void URegisterInputComponent::InputWalk(const FInputActionValue& Value)
 	bool Input = Value.Get<bool>();
 
 	OnInputWalk.ExecuteIfBound(Input);
+}
+
+void URegisterInputComponent::InputJump(const FInputActionValue& Value)
+{
+	bool Input = Value.Get<bool>();
+
+	if(!PlayerPawn->IsPlayerFalling())
+	{
+		OnInputJump.ExecuteIfBound(Input);
+	}
 }

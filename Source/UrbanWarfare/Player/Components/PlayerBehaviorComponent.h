@@ -6,6 +6,14 @@
 #include "Components/ActorComponent.h"
 #include "PlayerBehaviorComponent.generated.h"
 
+UENUM(BlueprintType)
+enum class EMovementState : uint8
+{
+	Running = 0,
+	Walking,
+	Crouching
+};
+
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class URBANWARFARE_API UPlayerBehaviorComponent : public UActorComponent
@@ -30,10 +38,14 @@ private:
 	bool InitConstruct();
 
 protected:
+	UFUNCTION(Server, Reliable)
+	void ServerExecuteApplyingMovementState();
+
+protected:
 	// Crouch
 
 	UFUNCTION()
-	void OnRep_Crouch();
+	void TriggerCrouch(bool bCrouch);
 
 	UFUNCTION()
 	void ExecuteCrouch(bool bCrouch);
@@ -45,21 +57,17 @@ protected:
 	// Walk
 
 	UFUNCTION()
-	void OnRep_Walk();
-
-	UFUNCTION()
 	void ExecuteWalk(bool bWalk);
 
-	UFUNCTION(Server, Reliable)
+	UFUNCTION(Server, Unreliable)
 	void ServerWalk(bool bWalk);
+
+protected:
+	// Jump
+
+	UFUNCTION()
+	void ExecuteJump(bool Jump);
 	
-public:
-	UPROPERTY(ReplicatedUsing = OnRep_Crouch)
-	bool bCrouching = false;
-
-	UPROPERTY(ReplicatedUsing = OnRep_Walk)
-	bool bWalking = false;
-
 protected:
 	UPROPERTY()
 	TObjectPtr<class APlayerBase> ThePlayer;
@@ -67,10 +75,17 @@ protected:
 	UPROPERTY()
 	TObjectPtr<class URegisterInputComponent> RegInputComp;
 
+	UPROPERTY()
+	TObjectPtr<class UCharacterMovementComponent> PlayerMovement;
+
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Constant")
 	float WalkSpeed = 200.f;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Constant")
 	float RunSpeed = 600.f;
+
+public:
+	UPROPERTY(Replicated)
+	TArray<EMovementState> MovementState;
 
 };

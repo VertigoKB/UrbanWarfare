@@ -10,6 +10,7 @@
 
 DECLARE_DELEGATE_OneParam(FOnInputCrouch, bool)
 DECLARE_DELEGATE_OneParam(FOnInputWalk, bool)
+DECLARE_DELEGATE_OneParam(FOnInputJump, bool)
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class URBANWARFARE_API URegisterInputComponent : public UActorComponent
@@ -42,6 +43,9 @@ protected:
 
 	UFUNCTION()
 	void InputWalk(const FInputActionValue& Value);
+
+	UFUNCTION()
+	void InputJump(const FInputActionValue& Value);
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "InputConfig")
 	TObjectPtr<class UInputConfig> InputConfig;
@@ -49,7 +53,7 @@ protected:
 	bool bInputConfigChecker = false;
 protected:
 	UPROPERTY()
-	TObjectPtr<APawn> PlayerPawn;
+	TObjectPtr<class APlayerBase> PlayerPawn;
 	UPROPERTY()
 	TObjectPtr<APlayerController> MyController;
 
@@ -57,4 +61,5 @@ protected:
 public:
 	FOnInputCrouch OnInputCrouch;
 	FOnInputWalk OnInputWalk;
+	FOnInputJump OnInputJump;
 };

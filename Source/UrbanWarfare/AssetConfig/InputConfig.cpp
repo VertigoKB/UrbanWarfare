@@ -10,4 +10,5 @@ void UInputConfig::PostLoad()
 	LOG_NULL(Look);
 	LOG_NULL(Crouch);
 	LOG_NULL(Walk);
+	LOG_NULL(Jump);
 }

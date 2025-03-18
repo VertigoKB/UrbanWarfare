@@ -23,6 +23,8 @@ class URBANWARFARE_API IDataProvider
 public:
 	virtual UActorComponent* GetRegInputComp() = 0;
 	virtual UActorComponent* GetPlayerBehavior() = 0;
+
+	virtual bool IsPlayerFalling() = 0;
 };
 
 
@@ -46,6 +48,8 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	virtual void PostInitializeComponents() override;
+
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 protected:
@@ -54,13 +58,11 @@ protected:
 
 	UFUNCTION()
 	void SetupCustomComponents();
-
-public:
-	inline bool GetHasAuthority() { return HasAuthority(); }
 	
 public:
 	virtual UActorComponent* GetRegInputComp() override;
-	virtual UActorComponent* GetPlayerBehavior() ;
+	virtual UActorComponent* GetPlayerBehavior() override;
+	virtual bool IsPlayerFalling() override;
 
 protected:
 	// Data Configs
@@ -101,4 +103,6 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Custom Components")
 	TObjectPtr<class UPlayerBehaviorComponent> PlayerBehavior;
 
+protected:
+	// Editable Constant
 };
