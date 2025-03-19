@@ -94,6 +94,8 @@ void URegisterInputComponent::InputLook(const FInputActionValue& Value)
 
 	PlayerPawn->AddControllerYawInput(Input.X);
 	PlayerPawn->AddControllerPitchInput(-Input.Y);
+
+	OnInputLook.ExecuteIfBound();
 }
 
 void URegisterInputComponent::InputCrouch(const FInputActionValue& Value)

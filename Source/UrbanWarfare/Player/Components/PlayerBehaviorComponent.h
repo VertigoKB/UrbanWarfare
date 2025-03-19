@@ -123,6 +123,9 @@ protected:
 	UFUNCTION()
 	void OnRep_MovementState();
 
+	UFUNCTION(Server, Reliable)
+	void ServerApplySpeed();
+
 protected:
 	// Crouch
 
@@ -136,7 +139,7 @@ protected:
 	// Walk
 
 	UFUNCTION()
-	void ExecuteWalk(bool bWalk);
+	void TriggerWalk(bool bWalk);
 
 	UFUNCTION(Server, Unreliable)
 	void ServerWalk(bool bWalk);
@@ -145,7 +148,22 @@ protected:
 	// Jump
 
 	UFUNCTION()
-	void ExecuteJump(bool Jump);
+	void TriggerJump(bool Jump);
+
+protected:
+	// Look
+
+	UFUNCTION()
+	void OnRep_AimDirection();
+
+	UFUNCTION()
+	void TriggerLook();
+
+	UFUNCTION(Server, Unreliable)
+	void ServerLook();
+
+	UFUNCTION()
+	float CalcAimDirection();
 	
 protected:
 	UPROPERTY()
@@ -163,8 +181,13 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Constant")
 	float RunSpeed = 600.f;
 
+	UPROPERTY(Replicated)
+	float CurrentSpeed = RunSpeed;
+
 public:
 	UPROPERTY(ReplicatedUsing = OnRep_MovementState)
 	FMovementStateArray MovementState;
 
+	UPROPERTY(ReplicatedUsing = OnRep_AimDirection)
+	float AimDirection = 0.f;
 };

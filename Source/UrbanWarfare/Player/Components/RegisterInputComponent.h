@@ -11,6 +11,7 @@
 DECLARE_DELEGATE_OneParam(FOnInputCrouch, bool)
 DECLARE_DELEGATE_OneParam(FOnInputWalk, bool)
 DECLARE_DELEGATE_OneParam(FOnInputJump, bool)
+DECLARE_DELEGATE(FOnInputLook)
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class URBANWARFARE_API URegisterInputComponent : public UActorComponent
@@ -62,4 +63,5 @@ public:
 	FOnInputCrouch OnInputCrouch;
 	FOnInputWalk OnInputWalk;
 	FOnInputJump OnInputJump;
+	FOnInputLook OnInputLook;
 };

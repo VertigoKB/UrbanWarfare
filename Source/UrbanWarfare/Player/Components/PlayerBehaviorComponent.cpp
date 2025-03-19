@@ -3,6 +3,7 @@
 
 #include "PlayerBehaviorComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "../PlayerBase.h"
 #include "RegisterInputComponent.h"
 #include "../../Common/WarfareLogger.h"
@@ -51,6 +52,8 @@ void UPlayerBehaviorComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProper
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(UPlayerBehaviorComponent, MovementState)
+	DOREPLIFETIME(UPlayerBehaviorComponent, CurrentSpeed)
+	DOREPLIFETIME(UPlayerBehaviorComponent, AimDirection)
 }
 
 bool UPlayerBehaviorComponent::InitConstruct()
@@ -68,32 +71,12 @@ bool UPlayerBehaviorComponent::InitConstruct()
 		return false;
 
 	RegInputComp->OnInputCrouch.BindUObject(this, &UPlayerBehaviorComponent::TriggerCrouch);
-	RegInputComp->OnInputWalk.BindUObject(this, &UPlayerBehaviorComponent::ExecuteWalk);
-	RegInputComp->OnInputJump.BindUObject(this, &UPlayerBehaviorComponent::ExecuteJump);
+	RegInputComp->OnInputWalk.BindUObject(this, &UPlayerBehaviorComponent::TriggerWalk);
+	RegInputComp->OnInputJump.BindUObject(this, &UPlayerBehaviorComponent::TriggerJump);
+	RegInputComp->OnInputLook.BindUObject(this, &UPlayerBehaviorComponent::TriggerLook);
 
 	return true;
 }
-
-//void UPlayerBehaviorComponent::ClientApplyMovementState_Implementation()
-//{
-//	if (MovementState.Last() != EMovementState::Crouching)
-//		GetOwner<ACharacter>()->UnCrouch();
-//
-//	switch (MovementState.Last())
-//	{
-//	case EMovementState::Running:
-//		GetOwner<ACharacter>()->GetCharacterMovement()->MaxWalkSpeed = RunSpeed;
-//		break;
-//	case EMovementState::Walking:
-//		GetOwner<ACharacter>()->GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
-//		break;
-//	case EMovementState::Crouching:
-//		GetOwner<ACharacter>()->Crouch();
-//		break;
-//	}
-//
-//	LOG_NETSIMPLE(TEXT("Apply Movement"))
-//}
 
 void UPlayerBehaviorComponent::OnRep_MovementState()
 {
@@ -103,15 +86,28 @@ void UPlayerBehaviorComponent::OnRep_MovementState()
 	switch (MovementState.LastState())
 	{
 	case EMovementState::Running:
-		GetOwner<ACharacter>()->GetCharacterMovement()->MaxWalkSpeed = RunSpeed;
+		CurrentSpeed = RunSpeed;
 		break;
 	case EMovementState::Walking:
-		GetOwner<ACharacter>()->GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
+		CurrentSpeed = WalkSpeed;
 		break;
 	case EMovementState::Crouching:
 		GetOwner<ACharacter>()->Crouch();
 		break;
 	}
+
+	if (GetOwner()->HasAuthority())
+		GetOwner<ACharacter>()->GetCharacterMovement()->MaxWalkSpeed = CurrentSpeed;
+	else
+	{
+		GetOwner<ACharacter>()->GetCharacterMovement()->MaxWalkSpeed = CurrentSpeed;
+		ServerApplySpeed();
+	}
+}
+
+void UPlayerBehaviorComponent::ServerApplySpeed_Implementation()
+{
+	OnRep_MovementState();
 }
 
 void UPlayerBehaviorComponent::TriggerCrouch(bool bCrouch)
@@ -119,20 +115,14 @@ void UPlayerBehaviorComponent::TriggerCrouch(bool bCrouch)
 	if (GetOwner()->HasAuthority())
 	{
 		if (bCrouch)
-		{
 			MovementState.AddState(EMovementState::Crouching);
-		}
 		else
-		{
 			MovementState.RemoveState(EMovementState::Crouching);
-		}
 		if (ThePlayer->IsLocallyControlled())
 			OnRep_MovementState();
 	}
 	else
-	{
 		ServerCrouch(bCrouch);
-	}
 }
 
 void UPlayerBehaviorComponent::ServerCrouch_Implementation(bool bCrouch)
@@ -140,30 +130,58 @@ void UPlayerBehaviorComponent::ServerCrouch_Implementation(bool bCrouch)
 	TriggerCrouch(bCrouch);
 }
 
-void UPlayerBehaviorComponent::ExecuteWalk(bool bWalk)
+void UPlayerBehaviorComponent::TriggerWalk(bool bWalk)
 {
-	//bool IsAuth = ThePlayer->HasAuthority();
-	//
-	//if (IsAuth)
-	//{
-	//	if (bWalk)
-	//		MovementState.AddState(EMovementState::Walking);
-	//	else
-	//		MovementState.RemoveState(EMovementState::Walking);
-	//
-	//	//ServerSetMovementByState();
-	//}
-	//else
-	//	ServerWalk(bWalk);
+	if (GetOwner()->HasAuthority())
+	{
+		if (bWalk)
+			MovementState.AddState(EMovementState::Walking);
+		else
+			MovementState.RemoveState(EMovementState::Walking);
+		if (ThePlayer->IsLocallyControlled())
+			OnRep_MovementState();
+	}
+	else
+		ServerWalk(bWalk);
 }
 
 void UPlayerBehaviorComponent::ServerWalk_Implementation(bool bWalk)
 {
-	//ExecuteWalk(bWalk);
-	////ServerSetMovementByState();
+	TriggerWalk(bWalk);
 }
 
-void UPlayerBehaviorComponent::ExecuteJump(bool Jump)
+void UPlayerBehaviorComponent::TriggerJump(bool Jump)
 {
 	ThePlayer->Jump();
+}
+
+void UPlayerBehaviorComponent::OnRep_AimDirection()
+{
+	AimDirection = CalcAimDirection();
+}
+
+void UPlayerBehaviorComponent::TriggerLook()
+{
+	if (GetOwner()->HasAuthority())
+	{
+		AimDirection = CalcAimDirection();
+	}
+	else
+	{
+		ServerLook();
+	}
+}
+
+void UPlayerBehaviorComponent::ServerLook_Implementation()
+{
+	TriggerLook();
+}
+
+float UPlayerBehaviorComponent::CalcAimDirection()
+{
+	FRotator ControlRot = ThePlayer->GetControlRotation();
+	FRotator ActorRot = ThePlayer->GetActorRotation();
+
+	FRotator TargetRot = UKismetMathLibrary::NormalizedDeltaRotator(ControlRot, ActorRot);
+	return TargetRot.Pitch;
 }

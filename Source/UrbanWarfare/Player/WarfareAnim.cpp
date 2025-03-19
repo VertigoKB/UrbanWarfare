@@ -80,4 +80,5 @@ void UWarfareAnim::SetTransitionProperty()
 {
 	CurrentMovementState = PlayerBehavior->MovementState.LastState();
 	bInAir = ThePlayer->IsPlayerFalling();
+	AimDirection = PlayerBehavior->AimDirection;
 }

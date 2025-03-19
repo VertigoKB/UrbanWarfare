@@ -82,8 +82,8 @@ void APlayerBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifet
 void APlayerBase::SetupBasicComponents()
 {
 	TheCapsule = GetCapsuleComponent();
-	TheCapsule->SetCapsuleRadius(34.f);
-	TheCapsule->SetCapsuleHalfHeight(93.f);
+	TheCapsule->SetCapsuleRadius(32.f);
+	TheCapsule->SetCapsuleHalfHeight(80.f);
 
 	TheMovement = GetCharacterMovement();
 	TheMovement->MaxWalkSpeed = 600.f;
@@ -96,8 +96,9 @@ void APlayerBase::SetupBasicComponents()
 		TheMesh->SetSkeletalMesh(MeshConfig->CounterTerrorist);
 	if (BlueprintConfig)
 		TheMesh->AnimClass = BlueprintConfig->PlayerAnimBP;
-	TheMesh->SetRelativeLocation(FVector(0.f, 0.f, -93.5f));
+	TheMesh->SetRelativeLocation(FVector(0.f, 0.f, -80.25f));
 	TheMesh->SetRelativeRotation(FRotator(0.f, -90.f, 0.f));
+	TheMesh->SetRelativeScale3D(FVector(0.85f, 0.85f, 0.85f));
 
 	TheSpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
 	TheSpringArm->SetupAttachment(TheMesh);

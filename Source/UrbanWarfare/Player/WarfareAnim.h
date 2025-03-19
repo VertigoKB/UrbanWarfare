@@ -52,6 +52,9 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "UrbanWarfare")
 	EMovementState CurrentMovementState;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "UrbanWarfare")
+	float AimDirection = 0.f;
+
 	bool bInitFlag = false;
 	FTimerHandle InitTimer;
 	
