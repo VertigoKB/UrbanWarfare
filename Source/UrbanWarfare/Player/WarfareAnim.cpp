@@ -8,6 +8,7 @@
 
 UWarfareAnim::UWarfareAnim()
 {
+	CurrentMovementState = EMovementState::Running;
 }
 
 void UWarfareAnim::NativeInitializeAnimation()
@@ -63,9 +64,6 @@ bool UWarfareAnim::CacheAndInit()
 	if (!ThePlayer)
 		return false;
 
-	if (PlayerBehavior->MovementState.Num() <= 0)
-		return false;
-
 	return true;
 }
 
@@ -80,6 +78,6 @@ void UWarfareAnim::SetMovementProperty()
 
 void UWarfareAnim::SetTransitionProperty()
 {
-	MovementState = PlayerBehavior->MovementState;
+	CurrentMovementState = PlayerBehavior->MovementState.LastState();
 	bInAir = ThePlayer->IsPlayerFalling();
 }

@@ -77,7 +77,6 @@ void APlayerBase::PostInitializeComponents()
 void APlayerBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	DOREPLIFETIME(UPlayerBehaviorComponent, PlayerBehavior);
 }
 
 void APlayerBase::SetupBasicComponents()

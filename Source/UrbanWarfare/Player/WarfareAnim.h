@@ -50,7 +50,7 @@ protected:
 	bool bInAir = false;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "UrbanWarfare")
-	TArray<EMovementState> MovementState;
+	EMovementState CurrentMovementState;
 
 	bool bInitFlag = false;
 	FTimerHandle InitTimer;

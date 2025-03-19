@@ -33,7 +33,7 @@ void UPlayerBehaviorComponent::BeginPlay()
 	}
 
 	MovementState.Reserve(5);
-	MovementState.Insert(EMovementState::Running, 0);
+	MovementState.AddState(EMovementState::Running);
 	
 }
 
@@ -74,12 +74,33 @@ bool UPlayerBehaviorComponent::InitConstruct()
 	return true;
 }
 
-void UPlayerBehaviorComponent::ServerExecuteApplyingMovementState_Implementation()
+//void UPlayerBehaviorComponent::ClientApplyMovementState_Implementation()
+//{
+//	if (MovementState.Last() != EMovementState::Crouching)
+//		GetOwner<ACharacter>()->UnCrouch();
+//
+//	switch (MovementState.Last())
+//	{
+//	case EMovementState::Running:
+//		GetOwner<ACharacter>()->GetCharacterMovement()->MaxWalkSpeed = RunSpeed;
+//		break;
+//	case EMovementState::Walking:
+//		GetOwner<ACharacter>()->GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
+//		break;
+//	case EMovementState::Crouching:
+//		GetOwner<ACharacter>()->Crouch();
+//		break;
+//	}
+//
+//	LOG_NETSIMPLE(TEXT("Apply Movement"))
+//}
+
+void UPlayerBehaviorComponent::OnRep_MovementState()
 {
-	if (MovementState.Last() != EMovementState::Crouching)
+	if (MovementState.LastState() != EMovementState::Crouching)
 		GetOwner<ACharacter>()->UnCrouch();
 
-	switch (MovementState.Last())
+	switch (MovementState.LastState())
 	{
 	case EMovementState::Running:
 		GetOwner<ACharacter>()->GetCharacterMovement()->MaxWalkSpeed = RunSpeed;
@@ -99,25 +120,19 @@ void UPlayerBehaviorComponent::TriggerCrouch(bool bCrouch)
 	{
 		if (bCrouch)
 		{
-			GetOwner<ACharacter>()->Crouch();
+			MovementState.AddState(EMovementState::Crouching);
 		}
 		else
 		{
-			GetOwner<ACharacter>()->UnCrouch();
+			MovementState.RemoveState(EMovementState::Crouching);
 		}
+		if (ThePlayer->IsLocallyControlled())
+			OnRep_MovementState();
 	}
 	else
+	{
 		ServerCrouch(bCrouch);
-}
-
-void UPlayerBehaviorComponent::ExecuteCrouch(bool bCrouch)
-{
-	if (bCrouch)
-		GetOwner<ACharacter>()->Crouch();
-	else
-		GetOwner<ACharacter>()->UnCrouch();
-		//MovementState.Add(EMovementState::Crouching);
-		//MovementState.Remove(EMovementState::Crouching);
+	}
 }
 
 void UPlayerBehaviorComponent::ServerCrouch_Implementation(bool bCrouch)
@@ -127,25 +142,25 @@ void UPlayerBehaviorComponent::ServerCrouch_Implementation(bool bCrouch)
 
 void UPlayerBehaviorComponent::ExecuteWalk(bool bWalk)
 {
-	bool IsAuth = ThePlayer->HasAuthority();
-
-	if (IsAuth)
-	{
-		if (bWalk)
-			MovementState.Add(EMovementState::Walking);
-		else
-			MovementState.Remove(EMovementState::Walking);
-
-		//ServerSetMovementByState();
-	}
-	else
-		ServerWalk(bWalk);
+	//bool IsAuth = ThePlayer->HasAuthority();
+	//
+	//if (IsAuth)
+	//{
+	//	if (bWalk)
+	//		MovementState.AddState(EMovementState::Walking);
+	//	else
+	//		MovementState.RemoveState(EMovementState::Walking);
+	//
+	//	//ServerSetMovementByState();
+	//}
+	//else
+	//	ServerWalk(bWalk);
 }
 
 void UPlayerBehaviorComponent::ServerWalk_Implementation(bool bWalk)
 {
-	ExecuteWalk(bWalk);
-	//ServerSetMovementByState();
+	//ExecuteWalk(bWalk);
+	////ServerSetMovementByState();
 }
 
 void UPlayerBehaviorComponent::ExecuteJump(bool Jump)
