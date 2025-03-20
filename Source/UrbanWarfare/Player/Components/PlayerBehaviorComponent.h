@@ -152,10 +152,6 @@ protected:
 
 protected:
 	// Look
-
-	UFUNCTION()
-	void OnRep_AimDirection();
-
 	UFUNCTION()
 	void TriggerLook();
 
@@ -163,7 +159,14 @@ protected:
 	void ServerLook();
 
 	UFUNCTION()
-	float CalcAimDirection();
+	void VerifyNecessitySyncAimDirection();
+	
+	UFUNCTION()
+	uint8 CalcAimDirection();
+
+	inline float DecompressePitch(uint8 CompressedPitch) {
+		return (CompressedPitch / 255.f) * 180.f - 90.f;
+	}
 	
 protected:
 	UPROPERTY()
@@ -188,6 +191,17 @@ public:
 	UPROPERTY(ReplicatedUsing = OnRep_MovementState)
 	FMovementStateArray MovementState;
 
-	UPROPERTY(ReplicatedUsing = OnRep_AimDirection)
+	UPROPERTY(Replicated)
 	float AimDirection = 0.f;
+
+private:
+	FTimerHandle SyncAimTimer;
+
+public:
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	int32 DebugA;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	int32 DebugB;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	float DebugF;
 };

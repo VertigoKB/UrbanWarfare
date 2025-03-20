@@ -80,5 +80,16 @@ void UWarfareAnim::SetTransitionProperty()
 {
 	CurrentMovementState = PlayerBehavior->MovementState.LastState();
 	bInAir = ThePlayer->IsPlayerFalling();
-	AimDirection = PlayerBehavior->AimDirection;
+	UpdateAimDirection();
+}
+
+void UWarfareAnim::UpdateAimDirection()
+{
+	float ServerAimDirection = PlayerBehavior->AimDirection;
+	float DeltaTime = GetWorld()->GetDeltaSeconds();
+
+	if (FMath::Abs(ServerAimDirection - AimDirection) > 30.f)
+		AimDirection = ServerAimDirection;
+
+	AimDirection = FMath::FInterpConstantTo(AimDirection, ServerAimDirection, DeltaTime, 10.f);
 }

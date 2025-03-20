@@ -31,6 +31,8 @@ protected:
 	void SetMovementProperty();
 	UFUNCTION()
 	void SetTransitionProperty();
+	UFUNCTION()
+	void UpdateAimDirection();
 
 protected:
 	UPROPERTY()

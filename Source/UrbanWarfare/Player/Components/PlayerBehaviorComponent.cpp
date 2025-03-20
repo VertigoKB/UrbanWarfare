@@ -155,33 +155,38 @@ void UPlayerBehaviorComponent::TriggerJump(bool Jump)
 	ThePlayer->Jump();
 }
 
-void UPlayerBehaviorComponent::OnRep_AimDirection()
-{
-	AimDirection = CalcAimDirection();
-}
-
 void UPlayerBehaviorComponent::TriggerLook()
 {
 	if (GetOwner()->HasAuthority())
-	{
-		AimDirection = CalcAimDirection();
-	}
+		AimDirection = DecompressePitch(CalcAimDirection());
 	else
-	{
-		ServerLook();
-	}
+		VerifyNecessitySyncAimDirection();
 }
 
 void UPlayerBehaviorComponent::ServerLook_Implementation()
 {
-	TriggerLook();
+	AimDirection = DecompressePitch(CalcAimDirection());
 }
 
-float UPlayerBehaviorComponent::CalcAimDirection()
+void UPlayerBehaviorComponent::VerifyNecessitySyncAimDirection()
+{
+	uint8 NewPitch = DecompressePitch(CalcAimDirection());
+
+	if (FMath::Abs(int32(NewPitch) - int32(AimDirection)) > 5)
+	{
+		AimDirection = DecompressePitch(CalcAimDirection());
+		if (!GetWorld()->GetTimerManager().IsTimerActive(SyncAimTimer))
+			GetWorld()->GetTimerManager().SetTimer(SyncAimTimer, this, &UPlayerBehaviorComponent::ServerLook, 0.1f, false);
+	}
+}
+
+uint8 UPlayerBehaviorComponent::CalcAimDirection()
 {
 	FRotator ControlRot = ThePlayer->GetControlRotation();
 	FRotator ActorRot = ThePlayer->GetActorRotation();
 
 	FRotator TargetRot = UKismetMathLibrary::NormalizedDeltaRotator(ControlRot, ActorRot);
-	return TargetRot.Pitch;
+
+	uint8 CompressedPitch = FMath::Clamp((FMath::RoundToInt(TargetRot.Pitch + 90) * 255 / 180), 0, 255);
+	return CompressedPitch;
 }
