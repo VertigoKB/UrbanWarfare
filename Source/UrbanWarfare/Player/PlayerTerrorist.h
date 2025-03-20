@@ -16,5 +16,9 @@ class URBANWARFARE_API APlayerTerrorist : public APlayerBase
 
 public:
 	APlayerTerrorist();
+
+protected:
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
 	
 };

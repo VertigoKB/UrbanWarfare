@@ -25,8 +25,9 @@ void UPlayerBehaviorComponent::BeginPlay()
 	Super::BeginPlay();
 
 	// ...
+	bIsInitialized = InitConstruct();
 
-	if (!InitConstruct())
+	if (!bIsInitialized)
 	{
 		LOG_EFUNC(TEXT("Failed to initialize component"))
 		SetComponentTickEnabled(false);
@@ -80,6 +81,9 @@ bool UPlayerBehaviorComponent::InitConstruct()
 
 void UPlayerBehaviorComponent::OnRep_MovementState()
 {
+	if (!bIsInitialized)
+		return;
+
 	if (MovementState.LastState() != EMovementState::Crouching)
 		GetOwner<ACharacter>()->UnCrouch();
 
@@ -101,7 +105,8 @@ void UPlayerBehaviorComponent::OnRep_MovementState()
 	else
 	{
 		GetOwner<ACharacter>()->GetCharacterMovement()->MaxWalkSpeed = CurrentSpeed;
-		ServerApplySpeed();
+		if (ThePlayer->IsLocallyControlled())
+			ServerApplySpeed();
 	}
 }
 
@@ -112,17 +117,34 @@ void UPlayerBehaviorComponent::ServerApplySpeed_Implementation()
 
 void UPlayerBehaviorComponent::TriggerCrouch(bool bCrouch)
 {
-	if (GetOwner()->HasAuthority())
+	if (ThePlayer->IsPlayerFalling())
 	{
-		if (bCrouch)
-			MovementState.AddState(EMovementState::Crouching);
-		else
-			MovementState.RemoveState(EMovementState::Crouching);
-		if (ThePlayer->IsLocallyControlled())
-			OnRep_MovementState();
+		GetWorld()->GetTimerManager().SetTimer(FallingChecker, FTimerDelegate::CreateLambda([this, bCrouch]() {
+			if (!(ThePlayer->IsPlayerFalling()))
+			{
+				TriggerCrouch(bCrouch);
+				GetWorld()->GetTimerManager().ClearTimer(FallingChecker);
+			}
+			}), 0.05, true);
 	}
 	else
-		ServerCrouch(bCrouch);
+	{
+		if (GetOwner()->HasAuthority())
+		{
+			if (bCrouch)
+				MovementState.AddState(EMovementState::Crouching);
+			else
+			{
+				if (MovementState.ContainState(EMovementState::Crouching))
+					MovementState.RemoveState(EMovementState::Crouching);
+			}
+
+			if (ThePlayer->IsLocallyControlled())
+				OnRep_MovementState();
+		}
+		else
+			ServerCrouch(bCrouch);
+	}
 }
 
 void UPlayerBehaviorComponent::ServerCrouch_Implementation(bool bCrouch)

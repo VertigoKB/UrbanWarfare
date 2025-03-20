@@ -3,3 +3,7 @@
 
 #include "PlayerCounterTrist.h"
 
+void APlayerCounterTrist::BeginPlay()
+{
+	Super::BeginPlay();
+}

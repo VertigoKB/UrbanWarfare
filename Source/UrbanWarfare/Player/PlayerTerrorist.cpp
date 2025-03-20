@@ -11,3 +11,9 @@ APlayerTerrorist::APlayerTerrorist()
 	if (MeshConfig)
 		TheMesh->SetSkeletalMesh(MeshConfig->Terrorist);
 }
+
+void APlayerTerrorist::BeginPlay()
+{
+	Super::BeginPlay();
+
+}

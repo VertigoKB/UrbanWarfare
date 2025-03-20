@@ -25,6 +25,7 @@ public:
 	EMovementState State;
 
 	FMovementStateEntry() : State(EMovementState::Running) {}
+	FMovementStateEntry(EMovementState InState) : State(InState) {}
 
 	bool operator==(const FMovementStateEntry& Other) const
 	{
@@ -40,7 +41,6 @@ struct FMovementStateArray : public FFastArraySerializer
 public:
 	UPROPERTY()
 	TArray<FMovementStateEntry> Items;
-
 	void AddState(EMovementState NewState)
 	{
 		for (const auto& Entry : Items)
@@ -79,6 +79,11 @@ public:
 	void Reserve(int32 Number)
 	{
 		Items.Reserve(Number);
+	}
+
+	bool ContainState(EMovementState State) const
+	{
+		return Items.Contains(FMovementStateEntry{State});
 	}
 
 	// 서버에서 변경 사항을 클라이언트에 동기화할 때 호출되는 함수
@@ -180,9 +185,9 @@ protected:
 
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Constant")
-	float WalkSpeed = 200.f;
+	float WalkSpeed = 400.f;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Constant")
-	float RunSpeed = 600.f;
+	float RunSpeed = 750.f;
 
 	UPROPERTY(Replicated)
 	float CurrentSpeed = RunSpeed;
@@ -196,6 +201,10 @@ public:
 
 private:
 	FTimerHandle SyncAimTimer;
+
+	FTimerHandle FallingChecker;
+
+	bool bIsInitialized = false;
 
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)

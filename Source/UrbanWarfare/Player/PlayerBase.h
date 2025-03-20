@@ -36,7 +36,6 @@ class URBANWARFARE_API APlayerBase : public ACharacter, public IDataProvider
 public:
 	// Sets default values for this character's properties
 	APlayerBase();
-
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -58,6 +57,9 @@ protected:
 
 	UFUNCTION()
 	void SetupCustomComponents();
+
+	UFUNCTION()
+	void SetupMesh();
 	
 public:
 	virtual UActorComponent* GetRegInputComp() override;
@@ -83,10 +85,11 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Player Capsule")
 	TObjectPtr<class UCapsuleComponent> TheCapsule;
 
-
-
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Player Mesh")
 	TObjectPtr<class USkeletalMeshComponent> TheMesh;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Player Mesh")
+	TObjectPtr<class USkeletalMeshComponent> TheThirdMesh;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Camera")
 	TObjectPtr<class USpringArmComponent> TheSpringArm;
@@ -105,4 +108,7 @@ protected:
 
 protected:
 	// Editable Constant
+
+	UPROPERTY(EditDefaultsOnly, Category = "UrbanWarfare")
+	bool DebugCamera = false;
 };
