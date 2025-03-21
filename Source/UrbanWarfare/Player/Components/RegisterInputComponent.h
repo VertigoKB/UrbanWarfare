@@ -12,6 +12,9 @@ DECLARE_DELEGATE_OneParam(FOnInputCrouch, bool)
 DECLARE_DELEGATE_OneParam(FOnInputWalk, bool)
 DECLARE_DELEGATE_OneParam(FOnInputJump, bool)
 DECLARE_DELEGATE(FOnInputLook)
+DECLARE_DELEGATE(FOnFootStepPlay)
+DECLARE_DELEGATE(FOnStopPlayingFootStep)
+DECLARE_DELEGATE(FOnTestInput)
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class URBANWARFARE_API URegisterInputComponent : public UActorComponent
@@ -21,6 +24,8 @@ class URBANWARFARE_API URegisterInputComponent : public UActorComponent
 public:	
 	// Sets default values for this component's properties
 	URegisterInputComponent();
+
+	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 protected:
 	// Called when the game starts
@@ -37,6 +42,12 @@ protected:
 	void InputMove(const FInputActionValue& Value);
 
 	UFUNCTION()
+	void TempMove(FVector2D Input);
+
+	UFUNCTION()
+	void CompleteMove(const FInputActionValue& Value);
+
+	UFUNCTION()
 	void InputLook(const FInputActionValue& Value);
 
 	UFUNCTION()
@@ -47,6 +58,13 @@ protected:
 
 	UFUNCTION()
 	void InputJump(const FInputActionValue& Value);
+
+	UFUNCTION()
+	void InputTest(const FInputActionValue& Value);
+
+private:
+	UFUNCTION()
+	void TempTest();
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "InputConfig")
 	TObjectPtr<class UInputConfig> InputConfig;
@@ -58,10 +76,19 @@ protected:
 	UPROPERTY()
 	TObjectPtr<APlayerController> MyController;
 
-
 public:
 	FOnInputCrouch OnInputCrouch;
 	FOnInputWalk OnInputWalk;
 	FOnInputJump OnInputJump;
 	FOnInputLook OnInputLook;
+
+public:
+	FOnFootStepPlay OnFootStepPlay;
+	FOnStopPlayingFootStep OnStopPlayingFootStep;
+
+public:
+	FOnTestInput OnTestInput;
+
+private:
+	bool TestAutoMove = false;
 };

@@ -19,6 +19,9 @@ public:
 	
 public:
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Class - Animation")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "SubClass|Animation")
 	TSubclassOf<class UAnimInstance> PlayerAnimBP;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Blueprints|Audio")
+	TObjectPtr<USoundBase> FootStepsSound;
 };

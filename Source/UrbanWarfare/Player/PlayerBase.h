@@ -11,25 +11,8 @@
 
 #include "PlayerBase.generated.h"
 
-UINTERFACE(MinimalAPI)
-class UDataProvider : public UInterface
-{
-	GENERATED_BODY()
-};
-class URBANWARFARE_API IDataProvider
-{
-	GENERATED_BODY()
-
-public:
-	virtual UActorComponent* GetRegInputComp() = 0;
-	virtual UActorComponent* GetPlayerBehavior() = 0;
-
-	virtual bool IsPlayerFalling() = 0;
-};
-
-
 UCLASS()
-class URBANWARFARE_API APlayerBase : public ACharacter, public IDataProvider
+class URBANWARFARE_API APlayerBase : public ACharacter
 {
 	GENERATED_BODY()
 
@@ -62,11 +45,13 @@ protected:
 	void SetupMesh();
 	
 public:
-	virtual UActorComponent* GetRegInputComp() override;
-	virtual UActorComponent* GetPlayerBehavior() override;
-	virtual bool IsPlayerFalling() override;
+	UActorComponent* GetRegInputComp();
+	UActorComponent* GetPlayerBehavior();
+	UActorComponent* GetSoundPlayer();
+	bool IsPlayerFalling();
 
-protected:
+
+public:
 	// Data Configs
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Config")
@@ -106,9 +91,15 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Custom Components")
 	TObjectPtr<class UPlayerBehaviorComponent> PlayerBehavior;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Custom Components")
+	TObjectPtr<class UPlayerSoundComponent> PlayerSoundComponent;
 protected:
 	// Editable Constant
 
 	UPROPERTY(EditDefaultsOnly, Category = "UrbanWarfare")
 	bool DebugCamera = false;
+
+public:
+	UFUNCTION(BlueprintImplementableEvent)
+	void TestUrban();
 };

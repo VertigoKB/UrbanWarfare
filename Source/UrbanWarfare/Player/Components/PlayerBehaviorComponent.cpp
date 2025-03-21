@@ -14,7 +14,6 @@ UPlayerBehaviorComponent::UPlayerBehaviorComponent()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
-	SetIsReplicatedByDefault(true);
 	// ...
 }
 
@@ -39,6 +38,13 @@ void UPlayerBehaviorComponent::BeginPlay()
 	
 }
 
+void UPlayerBehaviorComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	Super::EndPlay(EndPlayReason);
+
+	GetWorld()->GetTimerManager().ClearTimer(SyncAimTimer);
+	GetWorld()->GetTimerManager().ClearTimer(FallingChecker);
+}
 
 // Called every frame
 void UPlayerBehaviorComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -46,6 +52,12 @@ void UPlayerBehaviorComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	// ...
+}
+
+void UPlayerBehaviorComponent::InitializeComponent()
+{
+	Super::InitializeComponent();
+	SetIsReplicatedByDefault(true);
 }
 
 void UPlayerBehaviorComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

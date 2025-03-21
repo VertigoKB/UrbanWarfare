@@ -10,6 +10,7 @@
 
 #include "Components/RegisterInputComponent.h"
 #include "Components/PlayerBehaviorComponent.h"
+#include "Components/PlayerSoundComponent.h"
 #include "../Common/WarfareLogger.h"
 
 
@@ -128,8 +129,10 @@ void APlayerBase::SetupBasicComponents()
 void APlayerBase::SetupCustomComponents()
 {
 	RegisterInputComponent = CreateDefaultSubobject<URegisterInputComponent>(TEXT("RegisterInputComponent"));
+	RegisterInputComponent->OnTestInput.BindUObject(this, &APlayerBase::TestUrban);
 	PlayerBehavior = CreateDefaultSubobject<UPlayerBehaviorComponent>(TEXT("PlayerBehaviorComponent"));
 	PlayerBehavior->SetIsReplicated(true);
+	PlayerSoundComponent = CreateDefaultSubobject<UPlayerSoundComponent>(TEXT("PlayerSoundComponent"));
 }
 
 void APlayerBase::SetupMesh()
@@ -151,6 +154,11 @@ UActorComponent* APlayerBase::GetRegInputComp()
 UActorComponent* APlayerBase::GetPlayerBehavior()
 {
 	return PlayerBehavior;
+}
+
+UActorComponent* APlayerBase::GetSoundPlayer()
+{
+	return PlayerSoundComponent;
 }
 
 bool APlayerBase::IsPlayerFalling()

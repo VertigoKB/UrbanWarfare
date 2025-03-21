@@ -10,7 +10,7 @@ URegisterInputComponent::URegisterInputComponent()
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
-	PrimaryComponentTick.bCanEverTick = false;
+	PrimaryComponentTick.bCanEverTick = true;
 
 	if (!InputConfig)
 	{
@@ -27,6 +27,16 @@ URegisterInputComponent::URegisterInputComponent()
 
 }
 
+void URegisterInputComponent::TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+{
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	if (TestAutoMove)
+	{
+		TempMove(FVector2D(1.f, 0.f));
+	}
+
+}
 
 // Called when the game starts
 void URegisterInputComponent::BeginPlay()
@@ -70,10 +80,12 @@ void URegisterInputComponent::SetupEnhancedInput()
 	if (Input)
 	{
 		Input->BindAction(InputConfig->Movement, ETriggerEvent::Triggered, this, &URegisterInputComponent::InputMove);
+		Input->BindAction(InputConfig->Movement, ETriggerEvent::Completed, this, &URegisterInputComponent::CompleteMove);
 		Input->BindAction(InputConfig->Look, ETriggerEvent::Triggered, this, &URegisterInputComponent::InputLook);
 		Input->BindAction(InputConfig->Crouch, ETriggerEvent::Triggered, this, &URegisterInputComponent::InputCrouch);
 		Input->BindAction(InputConfig->Walk, ETriggerEvent::Triggered, this, &URegisterInputComponent::InputWalk);
 		Input->BindAction(InputConfig->Jump, ETriggerEvent::Triggered, this, &URegisterInputComponent::InputJump);
+		Input->BindAction(InputConfig->Test, ETriggerEvent::Started, this, &URegisterInputComponent::InputTest);
 	}
 }
 
@@ -81,11 +93,26 @@ void URegisterInputComponent::InputMove(const FInputActionValue& Value)
 {
 	FVector2D Input = Value.Get<FVector2D>();
 
+	TempMove(Input);
+}
+
+void URegisterInputComponent::TempMove(FVector2D Input)
+{
 	FVector ForwardVector = PlayerPawn->GetActorForwardVector();
 	FVector RightVector = PlayerPawn->GetActorRightVector();
 
 	PlayerPawn->AddMovementInput(ForwardVector, Input.X);
 	PlayerPawn->AddMovementInput(RightVector, Input.Y);
+
+	float MinimumVelocity = 250.f;
+	FVector PlayerVerlocity = PlayerPawn->GetVelocity();
+
+	OnFootStepPlay.ExecuteIfBound();
+}
+
+void URegisterInputComponent::CompleteMove(const FInputActionValue& Value)
+{
+	OnStopPlayingFootStep.ExecuteIfBound();
 }
 
 void URegisterInputComponent::InputLook(const FInputActionValue& Value)
@@ -103,7 +130,6 @@ void URegisterInputComponent::InputCrouch(const FInputActionValue& Value)
 	bool Input = Value.Get<bool>();
 
 	OnInputCrouch.ExecuteIfBound(Input);
-
 }
 
 void URegisterInputComponent::InputWalk(const FInputActionValue& Value)
@@ -121,4 +147,15 @@ void URegisterInputComponent::InputJump(const FInputActionValue& Value)
 	{
 		OnInputJump.ExecuteIfBound(Input);
 	}
+}
+
+void URegisterInputComponent::InputTest(const FInputActionValue& Value)
+{
+	OnTestInput.ExecuteIfBound();
+	TempTest();
+}
+
+void URegisterInputComponent::TempTest()
+{
+	TestAutoMove = true;
 }

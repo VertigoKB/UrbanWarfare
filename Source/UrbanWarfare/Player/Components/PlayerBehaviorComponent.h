@@ -116,8 +116,11 @@ protected:
 	virtual void BeginPlay() override;
 
 public:	
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
+	virtual void InitializeComponent() override;
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 private:
@@ -207,10 +210,8 @@ private:
 	bool bIsInitialized = false;
 
 public:
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-	int32 DebugA;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-	int32 DebugB;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-	float DebugF;
+	//UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	//int32 DebugA;
+	//UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	//float DebugF;
 };
