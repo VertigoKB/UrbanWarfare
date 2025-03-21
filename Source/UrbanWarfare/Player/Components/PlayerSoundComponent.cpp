@@ -90,6 +90,9 @@ void UPlayerSoundComponent::ServerRequestFootStepsSound_Implementation()
 	MulticastPlayFootSteps();
 }
 
+//Reviewing network optimization possibilities.
+//https://chatgpt.com/share/67dd21ff-7a78-8010-9873-99c8b868edcd
+
 void UPlayerSoundComponent::MulticastPlayFootSteps_Implementation()
 {
 	USoundBase* Sound = FootStepsSound.LoadSynchronous();
@@ -98,34 +101,33 @@ void UPlayerSoundComponent::MulticastPlayFootSteps_Implementation()
 
 void UPlayerSoundComponent::PlayFootStepSound()
 {
-	float ForwardVelocity = ThePlayer->GetVelocity().X;
-	float RightVelocity = ThePlayer->GetVelocity().Y;
-	float MinVelocityPlaySound = 100.f;
+	//float ForwardVelocity = ThePlayer->GetVelocity().X;
+	//float RightVelocity = ThePlayer->GetVelocity().Y;
+	//float MinVelocityPlaySound = 100.f;
+	//
+	//if (!(ForwardVelocity > MinVelocityPlaySound ||
+	//	ForwardVelocity < -MinVelocityPlaySound ||
+	//	RightVelocity > MinVelocityPlaySound ||
+	//	RightVelocity < -MinVelocityPlaySound))
+	//{
+	//	StopFootStepSound();
+	//	return;
+	//}
 
-	if (!(ForwardVelocity > MinVelocityPlaySound ||
-		ForwardVelocity < -MinVelocityPlaySound ||
-		RightVelocity > MinVelocityPlaySound ||
-		RightVelocity < -MinVelocityPlaySound))
+	FVector Velocity = ThePlayer->GetVelocity();
+	float SpeedSquared = Velocity.SizeSquared2D();
+	constexpr float MinVelocitySquared = 40.f * 40.f;
+	if (SpeedSquared < MinVelocitySquared || ThePlayer->IsPlayerFalling())
 	{
 		StopFootStepSound();
 		return;
 	}
 
-	if (ThePlayer->IsPlayerFalling())
-	{
-		StopFootStepSound();
-		return;
-	}
-
-
-	if (!bPlayingFootSteps)
-	{
-		bPlayingFootSteps = true;
-		if (ThePlayer->HasAuthority())
-			MulticastPlayFootSteps();
-		else
-			ServerRequestFootStepsSound();
-	}
+	//if (ThePlayer->IsPlayerFalling())
+	//{
+	//	StopFootStepSound();
+	//	return;
+	//}
 
 	if (PlayerBehavior->MovementState.LastState() == EMovementState::Running)
 	{
@@ -138,6 +140,15 @@ void UPlayerSoundComponent::PlayFootStepSound()
 		if (!(FMath::IsNearlyEqual(FootStepSoundInterval, WalkInterval)))
 			GetWorld()->GetTimerManager().ClearTimer(FootStepHandle);
 		FootStepSoundInterval = WalkInterval;
+	}
+
+	if (!bPlayingFootSteps)
+	{
+		bPlayingFootSteps = true;
+		if (ThePlayer->HasAuthority())
+			MulticastPlayFootSteps();
+		else
+			ServerRequestFootStepsSound();
 	}
 
 	if (!(GetWorld()->GetTimerManager().IsTimerActive(FootStepHandle)))
