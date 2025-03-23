@@ -17,6 +17,19 @@ class URBANWARFARE_API AWarfareGameMode : public AGameModeBase
 public:
 	AWarfareGameMode();
 
+public:
+	virtual void PostLogin(APlayerController* NewPlayer) override;
+
 protected:
 	virtual void BeginPlay() override;
+
+protected:
+	UPROPERTY()
+	TArray<AActor*> PlayerStartFinder;
+
+	UPROPERTY()
+	TArray<AActor*> CounterTristStart;
+
+	UPROPERTY()
+	TArray<AActor*> TerroristStart;
 };

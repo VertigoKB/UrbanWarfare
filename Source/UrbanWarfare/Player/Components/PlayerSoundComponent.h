@@ -31,10 +31,10 @@ private:
 	bool InitConstruct();
 
 protected:
-	UFUNCTION(Server, Unreliable)
+	UFUNCTION(Server, Reliable)
 	void ServerRequestFootStepsSound();
 
-	UFUNCTION(NetMulticast, Unreliable)
+	UFUNCTION(NetMulticast, Reliable)
 	void MulticastPlayFootSteps();
 
 	UFUNCTION()

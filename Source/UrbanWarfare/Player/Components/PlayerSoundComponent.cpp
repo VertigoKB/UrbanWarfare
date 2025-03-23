@@ -85,13 +85,15 @@ bool UPlayerSoundComponent::InitConstruct()
 	return true;
 }
 
+//Reviewing network optimization possibilities.
+//https://chatgpt.com/share/67dd21ff-7a78-8010-9873-99c8b868edcd
+// Packet loss issue
+//https://chatgpt.com/share/67dd73f3-77c4-8010-a4a0-a9a9261084e6
+
 void UPlayerSoundComponent::ServerRequestFootStepsSound_Implementation()
 {
 	MulticastPlayFootSteps();
 }
-
-//Reviewing network optimization possibilities.
-//https://chatgpt.com/share/67dd21ff-7a78-8010-9873-99c8b868edcd
 
 void UPlayerSoundComponent::MulticastPlayFootSteps_Implementation()
 {
@@ -101,19 +103,6 @@ void UPlayerSoundComponent::MulticastPlayFootSteps_Implementation()
 
 void UPlayerSoundComponent::PlayFootStepSound()
 {
-	//float ForwardVelocity = ThePlayer->GetVelocity().X;
-	//float RightVelocity = ThePlayer->GetVelocity().Y;
-	//float MinVelocityPlaySound = 100.f;
-	//
-	//if (!(ForwardVelocity > MinVelocityPlaySound ||
-	//	ForwardVelocity < -MinVelocityPlaySound ||
-	//	RightVelocity > MinVelocityPlaySound ||
-	//	RightVelocity < -MinVelocityPlaySound))
-	//{
-	//	StopFootStepSound();
-	//	return;
-	//}
-
 	FVector Velocity = ThePlayer->GetVelocity();
 	float SpeedSquared = Velocity.SizeSquared2D();
 	constexpr float MinVelocitySquared = 40.f * 40.f;
@@ -122,13 +111,6 @@ void UPlayerSoundComponent::PlayFootStepSound()
 		StopFootStepSound();
 		return;
 	}
-
-	//if (ThePlayer->IsPlayerFalling())
-	//{
-	//	StopFootStepSound();
-	//	return;
-	//}
-
 	if (PlayerBehavior->MovementState.LastState() == EMovementState::Running)
 	{
 		if (!(FMath::IsNearlyEqual(FootStepSoundInterval, RunInterval)))
