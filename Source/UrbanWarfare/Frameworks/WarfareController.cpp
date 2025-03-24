@@ -2,6 +2,7 @@
 
 
 #include "WarfareController.h"
+#include "UrbanWarfare/Frameworks/WarfareHud.h"
 
 AWarfareController::AWarfareController()
 {

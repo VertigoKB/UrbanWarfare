@@ -16,4 +16,5 @@ class URBANWARFARE_API AWarfareController : public APlayerController
 	
 public:
 	AWarfareController();
+
 };

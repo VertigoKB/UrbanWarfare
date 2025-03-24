@@ -105,6 +105,7 @@ bool UPlayerSoundComponent::InitConstruct()
 }
 
 // 움직임은 자동으로 리플리케이션되기 때문에, Velocity만 확인하면, 서버로직 없이 발소리 재생 가능
+// 키입력에 따른 Server RPC-> Multicast RPC 방식에서 위 방식으로 전환
 void UPlayerSoundComponent::PlayFootStepSound(const float SpeedSquared)
 {
 	if (SpeedSquared < MinVelocitySquared || ThePlayer->IsPlayerFalling())
