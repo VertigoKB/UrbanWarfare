@@ -104,15 +104,12 @@ void URegisterInputComponent::TempMove(FVector2D Input)
 	PlayerPawn->AddMovementInput(ForwardVector, Input.X);
 	PlayerPawn->AddMovementInput(RightVector, Input.Y);
 
-	float MinimumVelocity = 250.f;
-	FVector PlayerVerlocity = PlayerPawn->GetVelocity();
-
-	OnFootStepPlay.ExecuteIfBound();
+	//OnFootStepPlay.ExecuteIfBound();
 }
 
 void URegisterInputComponent::CompleteMove(const FInputActionValue& Value)
 {
-	OnStopPlayingFootStep.ExecuteIfBound();
+	//OnStopPlayingFootStep.ExecuteIfBound();
 }
 
 void URegisterInputComponent::InputLook(const FInputActionValue& Value)
