@@ -13,7 +13,7 @@ UPlayerBehaviorComponent::UPlayerBehaviorComponent()
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
-	PrimaryComponentTick.bCanEverTick = true;
+	PrimaryComponentTick.bCanEverTick = false;
 	// ...
 }
 
@@ -23,19 +23,34 @@ void UPlayerBehaviorComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// ...
-	bIsInitialized = InitConstruct();
+	//SetComponentTickEnabled(false);
 
-	if (!bIsInitialized)
-	{
-		LOG_EFUNC(TEXT("Failed to initialize component"))
-		SetComponentTickEnabled(false);
-		return;
-	}
+	GetWorld()->GetTimerManager().SetTimer(InitTimer, FTimerDelegate::CreateLambda([this]() {
 
-	MovementState.Reserve(5);
-	MovementState.AddState(EMovementState::Running);
-	
+		bInitFlag = InitConstruct();
+
+		if (bInitFlag)
+		{
+			//SetComponentTickEnabled(true);
+			GetWorld()->GetTimerManager().ClearTimer(InitTimer);
+			MovementState.Reserve(5);
+			MovementState.AddState(EMovementState::Running);
+		}
+		else
+		{
+			LOG_EFUNC(TEXT("Failed to initialize. Count: %d"), InitCount);
+			InitCount++;
+
+			if (InitCount > 10)
+			{
+				LOG_EFUNC(TEXT("Unable to initialize. Process end."));
+				SetActive(false);
+				GetWorld()->GetTimerManager().ClearTimer(InitTimer);
+			}
+		}
+
+		}), 0.5f, true);
+
 }
 
 void UPlayerBehaviorComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -44,15 +59,16 @@ void UPlayerBehaviorComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 
 	GetWorld()->GetTimerManager().ClearTimer(SyncAimTimer);
 	GetWorld()->GetTimerManager().ClearTimer(FallingChecker);
+	GetWorld()->GetTimerManager().ClearTimer(InitTimer);
 }
 
 // Called every frame
-void UPlayerBehaviorComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
-{
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	// ...
-}
+//void UPlayerBehaviorComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+//{
+//	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+//
+//	// ...
+//}
 
 void UPlayerBehaviorComponent::InitializeComponent()
 {
@@ -93,7 +109,7 @@ bool UPlayerBehaviorComponent::InitConstruct()
 
 void UPlayerBehaviorComponent::OnRep_MovementState()
 {
-	if (!bIsInitialized)
+	if (!bInitFlag)
 		return;
 
 	if (MovementState.LastState() != EMovementState::Crouching)

@@ -23,8 +23,31 @@ void UPlayerSoundComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (!InitConstruct())
-		return;
+	SetComponentTickEnabled(false);
+
+	GetWorld()->GetTimerManager().SetTimer(InitTimer, FTimerDelegate::CreateLambda([this]() {
+
+		bInitFlag = InitConstruct();
+
+		if (bInitFlag)
+		{
+			SetComponentTickEnabled(true);
+			GetWorld()->GetTimerManager().ClearTimer(InitTimer);
+		}
+		else
+		{
+			LOG_EFUNC(TEXT("Failed to initialize. Count: %d"), InitCount);
+			InitCount++;
+
+			if (InitCount > 10)
+			{
+				LOG_EFUNC(TEXT("Unable to initialize. Process end."));
+				SetActive(false);
+				GetWorld()->GetTimerManager().ClearTimer(InitTimer);
+			}
+		}
+
+		}), 0.5f, true);
 }
 
 void UPlayerSoundComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -32,6 +55,7 @@ void UPlayerSoundComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	Super::EndPlay(EndPlayReason);
 
 	GetWorld()->GetTimerManager().ClearTimer(FootStepHandle);
+	GetWorld()->GetTimerManager().ClearTimer(InitTimer);
 
 	LoadedFootSteps = nullptr;
 }
@@ -71,35 +95,24 @@ bool UPlayerSoundComponent::InitConstruct()
 {
 	ThePlayer = Cast<APlayerBase>(GetOwner());
 	if (!ThePlayer)
-	{
-		LOG_NULL(ThePlayer)
 		return false;
-	}
 
 	bAuthority = ThePlayer->HasAuthority();
 
 	RegInputComp = Cast<URegisterInputComponent>(ThePlayer->GetRegInputComp());
 	if (!RegInputComp)
-	{
-		LOG_NULL(RegInputComp)
 		return false;
-	}
 
 	PlayerBehavior = Cast<UPlayerBehaviorComponent>(ThePlayer->GetPlayerBehavior());
 	if (!PlayerBehavior)
-	{
-		LOG_NULL(PlayerBehavior)
 		return false;
-	}
 
 	FootStepRef = ThePlayer->BlueprintConfig->FootStepsSound;
 	if (!FootStepRef)
-	{
-		LOG_NULL(FootStepRef)
 		return false;
-	}
-
-	LoadedFootSteps = FootStepRef.LoadSynchronous();
+	
+	if (!LoadedFootSteps)
+		LoadedFootSteps = FootStepRef.LoadSynchronous();
 
 	return true;
 }

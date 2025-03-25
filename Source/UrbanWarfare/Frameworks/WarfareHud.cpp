@@ -23,6 +23,8 @@ void AWarfareHud::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	Super::EndPlay(EndPlayReason);
 }
 
+UMainMenu* AWarfareHud::GetWidgetMainMenu() { return MainMenu; }
+
 void AWarfareHud::CreateMainMenuWidget()
 {
 	if (!BlueprintConfig)

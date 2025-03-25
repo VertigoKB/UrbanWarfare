@@ -61,7 +61,10 @@ bool UWarfareAnim::CacheAndInit()
 		return false;
 
 	PlayerBehavior = Cast<UPlayerBehaviorComponent>(ThePlayer->GetPlayerBehavior());
-	if (!ThePlayer)
+	if (!PlayerBehavior)
+		return false;
+
+	if (!PlayerBehavior->bInitFlag)
 		return false;
 
 	return true;

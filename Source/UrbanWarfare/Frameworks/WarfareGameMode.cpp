@@ -4,14 +4,18 @@
 #include "WarfareGameMode.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/PlayerStart.h"
+#include "UrbanWarfare/AssetConfig/BlueprintConfig.h"
 #include "UrbanWarfare/Frameworks/WarfareController.h"
+#include "UrbanWarfare/Frameworks/WarfarePlayerState.h"
+#include "UrbanWarfare/Player/PlayerBase.h"
 //#include "../Common/WarfareLogger.h"
 
 AWarfareGameMode::AWarfareGameMode()
 {
     //bStartPlayersAsSpectators = true;
     PlayerStartFinder.Reserve(8);
-
+    CounterTristStart.Reserve(4);
+    TerroristStart.Reserve(4);
 }
 
 APlayerController* AWarfareGameMode::Login(UPlayer* NewPlayer, ENetRole InRemoteRole, const FString& Portal, const FString& Options, 
@@ -55,4 +59,43 @@ void AWarfareGameMode::RestorePlacedPlayerStart()
     }
 
     PlayerStartFinder.Empty();
+}
+
+void AWarfareGameMode::SpawnPlayerByPlayerState(AWarfarePlayerState* PlayerState)
+{
+    APlayerController* OwnerController = Cast<APlayerController>(PlayerState->GetOwner());
+    FActorSpawnParameters SpawnParams;
+    SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+
+    if (OwnerController)
+    {
+        uint8 RandomTeam = FMath::RandRange(0, 1);
+        uint8 RandomIndex = FMath::RandRange(0, 3);
+
+        switch (RandomTeam)
+        {
+        case 0:
+        {
+            FVector SpawnLocation = CounterTristStart[RandomIndex]->GetActorLocation();
+            FRotator SpawnRotation = CounterTristStart[RandomIndex]->GetActorRotation();
+
+            APawn* Target = GetWorld()->SpawnActor<APawn>(BlueprintConfig->CounterTrist, SpawnLocation, SpawnRotation, SpawnParams);
+
+            OwnerController->Possess(Target);
+            break;
+        }
+        case 1:
+        {
+            FVector SpawnLocation = TerroristStart[RandomIndex]->GetActorLocation();
+            FRotator SpawnRotation = TerroristStart[RandomIndex]->GetActorRotation();
+
+            APawn* Target = GetWorld()->SpawnActor<APawn>(BlueprintConfig->CounterTrist, SpawnLocation, SpawnRotation, SpawnParams);
+
+            OwnerController->Possess(Target);
+            break;
+        }
+        }
+    }
+
+    //PlayerState->PlayerGameCondition = EPlayerGameCondition::InGame;
 }

@@ -10,6 +10,5 @@ void UBlueprintConfig::PostLoad()
 
 	Super::PostLoad();
 
-	LOG_NULL(PlayerAnimBP);
 	LOG_NULL(FootStepsSound);
 }

@@ -118,7 +118,7 @@ protected:
 public:	
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	//virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	virtual void InitializeComponent() override;
 
@@ -202,12 +202,18 @@ public:
 	UPROPERTY(Replicated)
 	float AimDirection = 0.f;
 
+public:
+
+	bool bInitFlag = false;
+
 private:
 	FTimerHandle SyncAimTimer;
 
 	FTimerHandle FallingChecker;
 
-	bool bIsInitialized = false;
+	FTimerHandle InitTimer;
+
+	uint8 InitCount = 1;
 
 public:
 	//UPROPERTY(VisibleAnywhere, BlueprintReadWrite)

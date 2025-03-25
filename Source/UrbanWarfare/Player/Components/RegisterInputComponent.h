@@ -31,6 +31,9 @@ protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
+public:
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+
 protected:
 	UFUNCTION()
 	bool CachAndInit();
@@ -89,6 +92,13 @@ public:
 public:
 	FOnTestInput OnTestInput;
 
+
+	bool bInitFlag = false;
+
 private:
 	bool TestAutoMove = false;
+
+	uint8 InitCount = 1;
+
+	FTimerHandle InitTimer;
 };

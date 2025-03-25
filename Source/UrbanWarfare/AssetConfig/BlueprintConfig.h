@@ -17,13 +17,16 @@ class URBANWARFARE_API UBlueprintConfig : public UDataAsset
 public:
 	virtual void PostLoad() override;
 	
+
 public:
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "SubClass|Animation")
-	TSubclassOf<class UAnimInstance> PlayerAnimBP;
-
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "SubClass|UI")
 	TSubclassOf<UUserWidget> MainMenu;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "SubClass|Player")
+	TSubclassOf<class APlayerBase> CounterTrist;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "SubClass|Player")
+	TSubclassOf<class APlayerBase> Terrorist;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Blueprints|Audio")
 	TObjectPtr<USoundBase> FootStepsSound;

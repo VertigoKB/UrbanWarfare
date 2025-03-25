@@ -27,10 +27,13 @@ protected:
 	virtual void BeginPlay() override;
 
 protected:
-	UFUNCTION()
 	void AdjustTextureLevel();
 
 	void RestorePlacedPlayerStart();
+
+public:
+	UFUNCTION()
+	void SpawnPlayerByPlayerState(AWarfarePlayerState* PlayerState);
 
 protected:
 	UPROPERTY()
@@ -41,4 +44,8 @@ protected:
 
 	UPROPERTY()
 	TArray<AActor*> TerroristStart;
+
+protected:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	TObjectPtr<class UBlueprintConfig> BlueprintConfig;
 };

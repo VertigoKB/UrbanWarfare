@@ -40,6 +40,7 @@ APlayerBase::APlayerBase()
 			LOG_NULL(BlueprintConfig);
 	}
 
+
 	SetupBasicComponents();
 	SetupCustomComponents();
 }
@@ -97,8 +98,6 @@ void APlayerBase::SetupBasicComponents()
 	TheMesh = GetMesh();
 	if (MeshConfig)
 		TheMesh->SetSkeletalMesh(MeshConfig->CounterTerrorist);
-	if (BlueprintConfig)
-		TheMesh->AnimClass = BlueprintConfig->PlayerAnimBP;
 	TheMesh->SetRelativeLocation(FVector(0.f, 0.f, -80.25f));
 	TheMesh->SetRelativeRotation(FRotator(0.f, -90.f, 0.f));
 	TheMesh->SetRelativeScale3D(FVector(0.85f, 0.85f, 0.85f));
@@ -108,7 +107,6 @@ void APlayerBase::SetupBasicComponents()
 	TheThirdMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("ThirdViewMesh"));
 	TheThirdMesh->SetupAttachment(TheMesh);
 	TheThirdMesh->SetSkeletalMesh(MeshConfig->CounterTerrorist);
-	TheThirdMesh->AnimClass = BlueprintConfig->PlayerAnimBP;
 	TheThirdMesh->CanCharacterStepUpOn = ECB_No;
 	TheThirdMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	//TheThirdMesh->bHiddenInGame = true;

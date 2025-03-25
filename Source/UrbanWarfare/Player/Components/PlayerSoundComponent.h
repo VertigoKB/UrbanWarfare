@@ -58,6 +58,10 @@ protected:
 
 	bool bAuthority = false;
 
+public:
+
+	bool bInitFlag = false;
+
 protected:
 	float FootStepSoundInterval = RunInterval;
 	float WalkInterval = 1.f;
@@ -70,7 +74,9 @@ private:
 	UPROPERTY()
 	USoundBase* LoadedFootSteps;
 
-	FTimerManager* WorldTimer;
 	FTimerHandle FootStepHandle;
 
+	FTimerHandle InitTimer;
+
+	uint8 InitCount = 1;
 };

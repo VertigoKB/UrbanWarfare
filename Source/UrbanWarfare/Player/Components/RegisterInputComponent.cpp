@@ -2,7 +2,7 @@
 
 
 #include "RegisterInputComponent.h"
-#include "../../Common/WarfareLogger.h"
+#include "UrbanWarfare/Common/WarfareLogger.h"
 #include "../PlayerBase.h"
 
 // Sets default values for this component's properties
@@ -43,10 +43,39 @@ void URegisterInputComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (!CachAndInit())
-		return;
+	SetComponentTickEnabled(false);
 
-	SetupEnhancedInput();
+	GetWorld()->GetTimerManager().SetTimer(InitTimer, FTimerDelegate::CreateLambda([this]() {
+
+		bInitFlag = CachAndInit();
+
+		if (bInitFlag)
+		{
+			SetComponentTickEnabled(true);
+			SetupEnhancedInput();
+			GetWorld()->GetTimerManager().ClearTimer(InitTimer);
+		}
+		else
+		{
+			LOG_EFUNC(TEXT("Failed to initialize. Count: %d"), InitCount);
+			InitCount++;
+
+			if (InitCount > 10)
+			{
+				LOG_EFUNC(TEXT("Unable to initialize. Process end."));
+				SetActive(false);
+				GetWorld()->GetTimerManager().ClearTimer(InitTimer);
+			}
+		}
+
+		}), 0.5f, true);
+}
+
+void URegisterInputComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	Super::EndPlay(EndPlayReason);
+
+	GetWorld()->GetTimerManager().ClearTimer(InitTimer);
 }
 
 bool URegisterInputComponent::CachAndInit()

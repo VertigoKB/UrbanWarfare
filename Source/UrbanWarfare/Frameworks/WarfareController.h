@@ -17,4 +17,16 @@ class URBANWARFARE_API AWarfareController : public APlayerController
 public:
 	AWarfareController();
 
+	class UUserInterfaceComponent* GetUserInterfaceComponent();
+
+	//class APlayerBase* GeWarfarePawn();
+protected:
+	virtual void BeginPlay() override;
+	virtual void OnPossess(APawn* InPawn) override;
+	virtual void OnUnPossess() override;
+
+protected:
+	UPROPERTY()
+	TObjectPtr<class UUserInterfaceComponent> UserInterfaceComponent;
+
 };

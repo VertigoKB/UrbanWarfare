@@ -22,6 +22,8 @@ protected:
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 public:
+	class UMainMenu* GetWidgetMainMenu();
+
 	UFUNCTION()
 	void CreateMainMenuWidget();
 	
