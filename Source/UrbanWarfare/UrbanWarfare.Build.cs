@@ -14,6 +14,7 @@ public class UrbanWarfare : ModuleRules
 			Path.Combine(ModuleDirectory, "AssetConfig"),
 			Path.Combine(ModuleDirectory, "Common"),
 			Path.Combine(ModuleDirectory, "Frameworks"),
+			Path.Combine(ModuleDirectory, "Frameworks/ControllerComponents"),
 			Path.Combine(ModuleDirectory, "Interfaces"),
 			Path.Combine(ModuleDirectory, "Player"),
 			Path.Combine(ModuleDirectory, "Player/Components"),
@@ -21,12 +22,12 @@ public class UrbanWarfare : ModuleRules
 		});
 			
 
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "NetCore","InputCore", "EnhancedInput", "AnimGraphRuntime" });
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "NetCore","InputCore", "EnhancedInput", "AnimGraphRuntime", "LevelSequence", "MovieScene", "CinematicCamera" });
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 
 		// Uncomment if you are using Slate UI
-		// PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });
+		PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });
 		
 		// Uncomment if you are using online features
 		// PrivateDependencyModuleNames.Add("OnlineSubsystem");

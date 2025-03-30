@@ -29,4 +29,6 @@ protected:
 	UPROPERTY()
 	TObjectPtr<class UUserInterfaceComponent> UserInterfaceComponent;
 
+	UPROPERTY()
+	TObjectPtr<class UCinematicComponent> CinematicComponent;
 };
