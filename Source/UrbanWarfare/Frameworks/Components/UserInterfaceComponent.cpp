@@ -3,11 +3,13 @@
 
 #include "UserInterfaceComponent.h"
 #include "Components/Button.h"
+
+#include "UrbanWarfare/UI/MainMenu.h"
+#include "UrbanWarfare/Common/WarfareLogger.h"
 #include "UrbanWarfare/Frameworks/WarfareController.h"
 #include "UrbanWarfare/Frameworks/WarfareHud.h"
 #include "UrbanWarfare/Frameworks/WarfarePlayerState.h"
-#include "UrbanWarfare/UI/MainMenu.h"
-#include "UrbanWarfare/Common/WarfareLogger.h"
+#include "UrbanWarfare/Frameworks/WarfareGameMode.h"
 
 
 UUserInterfaceComponent::UUserInterfaceComponent()
@@ -18,32 +20,35 @@ UUserInterfaceComponent::UUserInterfaceComponent()
 void UUserInterfaceComponent::BeginPlay()
 {
 	Super::BeginPlay();
+
+
 	GetWorld()->GetTimerManager().SetTimer(InitTimer, FTimerDelegate::CreateLambda([this]() {
-		bInitFlag = InitConstruct();
 
-		FInputModeUIOnly InputMode;
-		MyOwner->SetInputMode(InputMode);
+		if (InitConstruct() || InitCount <= 0)
+			GetWorld()->GetTimerManager().ClearTimer(InitTimer);
+		else
+			InitCount--;
 
-		if (bInitFlag)
-		{
-			if (MainMenu->ButtonGameStart)
-				MainMenu->ButtonGameStart->OnClicked.AddDynamic(this, &UUserInterfaceComponent::OnClickedGameStart);
-		}
-
-		}), 0.5f, false);
+		}), 0.05f, true);
 }
 
 void UUserInterfaceComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	Super::EndPlay(EndPlayReason);
 
-	GetWorld()->GetTimerManager().ClearTimer(InitTimer);
 }
 
 bool UUserInterfaceComponent::InitConstruct()
 {
 	MyOwner = GetOwner<AWarfareController>();
 	if (!MyOwner)
+		return false;
+
+	//if (!MyOwner->IsLocalController())
+	//	return false;
+
+	OwnerPlayerState = MyOwner->GetPlayerState<AWarfarePlayerState>();
+	if (!OwnerPlayerState)
 		return false;
 
 	MyHud = MyOwner->GetHUD<AWarfareHud>();
@@ -54,18 +59,32 @@ bool UUserInterfaceComponent::InitConstruct()
 	if (!MainMenu)
 		return false;
 
+	DebugBoolA = true;
 	return true;
 }
 
-void UUserInterfaceComponent::OnClickedGameStart()
+void UUserInterfaceComponent::ServerRequestSpawnPlayer_Implementation()
 {
-	MainMenu->SetVisibility(ESlateVisibility::Collapsed);
-	//MainMenu->RemoveFromParent();
+	if (!OwnerPlayerState)
+		return;
 
-	FInputModeGameOnly InputMode;
-	MyOwner->SetInputMode(InputMode);
+	GetWorld()->GetAuthGameMode<AWarfareGameMode>()->SpawnPlayerByPlayerState(OwnerPlayerState);
+}
 
-	MyOwner->GetPlayerState<AWarfarePlayerState>()->OnClickedGameStart();
+void UUserInterfaceComponent::OnReleaseGameStart()
+{
+	if (!MyOwner->HasAuthority() ||
+		GetWorld()->GetNetMode() == NM_ListenServer)
+	{
+		MainMenu->SetVisibility(ESlateVisibility::Collapsed);
+		//MainMenu->RemoveFromParent();
+
+		FInputModeGameOnly InputMode;
+		MyOwner->SetInputMode(InputMode);
+
+		ServerRequestSpawnPlayer();
+	}
+
 
 }
 

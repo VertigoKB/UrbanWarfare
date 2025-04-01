@@ -14,19 +14,12 @@ class URBANWARFARE_API AWarfarePlayerState : public APlayerState
 {
 	GENERATED_BODY()
 
+public:
+	AWarfarePlayerState();
+
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
 protected:
 	virtual void BeginPlay() override;
 
-public:
-	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
-
-public:
-	UFUNCTION(Server, Reliable)
-	void OnClickedGameStart();
-
-public:
-	//UPROPERTY(Replicated)
-	//bool bClickedGameStart;
-
-	//EPlayerGameCondition PlayerGameCondition = EPlayerGameCondition::MainMenu;
 };

@@ -6,23 +6,18 @@
 #include "Net/UnrealNetwork.h"
 #include "UrbanWarfare/Frameworks/WarfareGameMode.h"
 
-void AWarfarePlayerState::BeginPlay()
+AWarfarePlayerState::AWarfarePlayerState()
 {
-	Super::BeginPlay();
-
 }
 
 void AWarfarePlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	//DOREPLIFETIME(AWarfarePlayerState, bClickedGameStart);
 }
 
-void AWarfarePlayerState::OnClickedGameStart_Implementation()
+void AWarfarePlayerState::BeginPlay()
 {
-	AWarfareGameMode* AuthGameMode = GetWorld()->GetAuthGameMode<AWarfareGameMode>();
-	
-	if (AuthGameMode)
-		AuthGameMode->SpawnPlayerByPlayerState(this);
+	Super::BeginPlay();
+
 }

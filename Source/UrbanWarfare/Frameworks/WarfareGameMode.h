@@ -48,4 +48,5 @@ protected:
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	TObjectPtr<class UBlueprintConfig> BlueprintConfig;
+
 };

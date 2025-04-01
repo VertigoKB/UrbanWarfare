@@ -19,16 +19,13 @@ public:
 
 	class UUserInterfaceComponent* GetUserInterfaceComponent();
 
-	//class APlayerBase* GeWarfarePawn();
+	void RequestStopSequenceToHud();
 protected:
 	virtual void BeginPlay() override;
 	virtual void OnPossess(APawn* InPawn) override;
 	virtual void OnUnPossess() override;
 
 protected:
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TObjectPtr<class UUserInterfaceComponent> UserInterfaceComponent;
-
-	UPROPERTY()
-	TObjectPtr<class UCinematicComponent> CinematicComponent;
 };

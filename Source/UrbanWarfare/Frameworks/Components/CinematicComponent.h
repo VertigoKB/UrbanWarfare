@@ -24,6 +24,18 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+	UFUNCTION()
+	void StopAllSequence();
+
+private:
+	bool InitConstruct();
+
+	UFUNCTION()
+	void PlaySequenceA();
+	UFUNCTION()
+	void PlaySequenceB();
+
+
 private:
 	UPROPERTY()
 	TArray<AActor*> SceneCameras;
@@ -40,8 +52,20 @@ private:
 	TObjectPtr<class ACineCameraActor> CineCameraB;
 
 	UPROPERTY()
-	TObjectPtr<class ALevelSequenceActor> SceneA;
+	TObjectPtr<class ALevelSequenceActor> SequenceActorA;
 
 	UPROPERTY()
-	TObjectPtr<class ALevelSequenceActor> SceneB;
+	TObjectPtr<class ALevelSequenceActor> SequenceActorB;
+
+	UPROPERTY()
+	TObjectPtr<class ULevelSequencePlayer> SequencePlayerA;
+
+	UPROPERTY()
+	TObjectPtr<class ULevelSequencePlayer> SequencePlayerB;
+
+	UPROPERTY()
+	TObjectPtr<class APlayerController> OwnerController;
+
+
+	bool bIsHostInit = false;
 };

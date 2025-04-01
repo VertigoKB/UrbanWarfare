@@ -17,6 +17,7 @@ class URBANWARFARE_API AWarfareHud : public AHUD
 public:
 	AWarfareHud();
 
+	class UCinematicComponent* GetCinematicComponent();
 protected:
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
@@ -33,4 +34,8 @@ protected:
 
 	UPROPERTY()
 	TObjectPtr<class UMainMenu> MainMenu;
+
+	UPROPERTY()
+	TObjectPtr<class UCinematicComponent> CinematicComponent;
+
 };

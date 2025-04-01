@@ -26,12 +26,15 @@ public:
 	// Called every frame
 	//virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-protected:
-	UFUNCTION()
-	bool InitConstruct();
 
 	UFUNCTION()
-	void OnClickedGameStart();
+	void OnReleaseGameStart();
+
+private:
+	bool InitConstruct();
+
+	UFUNCTION(Server, Reliable)
+	void ServerRequestSpawnPlayer();
 
 protected:
 
@@ -39,13 +42,19 @@ protected:
 	TObjectPtr<class AWarfareController> MyOwner;
 
 	UPROPERTY()
+	TObjectPtr<class AWarfarePlayerState> OwnerPlayerState;
+
+	UPROPERTY()
 	TObjectPtr<class AWarfareHud> MyHud;
 
 	UPROPERTY()
 	TObjectPtr<class UMainMenu> MainMenu;
 
-private:
-	bool bInitFlag = false;
-
 	FTimerHandle InitTimer;
+	uint8 InitCount = 10;
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool DebugBoolA = false;
+
 };

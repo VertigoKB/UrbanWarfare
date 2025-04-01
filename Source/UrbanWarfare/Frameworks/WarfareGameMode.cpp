@@ -4,9 +4,11 @@
 #include "WarfareGameMode.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/PlayerStart.h"
+
 #include "UrbanWarfare/AssetConfig/BlueprintConfig.h"
 #include "UrbanWarfare/Frameworks/WarfareController.h"
 #include "UrbanWarfare/Frameworks/WarfarePlayerState.h"
+#include "UrbanWarfare/Frameworks/WarfareHud.h"
 #include "UrbanWarfare/Player/PlayerBase.h"
 //#include "../Common/WarfareLogger.h"
 
@@ -63,7 +65,7 @@ void AWarfareGameMode::RestorePlacedPlayerStart()
 
 void AWarfareGameMode::SpawnPlayerByPlayerState(AWarfarePlayerState* PlayerState)
 {
-    APlayerController* OwnerController = Cast<APlayerController>(PlayerState->GetOwner());
+    AWarfareController* OwnerController = Cast<AWarfareController>(PlayerState->GetOwner());
     FActorSpawnParameters SpawnParams;
     SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 
@@ -82,6 +84,8 @@ void AWarfareGameMode::SpawnPlayerByPlayerState(AWarfarePlayerState* PlayerState
             APawn* Target = GetWorld()->SpawnActor<APawn>(BlueprintConfig->CounterTrist, SpawnLocation, SpawnRotation, SpawnParams);
 
             OwnerController->Possess(Target);
+            OwnerController->RequestStopSequenceToHud();
+            OwnerController->SetViewTarget(Target);
             break;
         }
         case 1:
@@ -92,10 +96,10 @@ void AWarfareGameMode::SpawnPlayerByPlayerState(AWarfarePlayerState* PlayerState
             APawn* Target = GetWorld()->SpawnActor<APawn>(BlueprintConfig->CounterTrist, SpawnLocation, SpawnRotation, SpawnParams);
 
             OwnerController->Possess(Target);
+            OwnerController->RequestStopSequenceToHud();
+            OwnerController->SetViewTarget(Target);
             break;
         }
         }
     }
-
-    //PlayerState->PlayerGameCondition = EPlayerGameCondition::InGame;
 }
