@@ -6,6 +6,8 @@
 #include "Animation/AnimInstance.h"
 #include "PlayerBase.h"
 #include "Components/PlayerBehaviorComponent.h"
+
+#include "UrbanWarfare/Common/CommonEnums.h"
 #include "WarfareAnim.generated.h"
 
 /**

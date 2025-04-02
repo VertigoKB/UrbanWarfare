@@ -19,6 +19,11 @@ class URBANWARFARE_API APlayerBase : public ACharacter
 public:
 	// Sets default values for this character's properties
 	APlayerBase();
+
+	UActorComponent* GetRegInputComp();
+	UActorComponent* GetPlayerBehavior();
+	UActorComponent* GetSoundPlayer();
+	bool IsPlayerFalling();
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -45,10 +50,7 @@ protected:
 	void SetupMesh();
 	
 public:
-	UActorComponent* GetRegInputComp();
-	UActorComponent* GetPlayerBehavior();
-	UActorComponent* GetSoundPlayer();
-	bool IsPlayerFalling();
+
 
 
 public:
@@ -93,6 +95,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Custom Components")
 	TObjectPtr<class UPlayerSoundComponent> PlayerSoundComponent;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Custom Components")
+	TObjectPtr<class UWeaponComponent> WeaponComponent;
 protected:
 	// Editable Constant
 

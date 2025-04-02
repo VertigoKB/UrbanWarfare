@@ -11,6 +11,7 @@
 #include "Components/RegisterInputComponent.h"
 #include "Components/PlayerBehaviorComponent.h"
 #include "Components/PlayerSoundComponent.h"
+#include "Components/WeaponComponent.h"
 #include "../Common/WarfareLogger.h"
 
 
@@ -44,6 +45,11 @@ APlayerBase::APlayerBase()
 	SetupBasicComponents();
 	SetupCustomComponents();
 }
+
+UActorComponent* APlayerBase::GetRegInputComp() { return RegisterInputComponent; }
+UActorComponent* APlayerBase::GetPlayerBehavior() { return PlayerBehavior; }
+UActorComponent* APlayerBase::GetSoundPlayer() { return PlayerSoundComponent; }
+bool APlayerBase::IsPlayerFalling() { return TheMovement->IsFalling(); }
 
 // Called when the game starts or when spawned
 void APlayerBase::BeginPlay()
@@ -131,6 +137,8 @@ void APlayerBase::SetupCustomComponents()
 	PlayerBehavior = CreateDefaultSubobject<UPlayerBehaviorComponent>(TEXT("PlayerBehaviorComponent"));
 	PlayerBehavior->SetIsReplicated(true);
 	PlayerSoundComponent = CreateDefaultSubobject<UPlayerSoundComponent>(TEXT("PlayerSoundComponent"));
+	WeaponComponent = CreateDefaultSubobject<UWeaponComponent>(TEXT("WeaponComponent"));
+	WeaponComponent->SetIsReplicated(true);
 }
 
 void APlayerBase::SetupMesh()
@@ -144,22 +152,4 @@ void APlayerBase::SetupMesh()
 		TheSpringArm->TargetArmLength = 600.f;
 }
 
-UActorComponent* APlayerBase::GetRegInputComp()
-{
-	return RegisterInputComponent;
-}
 
-UActorComponent* APlayerBase::GetPlayerBehavior()
-{
-	return PlayerBehavior;
-}
-
-UActorComponent* APlayerBase::GetSoundPlayer()
-{
-	return PlayerSoundComponent;
-}
-
-bool APlayerBase::IsPlayerFalling()
-{
-	return TheMovement->IsFalling();
-}
