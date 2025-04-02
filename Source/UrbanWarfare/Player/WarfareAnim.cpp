@@ -94,5 +94,5 @@ void UWarfareAnim::UpdateAimDirection()
 	if (FMath::Abs(ServerAimDirection - AimDirection) > 30.f)
 		AimDirection = ServerAimDirection;
 
-	AimDirection = FMath::FInterpConstantTo(AimDirection, ServerAimDirection, DeltaTime, 10.f);
+	AimDirection = FMath::FInterpConstantTo(AimDirection, ServerAimDirection, DeltaTime, 100.f);
 }

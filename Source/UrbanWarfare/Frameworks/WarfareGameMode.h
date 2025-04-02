@@ -17,6 +17,8 @@ class URBANWARFARE_API AWarfareGameMode : public AGameModeBase
 public:
 	AWarfareGameMode();
 
+	class UPlayerSpawnerComponent* GetPlayerSpawnerComponent();
+
 public:
 	virtual APlayerController* Login(UPlayer* NewPlayer, ENetRole InRemoteRole, const FString& Portal, 
 		const FString& Options, const FUniqueNetIdRepl& UniqueId, FString& ErrorMessage) override;
@@ -29,24 +31,9 @@ protected:
 protected:
 	void AdjustTextureLevel();
 
-	void RestorePlacedPlayerStart();
-
-public:
-	UFUNCTION()
-	void SpawnPlayerByPlayerState(AWarfarePlayerState* PlayerState);
-
 protected:
-	UPROPERTY()
-	TArray<AActor*> PlayerStartFinder;
 
 	UPROPERTY()
-	TArray<AActor*> CounterTristStart;
-
-	UPROPERTY()
-	TArray<AActor*> TerroristStart;
-
-protected:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	TObjectPtr<class UBlueprintConfig> BlueprintConfig;
+	TObjectPtr<class UPlayerSpawnerComponent> PlayerSpawnerComponent;
 
 };

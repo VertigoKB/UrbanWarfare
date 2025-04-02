@@ -14,7 +14,7 @@ public class UrbanWarfare : ModuleRules
 			Path.Combine(ModuleDirectory, "AssetConfig"),
 			Path.Combine(ModuleDirectory, "Common"),
 			Path.Combine(ModuleDirectory, "Frameworks"),
-			Path.Combine(ModuleDirectory, "Frameworks/ControllerComponents"),
+			Path.Combine(ModuleDirectory, "Frameworks/Components"),
 			Path.Combine(ModuleDirectory, "Interfaces"),
 			Path.Combine(ModuleDirectory, "Player"),
 			Path.Combine(ModuleDirectory, "Player/Components"),

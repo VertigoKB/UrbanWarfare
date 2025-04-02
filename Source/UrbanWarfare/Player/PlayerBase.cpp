@@ -86,36 +86,36 @@ void APlayerBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifet
 void APlayerBase::SetupBasicComponents()
 {
 	TheCapsule = GetCapsuleComponent();
-	TheCapsule->SetCapsuleRadius(45.f);
-	TheCapsule->SetCapsuleHalfHeight(80.f);
+	//TheCapsule->SetCapsuleRadius(45.f);
+	//TheCapsule->SetCapsuleHalfHeight(80.f);
 
 	TheMovement = GetCharacterMovement();
-	TheMovement->MaxWalkSpeed = 700.f;
-	TheMovement->MaxWalkSpeedCrouched = 200.f;
+	//TheMovement->MaxWalkSpeed = 700.f;
+	//TheMovement->MaxWalkSpeedCrouched = 200.f;
 	TheMovement->GetNavAgentPropertiesRef().bCanCrouch = true;
 	TheMovement->bCanWalkOffLedgesWhenCrouching = true;
 
 	TheMesh = GetMesh();
-	if (MeshConfig)
-		TheMesh->SetSkeletalMesh(MeshConfig->CounterTerrorist);
-	TheMesh->SetRelativeLocation(FVector(0.f, 0.f, -80.25f));
-	TheMesh->SetRelativeRotation(FRotator(0.f, -90.f, 0.f));
-	TheMesh->SetRelativeScale3D(FVector(0.85f, 0.85f, 0.85f));
+	//if (MeshConfig)
+	//	TheMesh->SetSkeletalMesh(MeshConfig->CounterTerrorist);
+	//TheMesh->SetRelativeLocation(FVector(0.f, 0.f, -80.25f));
+	//TheMesh->SetRelativeRotation(FRotator(0.f, -90.f, 0.f));
+	//TheMesh->SetRelativeScale3D(FVector(0.85f, 0.85f, 0.85f));
 	TheMesh->bOnlyOwnerSee = true;
 	TheMesh->SetCastHiddenShadow(false);
 
 	TheThirdMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("ThirdViewMesh"));
 	TheThirdMesh->SetupAttachment(TheMesh);
-	TheThirdMesh->SetSkeletalMesh(MeshConfig->CounterTerrorist);
+	//TheThirdMesh->SetSkeletalMesh(MeshConfig->CounterTerrorist);
 	TheThirdMesh->CanCharacterStepUpOn = ECB_No;
-	TheThirdMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	//TheThirdMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	//TheThirdMesh->bHiddenInGame = true;
 	TheThirdMesh->bOwnerNoSee = true;
 	TheThirdMesh->SetCastHiddenShadow(true);
 
 	TheSpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
 	TheSpringArm->SetupAttachment(TheMesh);
-	TheSpringArm->TargetArmLength = 0.f;
+	//TheSpringArm->TargetArmLength = 0.f;
 	TheSpringArm->bUsePawnControlRotation = true;
 	TheSpringArm->bEnableCameraRotationLag = true;
 	TheSpringArm->CameraRotationLagSpeed = 60.f;

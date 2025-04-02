@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
+#include "UrbanWarfare/Common/CommonEnums.h"
 #include "WarfareController.generated.h"
 
 /**
@@ -17,15 +18,30 @@ class URBANWARFARE_API AWarfareController : public APlayerController
 public:
 	AWarfareController();
 
-	class UUserInterfaceComponent* GetUserInterfaceComponent();
+	class UBlueprintConfig* GetBlueprintConfig();
+	class APlayerBase* GetPlayerPawn();
+	void SetPlayerPawn(class APlayerBase* InPlayerPawn);
 
-	void RequestStopSequenceToHud();
+	void SelectTeam(ETeam InTeam);
+
+	UFUNCTION(Server, Reliable)
+	void ServerSelectTeam(ETeam InTeam);
+
+	void SpawnPlayer(ETeam InTeam, const FTransform& SpawnTrasform);
+
+	UFUNCTION(Client, Reliable)
+	void ClientRequestStopSequenceToHud();
 protected:
 	virtual void BeginPlay() override;
 	virtual void OnPossess(APawn* InPawn) override;
 	virtual void OnUnPossess() override;
 
 protected:
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TObjectPtr<class UUserInterfaceComponent> UserInterfaceComponent;
+	TObjectPtr<class UBlueprintConfig> BlueprintConfig;
+
+private:
+	UPROPERTY()
+	TObjectPtr<class APlayerBase> PlayerPawn;
 };

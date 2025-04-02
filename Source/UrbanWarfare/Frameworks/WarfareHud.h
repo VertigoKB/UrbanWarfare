@@ -18,12 +18,14 @@ public:
 	AWarfareHud();
 
 	class UCinematicComponent* GetCinematicComponent();
+	class UTeamSelection* GetTeamSelectionWidget();
+	//class UMainMenu* GetWidgetMainMenu();
+	
 protected:
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 public:
-	class UMainMenu* GetWidgetMainMenu();
 
 	UFUNCTION()
 	void CreateMainMenuWidget();
@@ -33,7 +35,7 @@ protected:
 	TObjectPtr<class UBlueprintConfig> BlueprintConfig;
 
 	UPROPERTY()
-	TObjectPtr<class UMainMenu> MainMenu;
+	TObjectPtr<class UTeamSelection> TeamSelection;
 
 	UPROPERTY()
 	TObjectPtr<class UCinematicComponent> CinematicComponent;

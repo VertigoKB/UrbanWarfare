@@ -6,9 +6,8 @@
 
 #include "UrbanWarfare/AssetConfig/BlueprintConfig.h"
 #include "UrbanWarfare/Frameworks/WarfareController.h"
-#include "UrbanWarfare/Frameworks/Components/UserInterfaceComponent.h"
 #include "UrbanWarfare/Frameworks/Components/CinematicComponent.h"
-#include "UrbanWarfare/UI/MainMenu.h"
+#include "UrbanWarfare/UI/TeamSelection.h"
 #include "UrbanWarfare/Common/WarfareLogger.h"
 
 AWarfareHud::AWarfareHud()
@@ -17,7 +16,7 @@ AWarfareHud::AWarfareHud()
 }
 
 UCinematicComponent* AWarfareHud::GetCinematicComponent() { return CinematicComponent; }
-UMainMenu* AWarfareHud::GetWidgetMainMenu() { return MainMenu; }
+UTeamSelection* AWarfareHud::GetTeamSelectionWidget() { return TeamSelection; }
 
 void AWarfareHud::BeginPlay()
 {
@@ -26,8 +25,6 @@ void AWarfareHud::BeginPlay()
 	CreateMainMenuWidget();
 
 	AWarfareController* WarfareController = Cast<AWarfareController>(GetWorld()->GetFirstPlayerController());
-	UUserInterfaceComponent* UserInterfaceComponent = WarfareController->GetUserInterfaceComponent();
-	MainMenu->ButtonGameStart->OnReleased.AddDynamic(UserInterfaceComponent, &UUserInterfaceComponent::OnReleaseGameStart);
 
 }
 
@@ -45,7 +42,7 @@ void AWarfareHud::CreateMainMenuWidget()
 		return;
 	}
 
-	MainMenu = CreateWidget<UMainMenu>(GetWorld(), BlueprintConfig->MainMenu);
-	if (MainMenu)
-		MainMenu->AddToViewport();
+	TeamSelection = CreateWidget<UTeamSelection>(GetWorld(), BlueprintConfig->TeamSelection);
+	if (TeamSelection)
+		TeamSelection->AddToViewport();
 }

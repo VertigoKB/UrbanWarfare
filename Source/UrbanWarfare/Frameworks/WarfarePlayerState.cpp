@@ -2,9 +2,6 @@
 
 
 #include "WarfarePlayerState.h"
-#include "WarfareGameMode.h"
-#include "Net/UnrealNetwork.h"
-#include "UrbanWarfare/Frameworks/WarfareGameMode.h"
 
 AWarfarePlayerState::AWarfarePlayerState()
 {

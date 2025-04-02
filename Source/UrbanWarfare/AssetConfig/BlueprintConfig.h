@@ -20,7 +20,10 @@ public:
 
 public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "SubClass|UI")
-	TSubclassOf<UUserWidget> MainMenu;
+	TSubclassOf<UUserWidget> MainMenu_DEP;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "SubClass|UI")
+	TSubclassOf<UUserWidget> TeamSelection;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "SubClass|Player")
 	TSubclassOf<class APlayerBase> CounterTrist;
