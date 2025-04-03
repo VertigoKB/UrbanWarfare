@@ -44,11 +44,15 @@ APlayerBase::APlayerBase()
 
 	SetupBasicComponents();
 	SetupCustomComponents();
+
+	Tags.Add(FName("Player"));
 }
 
 UActorComponent* APlayerBase::GetRegInputComp() { return RegisterInputComponent; }
 UActorComponent* APlayerBase::GetPlayerBehavior() { return PlayerBehavior; }
 UActorComponent* APlayerBase::GetSoundPlayer() { return PlayerSoundComponent; }
+UWeaponComponent* APlayerBase::GetWeaponComponent() const { return WeaponComponent; }
+UBlueprintConfig* APlayerBase::GetBlueprintConfig() const { return BlueprintConfig; }
 bool APlayerBase::IsPlayerFalling() { return TheMovement->IsFalling(); }
 
 // Called when the game starts or when spawned

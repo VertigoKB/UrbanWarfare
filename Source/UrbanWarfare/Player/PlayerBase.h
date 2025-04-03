@@ -23,6 +23,8 @@ public:
 	UActorComponent* GetRegInputComp();
 	UActorComponent* GetPlayerBehavior();
 	UActorComponent* GetSoundPlayer();
+	class UWeaponComponent* GetWeaponComponent() const;
+	class UBlueprintConfig* GetBlueprintConfig() const;
 	bool IsPlayerFalling();
 protected:
 	// Called when the game starts or when spawned

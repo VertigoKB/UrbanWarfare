@@ -12,9 +12,18 @@ enum class ETeam : uint8
 };
 
 UENUM(BlueprintType)
-enum class EWeaponeType : uint8
+enum class EWeaponType : uint8
 {
 	UnArmed = 0			UMETA(DisplayName = "UnArmed"),
 	Pistol				UMETA(DisplayName = "Pistol"),
 	Rifle				UMETA(DisplayName = "Rifle")
+};
+
+UENUM()
+enum class EWeaponItem : uint8
+{
+	None = 0,
+	Pistol,
+	AK47,
+	M4A1
 };

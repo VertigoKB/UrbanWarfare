@@ -57,6 +57,9 @@ protected:
 	EMovementState CurrentMovementState;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "UrbanWarfare")
+	EWeaponType EquippedWeapon = EWeaponType::UnArmed;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "UrbanWarfare")
 	float AimDirection = 0.f;
 
 	bool bInitFlag = false;

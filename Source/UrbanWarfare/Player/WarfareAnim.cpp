@@ -4,6 +4,7 @@
 #include "WarfareAnim.h"
 #include "KismetAnimationLibrary.h"
 
+#include "UrbanWarfare/Player/Components/WeaponComponent.h"
 #include "../Common/WarfareLogger.h"
 
 UWarfareAnim::UWarfareAnim()
@@ -83,6 +84,11 @@ void UWarfareAnim::SetTransitionProperty()
 {
 	CurrentMovementState = PlayerBehavior->MovementState.LastState();
 	bInAir = ThePlayer->IsPlayerFalling();
+	
+	if (EquippedWeapon !=
+		ThePlayer->GetWeaponComponent()->GetEquippedWeaponType())
+		EquippedWeapon = ThePlayer->GetWeaponComponent()->GetEquippedWeaponType();
+
 	UpdateAimDirection();
 }
 

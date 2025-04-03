@@ -19,18 +19,33 @@ public:
 	
 
 public:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "SubClass|UI")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Class|UI")
 	TSubclassOf<UUserWidget> MainMenu_DEP;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "SubClass|UI")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Class|UI")
 	TSubclassOf<UUserWidget> TeamSelection;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "SubClass|Player")
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Class|Player")
 	TSubclassOf<class APlayerBase> CounterTrist;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "SubClass|Player")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Class|Player")
 	TSubclassOf<class APlayerBase> Terrorist;
+
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Class|Weapon")
+	TSubclassOf<class AWeaponBase> Pistol;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Class|Weapon")
+	TSubclassOf<class AWeaponBase> AK47;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Class|Weapon")
+	TSubclassOf<class AWeaponBase> M4A1;
+
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Blueprints|Audio")
 	TObjectPtr<USoundBase> FootStepsSound;
+
+
+
 };

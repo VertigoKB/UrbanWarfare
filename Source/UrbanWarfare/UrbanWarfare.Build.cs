@@ -18,6 +18,7 @@ public class UrbanWarfare : ModuleRules
 			Path.Combine(ModuleDirectory, "Interfaces"),
 			Path.Combine(ModuleDirectory, "Player"),
 			Path.Combine(ModuleDirectory, "Player/Components"),
+			Path.Combine(ModuleDirectory, "Weapon"),
 			Path.Combine(ModuleDirectory, "UI")
 		});
 			
