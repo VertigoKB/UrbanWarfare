@@ -28,7 +28,7 @@ public:
 
 	bool IsPlayerHaveThisWeaponType(const EWeaponType InType) const;
 
-	inline EWeaponType GetEquippedWeaponType() const { return EquippedWeaponType; }
+	inline EWeaponType GetEquippedWeaponType() const { return EquippedWeapon.Type; }
 
 private:
 	void LootWeapon(const EWeaponItem InWeapon);
@@ -36,16 +36,18 @@ private:
 	UFUNCTION()
 	void OnRep_WeaponInventory();
 
+	void EquipWeaponFromInventory(uint8 InIndex);
+
 protected:
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-	EWeaponType EquippedWeaponType = EWeaponType::UnArmed;
+	//UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	//EWeaponType EquippedWeaponType = EWeaponType::UnArmed;
+
+	UPROPERTY()
+	FInventoryItem EquippedWeapon;
 
 	UPROPERTY(ReplicatedUsing = OnRep_WeaponInventory)
 	FWeaponInventory WeaponInventory;
 
-	//UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-	//TArray<FInventoryItem> WeaponInventory;
-	//
 	bool bCanLootWeapon = true;
 
 	friend class AWeaponBase;

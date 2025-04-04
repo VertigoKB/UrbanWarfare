@@ -61,7 +61,9 @@ void AWeaponBase::OnWeaponBeginOverlap(UPrimitiveComponent* OverlappedComponent,
 			// 같은 종류의 무기를 들고있지않아야 함
 			if ((OverlappedPlayer->GetWeaponComponent()->IsPlayerHaveThisWeaponType(WeaponType)) == false)
 			{
+				//https://chatgpt.com/g/g-f52QYAJK1-unreal-engine-5-expert/c/67ef85ee-24d8-8010-984b-cf9a670af542
 				OverlappedPlayer->GetWeaponComponent()->LootWeapon(WeaponItem);
+				Destroy();
 			}
 		}
 	}

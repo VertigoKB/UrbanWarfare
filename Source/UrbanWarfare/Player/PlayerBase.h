@@ -23,6 +23,7 @@ public:
 	UActorComponent* GetRegInputComp();
 	UActorComponent* GetPlayerBehavior();
 	UActorComponent* GetSoundPlayer();
+	class USkeletalMeshComponent* GetTheMesh() const;
 	class UWeaponComponent* GetWeaponComponent() const;
 	class UBlueprintConfig* GetBlueprintConfig() const;
 	bool IsPlayerFalling();
@@ -76,13 +77,20 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Player Mesh")
 	TObjectPtr<class USkeletalMeshComponent> TheMesh;
-
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Player Mesh")
 	TObjectPtr<class USkeletalMeshComponent> TheThirdMesh;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon Mesh")
+	TObjectPtr<class USkeletalMeshComponent> TheRifleMesh;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon Mesh")
+	TObjectPtr<class USkeletalMeshComponent> ThePistolMesh;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon Mesh")
+	TObjectPtr<class USkeletalMeshComponent> RifleHandMesh;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon Mesh")
+	TObjectPtr<class USkeletalMeshComponent> PistolHandMesh;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Camera")
 	TObjectPtr<class USpringArmComponent> TheSpringArm;
-
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Camera")
 	TObjectPtr<class UCameraComponent> TheCamera;
 

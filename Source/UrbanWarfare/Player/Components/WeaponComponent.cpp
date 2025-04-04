@@ -16,6 +16,9 @@ UWeaponComponent::UWeaponComponent()
 	PrimaryComponentTick.bCanEverTick = true;
 
 	//WeaponInventory.Reserve(4);
+
+	EquippedWeapon.Type = EWeaponType::UnArmed;
+	EquippedWeapon.Item = EWeaponItem::None;
 }
 
 
@@ -97,7 +100,13 @@ void UWeaponComponent::OnRep_WeaponInventory()
 	{
 		uint8 TypeIndex = static_cast<uint8>(Iter.Type);
 		uint8 ItemIndex = static_cast<uint8>(Iter.Item);
-
+	
 		UE_LOG(LogTemp, Warning, TEXT("[UrbanWarfare] Type: %d, Item: %d"), TypeIndex, ItemIndex);
 	}
+}
+
+void UWeaponComponent::EquipWeaponFromInventory(uint8 InIndex)
+{
+	EquippedWeapon.Type = WeaponInventory.Items[InIndex].Type;
+	EquippedWeapon.Item = WeaponInventory.Items[InIndex].Item;
 }

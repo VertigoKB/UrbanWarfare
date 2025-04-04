@@ -80,4 +80,18 @@ struct FWeaponInventory : public FFastArraySerializer
 			MarkArrayDirty();
 		}
 	}
+
+	// 서버에서 변경 사항을 클라이언트에 동기화할 때 호출되는 함수
+	bool NetDeltaSerialize(FNetDeltaSerializeInfo& DeltaParms)
+	{
+		return FFastArraySerializer::FastArrayDeltaSerialize<FInventoryItem, FWeaponInventory>(Items, DeltaParms, *this);
+	}
+
+};
+
+// 네트워크 복제 활성화 매크로
+template<>
+struct TStructOpsTypeTraits<FWeaponInventory> : public TStructOpsTypeTraitsBase2<FWeaponInventory>
+{
+	enum { WithNetDeltaSerializer = true };
 };

@@ -51,6 +51,7 @@ APlayerBase::APlayerBase()
 UActorComponent* APlayerBase::GetRegInputComp() { return RegisterInputComponent; }
 UActorComponent* APlayerBase::GetPlayerBehavior() { return PlayerBehavior; }
 UActorComponent* APlayerBase::GetSoundPlayer() { return PlayerSoundComponent; }
+USkeletalMeshComponent* APlayerBase::GetTheMesh() const { return TheMesh; }
 UWeaponComponent* APlayerBase::GetWeaponComponent() const { return WeaponComponent; }
 UBlueprintConfig* APlayerBase::GetBlueprintConfig() const { return BlueprintConfig; }
 bool APlayerBase::IsPlayerFalling() { return TheMovement->IsFalling(); }
@@ -123,6 +124,12 @@ void APlayerBase::SetupBasicComponents()
 	TheThirdMesh->bOwnerNoSee = true;
 	TheThirdMesh->SetCastHiddenShadow(true);
 
+	TheRifleMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("RifleMesh"));
+	TheRifleMesh->SetupAttachment(TheMesh, FName("RifleSocket"));
+
+	ThePistolMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("PistolMesh"));
+	ThePistolMesh->SetupAttachment(TheMesh, FName("PistolSocket"));
+
 	TheSpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
 	TheSpringArm->SetupAttachment(TheMesh);
 	//TheSpringArm->TargetArmLength = 0.f;
@@ -138,9 +145,12 @@ void APlayerBase::SetupCustomComponents()
 {
 	RegisterInputComponent = CreateDefaultSubobject<URegisterInputComponent>(TEXT("RegisterInputComponent"));
 	RegisterInputComponent->OnTestInput.BindUObject(this, &APlayerBase::TestUrban);
+
 	PlayerBehavior = CreateDefaultSubobject<UPlayerBehaviorComponent>(TEXT("PlayerBehaviorComponent"));
 	PlayerBehavior->SetIsReplicated(true);
+
 	PlayerSoundComponent = CreateDefaultSubobject<UPlayerSoundComponent>(TEXT("PlayerSoundComponent"));
+
 	WeaponComponent = CreateDefaultSubobject<UWeaponComponent>(TEXT("WeaponComponent"));
 	WeaponComponent->SetIsReplicated(true);
 }
