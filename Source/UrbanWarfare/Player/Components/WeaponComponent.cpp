@@ -107,6 +107,7 @@ void UWeaponComponent::OnRep_WeaponInventory()
 
 void UWeaponComponent::EquipWeaponFromInventory(uint8 InIndex)
 {
+	// https://chatgpt.com/share/67ef9b17-750c-8010-8005-a206185355d3
 	EquippedWeapon.Type = WeaponInventory.Items[InIndex].Type;
 	EquippedWeapon.Item = WeaponInventory.Items[InIndex].Item;
 }
