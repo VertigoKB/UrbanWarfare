@@ -91,7 +91,7 @@ bool UPlayerBehaviorComponent::InitConstruct()
 	if (!ThePlayer)
 		return false;
 
-	RegInputComp = Cast<URegisterInputComponent>(ThePlayer->GetRegInputComp());
+	RegInputComp = ThePlayer->GetRegInputComp();
 	if (!RegInputComp)
 		return false;
 

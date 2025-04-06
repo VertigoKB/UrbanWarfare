@@ -7,12 +7,16 @@
 #include "Camera/CameraComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Engine/AssetManager.h"
+#include "Engine/StreamableManager.h"
 
 #include "Components/RegisterInputComponent.h"
 #include "Components/PlayerBehaviorComponent.h"
 #include "Components/PlayerSoundComponent.h"
 #include "Components/WeaponComponent.h"
-#include "../Common/WarfareLogger.h"
+#include "UrbanWarfare/Common/WarfareLogger.h"
+#include "UrbanWarfare/Frameworks/GameInstance/WeaponPreLoader.h"
+#include "UrbanWarfare/Weapon/WeaponData/WeaponDataAsset.h"
 
 
 // Sets default values
@@ -48,13 +52,14 @@ APlayerBase::APlayerBase()
 	Tags.Add(FName("Player"));
 }
 
-UActorComponent* APlayerBase::GetRegInputComp() { return RegisterInputComponent; }
-UActorComponent* APlayerBase::GetPlayerBehavior() { return PlayerBehavior; }
-UActorComponent* APlayerBase::GetSoundPlayer() { return PlayerSoundComponent; }
+URegisterInputComponent* APlayerBase::GetRegInputComp() const { return RegisterInputComponent; }
+UPlayerBehaviorComponent* APlayerBase::GetPlayerBehavior() const { return PlayerBehavior; }
+UPlayerSoundComponent* APlayerBase::GetSoundPlayer() const { return PlayerSoundComponent; }
 USkeletalMeshComponent* APlayerBase::GetTheMesh() const { return TheMesh; }
+USkeletalMeshComponent* APlayerBase::GetRifleMesh() const { return TheRifleMesh; }
 UWeaponComponent* APlayerBase::GetWeaponComponent() const { return WeaponComponent; }
 UBlueprintConfig* APlayerBase::GetBlueprintConfig() const { return BlueprintConfig; }
-bool APlayerBase::IsPlayerFalling() { return TheMovement->IsFalling(); }
+bool APlayerBase::IsPlayerFalling() const { return TheMovement->IsFalling(); }
 
 // Called when the game starts or when spawned
 void APlayerBase::BeginPlay()
@@ -62,6 +67,10 @@ void APlayerBase::BeginPlay()
 	Super::BeginPlay();
 
 	SetupMesh();
+
+	UWeaponDataAsset* WeaponData = GetWorld()->GetGameInstance()->GetSubsystem<UWeaponPreLoader>()->GetWeaponDataByName("AK47");
+	TheRifleMesh->SetSkeletalMesh(WeaponData->WeaponMesh.Get());
+
 }
 
 void APlayerBase::EndPlay(const EEndPlayReason::Type EndPlayReason)

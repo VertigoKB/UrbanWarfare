@@ -3,6 +3,8 @@
 
 #include "WeaponComponent.h"
 #include "Misc/CoreMiscDefines.h"
+#include "Components/SkeletalMeshComponent.h"
+
 
 #include "UrbanWarfare/AssetConfig/BlueprintConfig.h"
 #include "UrbanWarfare/Player/PlayerBase.h"
@@ -26,8 +28,6 @@ UWeaponComponent::UWeaponComponent()
 void UWeaponComponent::BeginPlay()
 {
 	Super::BeginPlay();
-
-	// ...
 	
 }
 

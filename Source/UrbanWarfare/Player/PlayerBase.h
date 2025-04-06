@@ -20,13 +20,14 @@ public:
 	// Sets default values for this character's properties
 	APlayerBase();
 
-	UActorComponent* GetRegInputComp();
-	UActorComponent* GetPlayerBehavior();
-	UActorComponent* GetSoundPlayer();
+	class URegisterInputComponent* GetRegInputComp() const;
+	class UPlayerBehaviorComponent* GetPlayerBehavior() const;
+	class UPlayerSoundComponent* GetSoundPlayer() const;
 	class USkeletalMeshComponent* GetTheMesh() const;
+	class USkeletalMeshComponent* GetRifleMesh() const;
 	class UWeaponComponent* GetWeaponComponent() const;
 	class UBlueprintConfig* GetBlueprintConfig() const;
-	bool IsPlayerFalling();
+	bool IsPlayerFalling() const;
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

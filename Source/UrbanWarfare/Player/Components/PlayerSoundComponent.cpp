@@ -99,11 +99,11 @@ bool UPlayerSoundComponent::InitConstruct()
 
 	bAuthority = ThePlayer->HasAuthority();
 
-	RegInputComp = Cast<URegisterInputComponent>(ThePlayer->GetRegInputComp());
+	RegInputComp = ThePlayer->GetRegInputComp();
 	if (!RegInputComp)
 		return false;
 
-	PlayerBehavior = Cast<UPlayerBehaviorComponent>(ThePlayer->GetPlayerBehavior());
+	PlayerBehavior = ThePlayer->GetPlayerBehavior();
 	if (!PlayerBehavior)
 		return false;
 

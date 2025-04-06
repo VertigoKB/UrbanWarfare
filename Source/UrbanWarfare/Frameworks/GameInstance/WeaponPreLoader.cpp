@@ -1,0 +1,69 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+
+#include "WeaponPreLoader.h"
+#include "Engine/AssetManager.h"
+#include "Engine/StreamableManager.h"
+
+#include "UrbanWarfare/Weapon/WeaponData/WeaponDataAsset.h"
+#include "UrbanWarfare/Common/WarfareLogger.h"
+
+void UWeaponPreLoader::Initialize(FSubsystemCollectionBase& Collection)
+{
+	Super::Initialize(Collection);
+
+	WeaponDataMap.Reserve(5);
+
+	for (uint8 i = 0; i < 10; i++)
+	{
+		bIsLoadSuccess = LoadWeaponDataAsset();
+		if (bIsLoadSuccess)
+			break;
+	}
+	
+}
+
+void UWeaponPreLoader::Deinitialize()
+{
+	Super::Deinitialize();
+}
+
+bool UWeaponPreLoader::LoadWeaponDataAsset()
+{
+	UAssetManager& Manager = UAssetManager::Get();
+
+	TArray<FPrimaryAssetId> Assets;
+	Manager.GetPrimaryAssetIdList(TEXT("Weapon"), Assets);
+
+	FSoftObjectPtr AssetPtr;
+
+	for (const auto& Iter : Assets)
+	{
+		AssetPtr = Manager.GetPrimaryAssetPath(Iter);
+		if (AssetPtr.IsPending())
+			AssetPtr.LoadSynchronous();
+		
+
+		UWeaponDataAsset* WeaponData = Cast<UWeaponDataAsset>(AssetPtr.Get());
+		if (!WeaponData)
+		{
+			LOG_SIMPLE(TEXT("UWeaponPreLoader failed to load"));
+			return false;
+		}
+		WeaponData->WeaponMesh.LoadSynchronous();
+
+		WeaponDataMap.Add(WeaponData->WeaponName, WeaponData);
+	}
+
+	LOG_SIMPLE(TEXT("UWeaponPreLoader Load Success"));
+	return true;
+}
+
+UWeaponDataAsset* UWeaponPreLoader::GetWeaponDataByName(FName InName)
+{
+	UWeaponDataAsset** TargetData = WeaponDataMap.Find(InName);
+	if (TargetData)
+		return *TargetData;
+
+	return nullptr;
+}
