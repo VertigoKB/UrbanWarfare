@@ -57,6 +57,7 @@ UPlayerBehaviorComponent* APlayerBase::GetPlayerBehavior() const { return Player
 UPlayerSoundComponent* APlayerBase::GetSoundPlayer() const { return PlayerSoundComponent; }
 USkeletalMeshComponent* APlayerBase::GetTheMesh() const { return TheMesh; }
 USkeletalMeshComponent* APlayerBase::GetRifleMesh() const { return TheRifleMesh; }
+USkeletalMeshComponent* APlayerBase::GetPistolMesh() const { return ThePistolMesh; }
 UWeaponComponent* APlayerBase::GetWeaponComponent() const { return WeaponComponent; }
 UBlueprintConfig* APlayerBase::GetBlueprintConfig() const { return BlueprintConfig; }
 bool APlayerBase::IsPlayerFalling() const { return TheMovement->IsFalling(); }
@@ -68,8 +69,8 @@ void APlayerBase::BeginPlay()
 
 	SetupMesh();
 
-	UWeaponDataAsset* WeaponData = GetWorld()->GetGameInstance()->GetSubsystem<UWeaponPreLoader>()->GetWeaponDataByName("AK47");
-	TheRifleMesh->SetSkeletalMesh(WeaponData->WeaponMesh.Get());
+	//UWeaponDataAsset* WeaponData = GetWorld()->GetGameInstance()->GetSubsystem<UWeaponPreLoader>()->GetWeaponDataByWeaponId(1);
+	//TheRifleMesh->SetSkeletalMesh(WeaponData->WeaponMesh.Get());
 
 }
 

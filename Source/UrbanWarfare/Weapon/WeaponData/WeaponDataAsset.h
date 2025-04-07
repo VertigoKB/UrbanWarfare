@@ -25,7 +25,13 @@ public:
 	FName WeaponName;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	uint8 WeaponIdNumber;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	TSoftObjectPtr<USkeletalMesh> WeaponMesh;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	EWeaponType WeaponType;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	float Damage;

@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "UrbanWarfare/Common/CommonEnums.h"
+#include "UrbanWarfare/Weapon/WeaponData/WeaponDataAsset.h"
 #include "SerializedWeaponInventory.h"
 #include "WeaponComponent.generated.h"
 
@@ -28,27 +29,45 @@ public:
 
 	bool IsPlayerHaveThisWeaponType(const EWeaponType InType) const;
 
-	inline EWeaponType GetEquippedWeaponType() const { return EquippedWeapon.Type; }
+	// 이 함수는 ADroppedWeapon에 의해 HasAuthority true 확인후 호출됨
+	void LootWeapon(const uint8 InWeaponIdNumber);
+
+	inline EWeaponType GetEquippedWeaponType() const { return EquippedWeaponType; }
 
 private:
-	void LootWeapon(const EWeaponItem InWeapon);
+
+	//UFUNCTION()
+	//void OnRep_WeaponInventory();
 
 	UFUNCTION()
-	void OnRep_WeaponInventory();
+	void OnRep_LootTargetId();
 
-	void EquipWeaponFromInventory(uint8 InIndex);
+	UFUNCTION(Server, Unreliable)
+	void ResetLootTargetId();
+
+	void EquipWeaponFromInventory(const EWeaponType InType);
 
 protected:
-	//UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-	//EWeaponType EquippedWeaponType = EWeaponType::UnArmed;
+	UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadWrite)
+	EWeaponType EquippedWeaponType = EWeaponType::UnArmed;
+
+	UPROPERTY(Replicated)
+	uint8 EquippedWeaponId = 0;
+
+	//UPROPERTY()
+	//TObjectPtr<UWeaponDataAsset> EquippedWeapon;
+
+	UPROPERTY(ReplicatedUsing = OnRep_LootTargetId)
+	uint8 LootTargetId = 0;
 
 	UPROPERTY()
-	FInventoryItem EquippedWeapon;
+	TMap<EWeaponType, uint8> WeaponInventory;
 
-	UPROPERTY(ReplicatedUsing = OnRep_WeaponInventory)
-	FWeaponInventory WeaponInventory;
+
+	//UPROPERTY(ReplicatedUsing = OnRep_WeaponInventory)
+	//FWeaponInventory WeaponInventory;
 
 	bool bCanLootWeapon = true;
 
-	friend class AWeaponBase;
+	//friend class AWeaponBase;
 };

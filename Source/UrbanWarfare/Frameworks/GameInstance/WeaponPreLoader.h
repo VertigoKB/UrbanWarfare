@@ -20,10 +20,10 @@ public:
 
 	bool LoadWeaponDataAsset();
 
-	class UWeaponDataAsset* GetWeaponDataByName(FName InName);
+	class UWeaponDataAsset* GetWeaponDataByWeaponId(uint8 InNumber);
 
 	UPROPERTY()
-	TMap<FName, UWeaponDataAsset*> WeaponDataMap;
+	TMap<uint8, UWeaponDataAsset*> WeaponDataMap;
 
 	bool bIsLoadSuccess = false;
 };

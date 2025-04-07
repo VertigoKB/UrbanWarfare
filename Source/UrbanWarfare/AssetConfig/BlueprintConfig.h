@@ -31,21 +31,7 @@ public:
 	TSubclassOf<class APlayerBase> Terrorist;
 
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Class|Weapon")
-	TSubclassOf<class AWeaponBase> Pistol;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Class|Weapon")
-	TSubclassOf<class AWeaponBase> AK47;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Class|Weapon")
-	TSubclassOf<class AWeaponBase> M4A1;
-
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Blueprints|Audio")
 	TObjectPtr<USoundBase> FootStepsSound;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Blueprints|WeaponMesh")
-	TObjectPtr<class USkeletalMesh> PistolMesh;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Blueprints|WeaponMesh")
-	TObjectPtr<class USkeletalMesh> AK47Mesh;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Blueprints|WeaponMesh")
-	TObjectPtr<class USkeletalMesh> M4A1Mesh;
 };

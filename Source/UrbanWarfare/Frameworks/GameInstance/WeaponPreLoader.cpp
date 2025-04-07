@@ -52,18 +52,16 @@ bool UWeaponPreLoader::LoadWeaponDataAsset()
 		}
 		WeaponData->WeaponMesh.LoadSynchronous();
 
-		WeaponDataMap.Add(WeaponData->WeaponName, WeaponData);
+		WeaponDataMap.Add(WeaponData->WeaponIdNumber, WeaponData);
 	}
 
 	LOG_SIMPLE(TEXT("UWeaponPreLoader Load Success"));
 	return true;
 }
 
-UWeaponDataAsset* UWeaponPreLoader::GetWeaponDataByName(FName InName)
+UWeaponDataAsset* UWeaponPreLoader::GetWeaponDataByWeaponId(uint8 InNumber)
 {
-	UWeaponDataAsset** TargetData = WeaponDataMap.Find(InName);
-	if (TargetData)
-		return *TargetData;
+	UWeaponDataAsset** TargetData = WeaponDataMap.Find(InNumber);
 
-	return nullptr;
+	return *TargetData;
 }

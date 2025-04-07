@@ -25,6 +25,7 @@ public:
 	class UPlayerSoundComponent* GetSoundPlayer() const;
 	class USkeletalMeshComponent* GetTheMesh() const;
 	class USkeletalMeshComponent* GetRifleMesh() const;
+	class USkeletalMeshComponent* GetPistolMesh() const;
 	class UWeaponComponent* GetWeaponComponent() const;
 	class UBlueprintConfig* GetBlueprintConfig() const;
 	bool IsPlayerFalling() const;

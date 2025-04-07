@@ -5,16 +5,16 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "UrbanWarfare/Common/CommonEnums.h"
-#include "WeaponBase.generated.h"
+#include "DropeedWeapon.generated.h"
 
 UCLASS()
-class URBANWARFARE_API AWeaponBase : public AActor
+class URBANWARFARE_API ADroppedWeapon : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	AWeaponBase();
+	ADroppedWeapon();
 
 protected:
 	// Called when the game starts or when spawned
@@ -24,8 +24,6 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	inline EWeaponType GetWeaponType() const { return WeaponType; }
-
 	UFUNCTION()
 	void OnWeaponBeginOverlap(
 		UPrimitiveComponent* OverlappedComponent, 
@@ -33,8 +31,14 @@ public:
 		int32 OtherBodyIndex, bool bFromSweep, 
 		const FHitResult& SweepResult);
 
+	// 외부 로직에서 이 클래스의 객체를 스폰 할 경우, 이 함수로 초기화를 진행해야 함.
+	bool ExternalInitialize(const uint8 InIdNumber);
+
 private:
-	void SetupComponentsCollision();
+
+	bool InitializePlacedWeapon();
+
+	void SetupComponentsDroppedCollision();
 
 protected:
 	UPROPERTY()
@@ -46,10 +50,12 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TObjectPtr<class USphereComponent> SphereCollision;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	EWeaponType WeaponType = EWeaponType::UnArmed;
+	UPROPERTY(EditInstanceOnly)
+	uint8 PlacedWeaponInitIdNumber = 0;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	EWeaponItem WeaponItem = EWeaponItem::None;
+	UPROPERTY()
+	TObjectPtr<class UWeaponDataAsset> WeaponData;
 
+private:
+	bool bIsSpecifyName = false;
 };

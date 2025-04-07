@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "Net/Serialization/FastArraySerializer.h"
 #include "UrbanWarfare/Common/CommonEnums.h"
+#include "UrbanWarfare/Weapon/WeaponData/WeaponDataAsset.h"
 #include "SerializedWeaponInventory.generated.h"
 
 USTRUCT(BlueprintType)
@@ -11,18 +12,14 @@ struct FInventoryItem : public FFastArraySerializerItem
 	GENERATED_BODY()
 
 	UPROPERTY()
-	EWeaponType Type;
-
-	UPROPERTY()
-	EWeaponItem Item;
-
+	TObjectPtr<UWeaponDataAsset> WeaponData;
 
 	FInventoryItem()
-		: Type(EWeaponType::UnArmed), Item(EWeaponItem::None) {}
+		: WeaponData(nullptr) {}
 
 	bool operator==(const FInventoryItem& Other) const
 	{
-		return (Type == Other.Type) && (Item == Other.Item);
+		return (WeaponData == Other.WeaponData);
 	}
 
 	bool operator!=(const FInventoryItem& Other) const
@@ -33,12 +30,12 @@ struct FInventoryItem : public FFastArraySerializerItem
 	// 정렬에 필요한 연산자
 	bool operator<(const FInventoryItem& Other) const
 	{
-		return static_cast<uint8>(Type) < static_cast<uint8>(Other.Type);
+		return static_cast<uint8>(WeaponData->WeaponType) < static_cast<uint8>(Other.WeaponData->WeaponType);
 	}
 
 	bool operator>(const FInventoryItem& Other) const
 	{
-		return static_cast<uint8>(Type) > static_cast<uint8>(Other.Type);
+		return static_cast<uint8>(WeaponData->WeaponType) > static_cast<uint8>(Other.WeaponData->WeaponType);
 	}
 
 	// 할당 연산자 오버로딩
@@ -46,8 +43,7 @@ struct FInventoryItem : public FFastArraySerializerItem
 	{
 		if (this != &Other) // 자기 자신을 할당하는 경우 방지
 		{
-			Type = Other.Type;
-			Item = Other.Item;
+			WeaponData = Other.WeaponData;
 
 			// Fast Array Serializer가 변경 사항을 감지하도록 설정
 			ReplicationID = Other.ReplicationID;
