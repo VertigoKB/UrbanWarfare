@@ -36,6 +36,8 @@ public:
 
 private:
 
+	bool InitConstruct();
+
 	UFUNCTION()
 	void OnRep_WeaponInventory();
 
@@ -46,6 +48,9 @@ private:
 	void ServerEquipWeapon(const uint8 InIdNumber, const EWeaponType InType);
 
 protected:
+	UPROPERTY()
+	TObjectPtr<class URegisterInputComponent> RegisterInputComponent;
+
 	UPROPERTY(Replicated)
 	EWeaponType EquippedWeaponType = EWeaponType::UnArmed;
 

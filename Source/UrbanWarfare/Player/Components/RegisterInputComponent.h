@@ -12,9 +12,10 @@ DECLARE_DELEGATE_OneParam(FOnInputCrouch, bool)
 DECLARE_DELEGATE_OneParam(FOnInputWalk, bool)
 DECLARE_DELEGATE_OneParam(FOnInputJump, bool)
 DECLARE_DELEGATE(FOnInputLook)
-DECLARE_DELEGATE(FOnFootStepPlay)
-DECLARE_DELEGATE(FOnStopPlayingFootStep)
 DECLARE_DELEGATE(FOnTestInput)
+DECLARE_DELEGATE(FOnInputEquipRifle)
+DECLARE_DELEGATE(FOnInputEquipPistol)
+DECLARE_DELEGATE(FOnInputThrowWeapon)
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class URBANWARFARE_API URegisterInputComponent : public UActorComponent
@@ -41,28 +42,18 @@ protected:
 	void SetupEnhancedInput();
 	
 protected:
-	UFUNCTION()
 	void InputMove(const FInputActionValue& Value);
-
-	UFUNCTION()
 	void TempMove(FVector2D Input);
-
-	UFUNCTION()
 	void CompleteMove(const FInputActionValue& Value);
-
-	UFUNCTION()
 	void InputLook(const FInputActionValue& Value);
-
-	UFUNCTION()
 	void InputCrouch(const FInputActionValue& Value);
-
-	UFUNCTION()
 	void InputWalk(const FInputActionValue& Value);
-
-	UFUNCTION()
 	void InputJump(const FInputActionValue& Value);
+	void InputEquipRifle(const FInputActionValue& Value);
+	void InputEquipPistol(const FInputActionValue& Value);
+	void InputThrowWeapon(const FInputActionValue& Value);
+	
 
-	UFUNCTION()
 	void InputTest(const FInputActionValue& Value);
 
 private:
@@ -84,10 +75,9 @@ public:
 	FOnInputWalk OnInputWalk;
 	FOnInputJump OnInputJump;
 	FOnInputLook OnInputLook;
-
-public:
-	FOnFootStepPlay OnFootStepPlay;
-	FOnStopPlayingFootStep OnStopPlayingFootStep;
+	FOnInputEquipRifle OnInputEquipRifle;
+	FOnInputEquipPistol OnInputEquipPistol;
+	FOnInputThrowWeapon OnThrowWeapon;
 
 public:
 	FOnTestInput OnTestInput;

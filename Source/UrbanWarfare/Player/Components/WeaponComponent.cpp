@@ -8,6 +8,7 @@
 
 #include "UrbanWarfare/AssetConfig/BlueprintConfig.h"
 #include "UrbanWarfare/Player/PlayerBase.h"
+#include "UrbanWarfare/Player/Components/RegisterInputComponent.h"
 #include "UrbanWarfare/Frameworks/GameInstance/WeaponPreLoader.h"
 //#include "UrbanWarfare/Weapon/WeaponBase.h"
 
@@ -29,6 +30,8 @@ void UWeaponComponent::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	if (RegisterInputComponent)
+		RegisterInputComponent->
 }
 
 
@@ -68,6 +71,15 @@ void UWeaponComponent::LootWeapon(const uint8 InWeaponIdNumber, const EWeaponTyp
 }
 
 EWeaponType UWeaponComponent::GetEquippedWeaponType() const { return EquippedWeaponType; }
+
+bool UWeaponComponent::InitConstruct()
+{
+	RegisterInputComponent = GetOwner<APlayerBase>()->GetRegInputComp();
+	if (!RegisterInputComponent)
+		return false;
+
+	return true;
+}
 
 void UWeaponComponent::OnRep_WeaponInventory()
 {
