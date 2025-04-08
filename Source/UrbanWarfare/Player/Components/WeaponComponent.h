@@ -30,44 +30,45 @@ public:
 	bool IsPlayerHaveThisWeaponType(const EWeaponType InType) const;
 
 	// 이 함수는 ADroppedWeapon에 의해 HasAuthority true 확인후 호출됨
-	void LootWeapon(const uint8 InWeaponIdNumber);
+	void LootWeapon(const uint8 InWeaponIdNumber, const EWeaponType InType);
 
-	inline EWeaponType GetEquippedWeaponType() const { return EquippedWeaponType; }
+	EWeaponType GetEquippedWeaponType() const;
 
 private:
 
-	//UFUNCTION()
-	//void OnRep_WeaponInventory();
+	UFUNCTION()
+	void OnRep_WeaponInventory();
 
 	UFUNCTION()
-	void OnRep_LootTargetId();
+	void OnRep_EquippedWeaponId();
 
-	UFUNCTION(Server, Unreliable)
-	void ResetLootTargetId();
-
-	void EquipWeaponFromInventory(const EWeaponType InType);
+	UFUNCTION(Server, Reliable)
+	void ServerEquipWeapon(const uint8 InIdNumber, const EWeaponType InType);
 
 protected:
-	UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(Replicated)
 	EWeaponType EquippedWeaponType = EWeaponType::UnArmed;
 
-	UPROPERTY(Replicated)
+	UPROPERTY(ReplicatedUsing = OnRep_EquippedWeaponId)
 	uint8 EquippedWeaponId = 0;
 
-	//UPROPERTY()
-	//TObjectPtr<UWeaponDataAsset> EquippedWeapon;
-
-	UPROPERTY(ReplicatedUsing = OnRep_LootTargetId)
-	uint8 LootTargetId = 0;
-
-	UPROPERTY()
-	TMap<EWeaponType, uint8> WeaponInventory;
-
-
-	//UPROPERTY(ReplicatedUsing = OnRep_WeaponInventory)
-	//FWeaponInventory WeaponInventory;
+	UPROPERTY(ReplicatedUsing = OnRep_WeaponInventory)
+	FWeaponInventory WeaponInventory;
 
 	bool bCanLootWeapon = true;
 
-	//friend class AWeaponBase;
+public:
+	// Debug
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool DebugBoolA = false;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool DebugBoolB = false;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool DebugBoolC = false;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	EWeaponType DebugWeaponType = EWeaponType::UnArmed;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	uint8 DebugWeaponIdA = 0;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	uint8 DebugWeaponIdB = 0;
 };

@@ -43,7 +43,7 @@ void ADroppedWeapon::BeginPlay()
 
 	SphereCollision->OnComponentBeginOverlap.AddDynamic(this, &ADroppedWeapon::OnWeaponBeginOverlap);
 
-	bIsSpecifyName = InitializePlacedWeapon();
+	bIsWeaponIdSpecified = InitializePlacedWeapon();
 }
 
 // Called every frame
@@ -56,7 +56,7 @@ void ADroppedWeapon::Tick(float DeltaTime)
 void ADroppedWeapon::OnWeaponBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (!bIsSpecifyName)
+	if (!bIsWeaponIdSpecified)
 		return;
 
 	if (OtherActor->ActorHasTag(FName("Player")))
@@ -66,11 +66,10 @@ void ADroppedWeapon::OnWeaponBeginOverlap(UPrimitiveComponent* OverlappedCompone
 			APlayerBase* OverlappedPlayer = Cast<APlayerBase>(OtherActor);
 
 			 //같은 종류의 무기를 들고있지않아야 함
-			if ((OverlappedPlayer->GetWeaponComponent()->IsPlayerHaveThisWeaponType(WeaponData->WeaponType)) == false)
+			if ((OverlappedPlayer->GetWeaponComponent()->IsPlayerHaveThisWeaponType(ThisWeaponType)) == false)
 			{
 				//https://chatgpt.com/g/g-f52QYAJK1-unreal-engine-5-expert/c/67ef85ee-24d8-8010-984b-cf9a670af542
-				OverlappedPlayer->GetWeaponComponent()->LootWeapon(WeaponData->WeaponIdNumber);
-				//Destroy();
+				OverlappedPlayer->GetWeaponComponent()->LootWeapon(ThisWeaponIdNumber, ThisWeaponType);
 			}
 		}
 	}
@@ -78,23 +77,27 @@ void ADroppedWeapon::OnWeaponBeginOverlap(UPrimitiveComponent* OverlappedCompone
 
 bool ADroppedWeapon::ExternalInitialize(const uint8 InIdNumber)
 {
-	if (bIsSpecifyName)
+	if (bIsWeaponIdSpecified)
 	{
 		LOG_EFUNC(TEXT("객체를 외부에서 초기화 하고자 하였으나 이미 객체가 초기화되어 있음."));
 		return false;
 	}
 
-	WeaponData = GetWorld()->GetGameInstance()->GetSubsystem<UWeaponPreLoader>()->GetWeaponDataByWeaponId(InIdNumber);
-	if (!WeaponData)
+	UWeaponDataAsset* TempWeaponData = GetWorld()->GetGameInstance()->GetSubsystem<UWeaponPreLoader>()->GetWeaponDataByWeaponId(InIdNumber);
+	if (!TempWeaponData)
 	{
 		LOG_EFUNC(TEXT("게임 인스턴스에서 WeaponData를 가져오는데 실패하였음."));
 		return false;
 	}
-	WeaponMesh->SetSkeletalMesh(WeaponData->WeaponMesh.Get());
+	WeaponMesh->SetSkeletalMesh(TempWeaponData->WeaponMesh.Get());
+	ThisWeaponType = TempWeaponData->WeaponType;
+	ThisWeaponIdNumber = TempWeaponData->WeaponIdNumber;
+
 	SetupComponentsDroppedCollision();
 	WeaponMesh->SetSimulatePhysics(true);
 
-	return true;
+	bIsWeaponIdSpecified = true;
+	return bIsWeaponIdSpecified;
 }
 
 bool ADroppedWeapon::InitializePlacedWeapon()
@@ -102,14 +105,17 @@ bool ADroppedWeapon::InitializePlacedWeapon()
 	if (PlacedWeaponInitIdNumber == 0)
 		return false;
 
-	WeaponData = GetWorld()->GetGameInstance()->GetSubsystem<UWeaponPreLoader>()->GetWeaponDataByWeaponId(PlacedWeaponInitIdNumber);
-	if (!WeaponData)
+	UWeaponDataAsset* TempWeaponData = GetWorld()->GetGameInstance()->GetSubsystem<UWeaponPreLoader>()->GetWeaponDataByWeaponId(PlacedWeaponInitIdNumber);
+	if (!TempWeaponData)
 	{
 		LOG_EFUNC(TEXT("게임 인스턴스에서 WeaponData를 가져오는데 실패하였음."));
 		return false;
 	}
 
-	WeaponMesh->SetSkeletalMesh(WeaponData->WeaponMesh.Get());
+	WeaponMesh->SetSkeletalMesh(TempWeaponData->WeaponMesh.Get());
+	ThisWeaponType = TempWeaponData->WeaponType;
+	ThisWeaponIdNumber = TempWeaponData->WeaponIdNumber;
+
 	SetupComponentsDroppedCollision();
 	WeaponMesh->SetSimulatePhysics(true);
 	

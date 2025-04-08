@@ -71,7 +71,7 @@ void APlayerBase::BeginPlay()
 
 	//UWeaponDataAsset* WeaponData = GetWorld()->GetGameInstance()->GetSubsystem<UWeaponPreLoader>()->GetWeaponDataByWeaponId(1);
 	//TheRifleMesh->SetSkeletalMesh(WeaponData->WeaponMesh.Get());
-
+	
 }
 
 void APlayerBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -86,11 +86,18 @@ void APlayerBase::Tick(float DeltaTime)
 
 }
 
+void APlayerBase::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+
+
+
+}
+
 // Called to bind functionality to input
 void APlayerBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
 }
 
 void APlayerBase::PostInitializeComponents()
@@ -135,10 +142,10 @@ void APlayerBase::SetupBasicComponents()
 	TheThirdMesh->SetCastHiddenShadow(true);
 
 	TheRifleMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("RifleMesh"));
-	TheRifleMesh->SetupAttachment(TheMesh, FName("RifleSocket"));
+	TheRifleMesh->SetupAttachment(TheThirdMesh, FName("RifleSocket"));
 
 	ThePistolMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("PistolMesh"));
-	ThePistolMesh->SetupAttachment(TheMesh, FName("PistolSocket"));
+	ThePistolMesh->SetupAttachment(TheThirdMesh, FName("PistolSocket"));
 
 	TheSpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
 	TheSpringArm->SetupAttachment(TheMesh);
@@ -175,5 +182,18 @@ void APlayerBase::SetupMesh()
 	if (DebugCamera)
 		TheSpringArm->TargetArmLength = 600.f;
 }
+
+//void APlayerBase::SetupFirstPersonViewSocket()
+//{
+//	FTimerHandle MeshHandle;
+//
+//	GetWorld()->GetTimerManager().SetTimer(MeshHandle, FTimerDelegate::CreateLambda([this]() {
+//
+//		FAttachmentTransformRules TransformRule = FAttachmentTransformRules(EAttachmentRule::KeepRelative, true);
+//		TheRifleMesh->AttachToComponent(TheMesh, TransformRule, FName("RifleSocket"));
+//		ThePistolMesh->AttachToComponent(TheMesh, TransformRule, FName("PistolSocket"));
+//
+//		}), 1.f, false);
+//}
 
 

@@ -11,5 +11,8 @@ void UInputConfig::PostLoad()
 	LOG_NULL(Crouch);
 	LOG_NULL(Walk);
 	LOG_NULL(Jump);
+	LOG_NULL(ThrowWeapon);
+	LOG_NULL(EquipPistol);
+	LOG_NULL(EquipRifle);
 	LOG_NULL(Test);
 }

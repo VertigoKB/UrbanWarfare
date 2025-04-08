@@ -53,9 +53,9 @@ protected:
 	UPROPERTY(EditInstanceOnly)
 	uint8 PlacedWeaponInitIdNumber = 0;
 
-	UPROPERTY()
-	TObjectPtr<class UWeaponDataAsset> WeaponData;
+	EWeaponType ThisWeaponType = EWeaponType::UnArmed;
+	uint8 ThisWeaponIdNumber = 0;
 
 private:
-	bool bIsSpecifyName = false;
+	bool bIsWeaponIdSpecified = false;
 };

@@ -12,46 +12,12 @@ struct FInventoryItem : public FFastArraySerializerItem
 	GENERATED_BODY()
 
 	UPROPERTY()
-	TObjectPtr<UWeaponDataAsset> WeaponData;
-
-	FInventoryItem()
-		: WeaponData(nullptr) {}
+	uint8 WeaponId = 0;
 
 	bool operator==(const FInventoryItem& Other) const
 	{
-		return (WeaponData == Other.WeaponData);
+		return WeaponId == Other.WeaponId;
 	}
-
-	bool operator!=(const FInventoryItem& Other) const
-	{
-		return !(*this == Other);
-	}
-
-	// 정렬에 필요한 연산자
-	bool operator<(const FInventoryItem& Other) const
-	{
-		return static_cast<uint8>(WeaponData->WeaponType) < static_cast<uint8>(Other.WeaponData->WeaponType);
-	}
-
-	bool operator>(const FInventoryItem& Other) const
-	{
-		return static_cast<uint8>(WeaponData->WeaponType) > static_cast<uint8>(Other.WeaponData->WeaponType);
-	}
-
-	// 할당 연산자 오버로딩
-	FInventoryItem& operator=(const FInventoryItem& Other)
-	{
-		if (this != &Other) // 자기 자신을 할당하는 경우 방지
-		{
-			WeaponData = Other.WeaponData;
-
-			// Fast Array Serializer가 변경 사항을 감지하도록 설정
-			ReplicationID = Other.ReplicationID;
-			ReplicationKey = Other.ReplicationKey;
-		}
-		return *this;
-	}
-
 };
 
 USTRUCT(BlueprintType)

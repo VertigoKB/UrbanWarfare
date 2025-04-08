@@ -18,10 +18,9 @@ UWeaponComponent::UWeaponComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 
-	//WeaponInventory.Reserve(4);
-
-	WeaponInventory.Add(EWeaponType::Pistol, 0);
-	WeaponInventory.Add(EWeaponType::Rifle, 0);
+	FInventoryItem InitItem;
+	InitItem.WeaponId = 0;
+	WeaponInventory.Items.Init(InitItem, 4);
 }
 
 
@@ -45,86 +44,65 @@ void UWeaponComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(UWeaponComponent, LootTargetId);
+	DOREPLIFETIME(UWeaponComponent, WeaponInventory);
 	DOREPLIFETIME(UWeaponComponent, EquippedWeaponType);
 	DOREPLIFETIME(UWeaponComponent, EquippedWeaponId);
 }
 
 bool UWeaponComponent::IsPlayerHaveThisWeaponType(const EWeaponType InType) const
 {
-	for (TMap<EWeaponType, uint8>::TConstIterator Iter(WeaponInventory); Iter; ++Iter)
+	if (WeaponInventory.Items[static_cast<uint8>(InType)].WeaponId != 0)
+		return true;
+	else
+		return false;
+}
+
+void UWeaponComponent::LootWeapon(const uint8 InWeaponIdNumber, const EWeaponType InType)
+{
+	FInventoryItem Looted;
+	Looted.WeaponId = InWeaponIdNumber;
+	WeaponInventory.AddItem(Looted);
+
+	if (EquippedWeaponId == 0)
+		ServerEquipWeapon(InWeaponIdNumber, InType);
+}
+
+EWeaponType UWeaponComponent::GetEquippedWeaponType() const { return EquippedWeaponType; }
+
+void UWeaponComponent::OnRep_WeaponInventory()
+{
+
+}
+
+void UWeaponComponent::OnRep_EquippedWeaponId()
+{
+	UWeaponDataAsset* TempWeaponData = GetWorld()->GetGameInstance()->GetSubsystem<UWeaponPreLoader>()->GetWeaponDataByWeaponId(EquippedWeaponId);
+
+	if (TempWeaponData)
 	{
-		if (Iter->Key == InType)
+		switch (TempWeaponData->WeaponType)
 		{
-			if (Iter->Value > 0)
-				return true;
+		case EWeaponType::UnArmed:
+			GetOwner<APlayerBase>()->GetRifleMesh()->SetSkeletalMesh(nullptr);
+			break;
+		case EWeaponType::Rifle:
+			GetOwner<APlayerBase>()->GetRifleMesh()->SetSkeletalMesh(TempWeaponData->WeaponMesh.Get());
+			break;
+		case EWeaponType::Pistol:
+			GetOwner<APlayerBase>()->GetPistolMesh()->SetSkeletalMesh(TempWeaponData->WeaponMesh.Get());
+			break;
 		}
 	}
-
-	return false;
+	else // 잘못된 무기 데이터 요청
+		ensure(false);
 }
 
-void UWeaponComponent::LootWeapon(const uint8 InWeaponIdNumber)
+void UWeaponComponent::ServerEquipWeapon_Implementation(const uint8 InIdNumber, const EWeaponType InType)
 {
-	LootTargetId = InWeaponIdNumber;
-
-	if (GetOwner<APawn>()->IsLocallyControlled())
-		OnRep_LootTargetId();
-}
-
-//void UWeaponComponent::OnRep_WeaponInventory()
-//{
-//	// 테스트 코드
-//	for (const auto& Iter : WeaponInventory.Items)
-//	{
-//		uint8 TypeIndex = static_cast<uint8>(Iter.WeaponData->WeaponType);
-//		FName ItemName = Iter.WeaponData->WeaponName;
-//	
-//		UE_LOG(LogTemp, Warning, TEXT("[UrbanWarfare] Type: %d, Item: %s"), TypeIndex, *ItemName.ToString());
-//	}
-//}
-
-void UWeaponComponent::OnRep_LootTargetId()
-{
-	if (LootTargetId != 0)
-	{
-		UWeaponDataAsset* TempWeaponData = GetWorld()->GetGameInstance()->GetSubsystem<UWeaponPreLoader>()->GetWeaponDataByWeaponId(LootTargetId);
-		WeaponInventory.Add(TempWeaponData->WeaponType, LootTargetId);
-		ResetLootTargetId();
-
-		if (EquippedWeaponType == EWeaponType::UnArmed)
-			EquipWeaponFromInventory(TempWeaponData->WeaponType);
-	}
-}
-
-void UWeaponComponent::ResetLootTargetId_Implementation()
-{
-	LootTargetId = 0;
-}
-
-void UWeaponComponent::EquipWeaponFromInventory(const EWeaponType InType)
-{
+	EquippedWeaponId = InIdNumber;
 	EquippedWeaponType = InType;
 
-	uint8 WeaponId = *(WeaponInventory.Find(InType));
-
-	UWeaponDataAsset* TempWeaponData = GetWorld()->GetGameInstance()->GetSubsystem<UWeaponPreLoader>()->GetWeaponDataByWeaponId(WeaponId);
-
-	switch (EquippedWeaponType)
-	{
-	case EWeaponType::UnArmed:
-		GetOwner<APlayerBase>()->GetRifleMesh()->SetSkeletalMesh(nullptr);
-		break;
-	case EWeaponType::Rifle:
-		GetOwner<APlayerBase>()->GetRifleMesh()->SetSkeletalMesh(TempWeaponData->WeaponMesh.Get());
-		break;
-	case EWeaponType::Pistol:
-		GetOwner<APlayerBase>()->GetPistolMesh()->SetSkeletalMesh(TempWeaponData->WeaponMesh.Get());
-		break;
-	}
-
+	OnRep_EquippedWeaponId();
 }
-
-
 
 // https://chatgpt.com/share/67ef9b17-750c-8010-8005-a206185355d3
