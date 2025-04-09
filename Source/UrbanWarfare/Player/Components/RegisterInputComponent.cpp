@@ -114,8 +114,9 @@ void URegisterInputComponent::SetupEnhancedInput()
 		Input->BindAction(InputConfig->Crouch, ETriggerEvent::Triggered, this, &URegisterInputComponent::InputCrouch);
 		Input->BindAction(InputConfig->Walk, ETriggerEvent::Triggered, this, &URegisterInputComponent::InputWalk);
 		Input->BindAction(InputConfig->Jump, ETriggerEvent::Triggered, this, &URegisterInputComponent::InputJump);
-		Input->BindAction(InputConfig->EquipRifle, ETriggerEvent::Triggered, this, &URegisterInputComponent::InputEquipRifle);
-		Input->BindAction(InputConfig->EquipPistol, ETriggerEvent::Triggered, this, &URegisterInputComponent::InputEquipPistol);
+		Input->BindAction(InputConfig->EquipRifle, ETriggerEvent::Started, this, &URegisterInputComponent::InputEquipRifle);
+		Input->BindAction(InputConfig->EquipPistol, ETriggerEvent::Started, this, &URegisterInputComponent::InputEquipPistol);
+		Input->BindAction(InputConfig->ThrowWeapon, ETriggerEvent::Started, this, &URegisterInputComponent::InputThrowWeapon);
 		//Input->BindAction(InputConfig->Test, ETriggerEvent::Started, this, &URegisterInputComponent::InputTest);
 	}
 }
@@ -185,11 +186,13 @@ void URegisterInputComponent::InputTest(const FInputActionValue& Value)
 
 void URegisterInputComponent::InputEquipRifle(const FInputActionValue& Value)
 {
+	//LOG_SIMPLE(TEXT("OnEquipRifle"));
 	OnInputEquipRifle.ExecuteIfBound();
 }
 
 void URegisterInputComponent::InputEquipPistol(const FInputActionValue& Value)
 {
+	//LOG_SIMPLE(TEXT("OnEquipPistol"));
 	OnInputEquipPistol.ExecuteIfBound();
 }
 

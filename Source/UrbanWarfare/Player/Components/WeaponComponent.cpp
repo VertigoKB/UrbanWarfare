@@ -10,6 +10,7 @@
 #include "UrbanWarfare/Player/PlayerBase.h"
 #include "UrbanWarfare/Player/Components/RegisterInputComponent.h"
 #include "UrbanWarfare/Frameworks/GameInstance/WeaponPreLoader.h"
+#include "UrbanWarfare/Weapon/DropeedWeapon.h"
 //#include "UrbanWarfare/Weapon/WeaponBase.h"
 
 // Sets default values for this component's properties
@@ -19,9 +20,7 @@ UWeaponComponent::UWeaponComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 
-	FInventoryItem InitItem;
-	InitItem.WeaponId = 0;
-	WeaponInventory.Items.Init(InitItem, 4);
+	
 }
 
 
@@ -30,8 +29,17 @@ void UWeaponComponent::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	if (RegisterInputComponent)
-		RegisterInputComponent->
+	if (InitConstruct())
+	{
+		RegisterInputComponent->OnInputEquipRifle.BindUObject(this, &UWeaponComponent::Server_OnTriggerEquipRifle);
+		RegisterInputComponent->OnInputEquipPistol.BindUObject(this, &UWeaponComponent::Server_OnTriggerEquipPistol);
+		RegisterInputComponent->OnThrowWeapon.BindUObject(this, &UWeaponComponent::Server_OnTriggerThrowWeapon);
+	}
+
+	FInventoryItem InitItem;
+	InitItem.WeaponId = 0;
+	WeaponInventory.Items.Init(InitItem, 4);
+	WeaponInventory.MarkArrayDirty();
 }
 
 
@@ -62,12 +70,14 @@ bool UWeaponComponent::IsPlayerHaveThisWeaponType(const EWeaponType InType) cons
 
 void UWeaponComponent::LootWeapon(const uint8 InWeaponIdNumber, const EWeaponType InType)
 {
-	FInventoryItem Looted;
+	/*FInventoryItem Looted;
 	Looted.WeaponId = InWeaponIdNumber;
-	WeaponInventory.AddItem(Looted);
+	WeaponInventory.AddItem(Looted);*/
+
+	WeaponInventory.SetItem(static_cast<uint8>(InType), InWeaponIdNumber);
 
 	if (EquippedWeaponId == 0)
-		ServerEquipWeapon(InWeaponIdNumber, InType);
+		Server_EquipWeapon(InWeaponIdNumber, InType);
 }
 
 EWeaponType UWeaponComponent::GetEquippedWeaponType() const { return EquippedWeaponType; }
@@ -88,6 +98,13 @@ void UWeaponComponent::OnRep_WeaponInventory()
 
 void UWeaponComponent::OnRep_EquippedWeaponId()
 {
+	if (EquippedWeaponId == 0)
+	{
+		GetOwner<APlayerBase>()->GetRifleMesh()->SetSkeletalMesh(nullptr);
+		GetOwner<APlayerBase>()->GetPistolMesh()->SetSkeletalMesh(nullptr);
+		return;
+	}
+
 	UWeaponDataAsset* TempWeaponData = GetWorld()->GetGameInstance()->GetSubsystem<UWeaponPreLoader>()->GetWeaponDataByWeaponId(EquippedWeaponId);
 
 	if (TempWeaponData)
@@ -96,11 +113,14 @@ void UWeaponComponent::OnRep_EquippedWeaponId()
 		{
 		case EWeaponType::UnArmed:
 			GetOwner<APlayerBase>()->GetRifleMesh()->SetSkeletalMesh(nullptr);
+			GetOwner<APlayerBase>()->GetPistolMesh()->SetSkeletalMesh(nullptr);
 			break;
 		case EWeaponType::Rifle:
 			GetOwner<APlayerBase>()->GetRifleMesh()->SetSkeletalMesh(TempWeaponData->WeaponMesh.Get());
+			GetOwner<APlayerBase>()->GetPistolMesh()->SetSkeletalMesh(nullptr);
 			break;
 		case EWeaponType::Pistol:
+			GetOwner<APlayerBase>()->GetRifleMesh()->SetSkeletalMesh(nullptr);
 			GetOwner<APlayerBase>()->GetPistolMesh()->SetSkeletalMesh(TempWeaponData->WeaponMesh.Get());
 			break;
 		}
@@ -109,12 +129,78 @@ void UWeaponComponent::OnRep_EquippedWeaponId()
 		ensure(false);
 }
 
-void UWeaponComponent::ServerEquipWeapon_Implementation(const uint8 InIdNumber, const EWeaponType InType)
+void UWeaponComponent::Server_EquipWeapon_Implementation(const uint8 InIdNumber, const EWeaponType InType)
 {
 	EquippedWeaponId = InIdNumber;
 	EquippedWeaponType = InType;
 
 	OnRep_EquippedWeaponId();
+}
+
+void UWeaponComponent::Server_OnTriggerEquipRifle_Implementation()
+{
+	uint8 TargetWeapon = WeaponInventory.Items[static_cast<uint8>(EWeaponType::Rifle)].WeaponId;
+
+	if (TargetWeapon != 0)
+	{
+		EquippedWeaponId = TargetWeapon;
+		EquippedWeaponType = EWeaponType::Rifle;
+
+		OnRep_EquippedWeaponId();
+	}
+}
+
+void UWeaponComponent::Server_OnTriggerEquipPistol_Implementation()
+{
+	uint8 TargetWeapon = WeaponInventory.Items[static_cast<uint8>(EWeaponType::Pistol)].WeaponId;
+
+	if (TargetWeapon != 0)
+	{
+		EquippedWeaponId = TargetWeapon;
+		EquippedWeaponType = EWeaponType::Pistol;
+
+		OnRep_EquippedWeaponId();
+	}
+}
+
+void UWeaponComponent::Server_OnTriggerThrowWeapon_Implementation()
+{
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+
+	//FVector TargetHeight = FVector(0.f, 0.f, 100.f);
+
+	FVector SpawnLocation = GetOwner<APlayerBase>()->GetActorForwardVector() * 1.05f;
+	ADroppedWeapon* DroppedWeapon = GetWorld()->SpawnActor<ADroppedWeapon>(ADroppedWeapon::StaticClass(), SpawnLocation, GetOwner<AActor>()->GetActorRotation(), SpawnParams);
+	DroppedWeapon->ExternalInitialize(EquippedWeaponId);
+
+	WeaponInventory.SetItem(static_cast<uint8>(EquippedWeaponType), 0);
+	
+	uint8 AnotherWeaponInInventory = 0;
+	for (const auto& Iter : WeaponInventory.Items)
+	{
+		if (Iter.WeaponId > 0)
+		{
+			AnotherWeaponInInventory = Iter.WeaponId;
+			break;
+		}
+	}
+
+	if (AnotherWeaponInInventory != 0)
+	{
+		UWeaponDataAsset* WeaponData = GetWorld()->GetGameInstance()->GetSubsystem<UWeaponPreLoader>()->GetWeaponDataByWeaponId(AnotherWeaponInInventory);
+		EquippedWeaponId = WeaponData->WeaponIdNumber;
+		EquippedWeaponType = WeaponData->WeaponType;
+
+		OnRep_EquippedWeaponId();
+	}
+	else
+	{
+		EquippedWeaponId = 0;
+		EquippedWeaponType = EWeaponType::UnArmed;
+
+		OnRep_EquippedWeaponId();
+	}
 }
 
 // https://chatgpt.com/share/67ef9b17-750c-8010-8005-a206185355d3

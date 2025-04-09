@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "Net/Serialization/FastArraySerializer.h"
 #include "UrbanWarfare/Common/CommonEnums.h"
+#include "UrbanWarfare/Common/WarfareLogger.h"
 #include "UrbanWarfare/Weapon/WeaponData/WeaponDataAsset.h"
 #include "SerializedWeaponInventory.generated.h"
 
@@ -40,6 +41,21 @@ struct FWeaponInventory : public FFastArraySerializer
 		{
 			Items.RemoveAt(Index);
 			MarkArrayDirty();
+		}
+	}
+
+	void SetItem(uint8 Index, uint8 TargetWeaponId)
+	{
+		if (!Items.IsValidIndex(Index))
+		{
+			LOG_SIMPLE(TEXT("FWeaponInventory SetItem failed: Invalid index %d"), Index);
+			return;
+		}
+
+		if (Items[Index].WeaponId != TargetWeaponId)
+		{
+			Items[Index].WeaponId = TargetWeaponId;
+			MarkItemDirty(Items[Index]);
 		}
 	}
 

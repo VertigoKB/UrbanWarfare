@@ -16,7 +16,7 @@
 ADroppedWeapon::ADroppedWeapon()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 
 	bReplicates = true;
 	SetReplicateMovement(true);
@@ -47,11 +47,11 @@ void ADroppedWeapon::BeginPlay()
 }
 
 // Called every frame
-void ADroppedWeapon::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
-}
+//void ADroppedWeapon::Tick(float DeltaTime)
+//{
+//	Super::Tick(DeltaTime);
+//
+//}
 
 void ADroppedWeapon::OnWeaponBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -70,6 +70,7 @@ void ADroppedWeapon::OnWeaponBeginOverlap(UPrimitiveComponent* OverlappedCompone
 			{
 				//https://chatgpt.com/g/g-f52QYAJK1-unreal-engine-5-expert/c/67ef85ee-24d8-8010-984b-cf9a670af542
 				OverlappedPlayer->GetWeaponComponent()->LootWeapon(ThisWeaponIdNumber, ThisWeaponType);
+				Destroy();
 			}
 		}
 	}

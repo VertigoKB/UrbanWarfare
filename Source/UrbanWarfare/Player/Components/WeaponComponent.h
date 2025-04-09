@@ -45,7 +45,17 @@ private:
 	void OnRep_EquippedWeaponId();
 
 	UFUNCTION(Server, Reliable)
-	void ServerEquipWeapon(const uint8 InIdNumber, const EWeaponType InType);
+	void Server_EquipWeapon(const uint8 InIdNumber, const EWeaponType InType);
+
+	UFUNCTION(Server, Unreliable)
+	void Server_OnTriggerEquipRifle();
+
+	UFUNCTION(Server, Unreliable)
+	void Server_OnTriggerEquipPistol();
+
+	UFUNCTION(Server, Reliable)
+	void Server_OnTriggerThrowWeapon();
+	
 
 protected:
 	UPROPERTY()
