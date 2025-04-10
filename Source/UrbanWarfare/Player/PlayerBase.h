@@ -24,6 +24,7 @@ public:
 	class UPlayerBehaviorComponent* GetPlayerBehavior() const;
 	class UPlayerSoundComponent* GetSoundPlayer() const;
 	class USkeletalMeshComponent* GetTheMesh() const;
+	class USkeletalMeshComponent* GetThirdMesh() const;
 	class USkeletalMeshComponent* GetRifleMesh() const;
 	class USkeletalMeshComponent* GetPistolMesh() const;
 	class UWeaponComponent* GetWeaponComponent() const;

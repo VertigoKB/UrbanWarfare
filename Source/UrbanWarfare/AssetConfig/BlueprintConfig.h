@@ -24,7 +24,6 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Class|UI")
 	TSubclassOf<UUserWidget> TeamSelection;
 
-
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Class|Player")
 	TSubclassOf<class APlayerBase> CounterTrist;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Class|Player")
@@ -34,4 +33,13 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Blueprints|Audio")
 	TObjectPtr<USoundBase> FootStepsSound;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Blueprints|AnimMontage")
+	TObjectPtr<UAnimMontage> TerroristReloadPistol;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Blueprints|AnimMontage")
+	TObjectPtr<UAnimMontage> TerroristReloadRifle;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Blueprints|AnimMontage")
+	TObjectPtr<UAnimMontage> CounterTristReloadPistol;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Blueprints|AnimMontage")
+	TObjectPtr<UAnimMontage> CounterTristReloadRifle;
 };

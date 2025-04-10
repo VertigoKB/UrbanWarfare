@@ -24,6 +24,9 @@ public:
 	virtual void NativeInitializeAnimation() override;
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 
+	void PlayMontage_ReloadPistol();
+	void PlayMontage_ReloadRifle();
+
 protected:
 	UFUNCTION()
 	bool CacheAndInit();
@@ -42,6 +45,11 @@ protected:
 
 	UPROPERTY()
 	TObjectPtr<class UPlayerBehaviorComponent> PlayerBehavior;
+
+	UPROPERTY()
+	TObjectPtr<UAnimMontage> MontageReloadPistol;
+	UPROPERTY()
+	TObjectPtr<UAnimMontage> MontageReloadRifle;
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "UrbanWarfare")

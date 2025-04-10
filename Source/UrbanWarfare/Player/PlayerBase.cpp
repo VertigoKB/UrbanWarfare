@@ -7,8 +7,6 @@
 #include "Camera/CameraComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/CapsuleComponent.h"
-#include "Engine/AssetManager.h"
-#include "Engine/StreamableManager.h"
 
 #include "Components/RegisterInputComponent.h"
 #include "Components/PlayerBehaviorComponent.h"
@@ -56,6 +54,7 @@ URegisterInputComponent* APlayerBase::GetRegInputComp() const { return RegisterI
 UPlayerBehaviorComponent* APlayerBase::GetPlayerBehavior() const { return PlayerBehavior; }
 UPlayerSoundComponent* APlayerBase::GetSoundPlayer() const { return PlayerSoundComponent; }
 USkeletalMeshComponent* APlayerBase::GetTheMesh() const { return TheMesh; }
+USkeletalMeshComponent* APlayerBase::GetThirdMesh() const { return TheThirdMesh; }
 USkeletalMeshComponent* APlayerBase::GetRifleMesh() const { return TheRifleMesh; }
 USkeletalMeshComponent* APlayerBase::GetPistolMesh() const { return ThePistolMesh; }
 UWeaponComponent* APlayerBase::GetWeaponComponent() const { return WeaponComponent; }

@@ -55,11 +55,45 @@ void UWarfareAnim::NativeUpdateAnimation(float DeltaSeconds)
 
 }
 
+void UWarfareAnim::PlayMontage_ReloadPistol()
+{
+	ensure(MontageReloadPistol);
+
+	Montage_Stop(0.f);
+	Montage_Play(MontageReloadPistol);
+}
+
+void UWarfareAnim::PlayMontage_ReloadRifle()
+{
+	ensure(MontageReloadRifle);
+
+	Montage_Stop(0.f);
+	Montage_Play(MontageReloadRifle);
+}
+
 bool UWarfareAnim::CacheAndInit()
 {
 	ThePlayer = Cast<APlayerBase>(TryGetPawnOwner());
 	if (!ThePlayer)
 		return false;
+
+	if (ThePlayer->ActorHasTag("CounterTrist"))
+	{
+		MontageReloadPistol = ThePlayer->GetBlueprintConfig()->CounterTristReloadPistol;
+		MontageReloadRifle = ThePlayer->GetBlueprintConfig()->CounterTristReloadRifle;
+	}
+	else if (ThePlayer->ActorHasTag("Terrorist"))
+	{
+		MontageReloadPistol = ThePlayer->GetBlueprintConfig()->TerroristReloadPistol;
+		MontageReloadRifle = ThePlayer->GetBlueprintConfig()->TerroristReloadRifle;
+	}
+	else
+	{
+		LOG_EFUNC(TEXT("Failed to find tag"));
+		return false;
+	}
+
+		 
 
 	PlayerBehavior = ThePlayer->GetPlayerBehavior();
 	if (!PlayerBehavior)

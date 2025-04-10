@@ -55,6 +55,9 @@ private:
 
 	UFUNCTION(Server, Reliable)
 	void Server_OnTriggerThrowWeapon();
+
+	UFUNCTION(NetMulticast, Unreliable)
+	void Multicast_ReloadWeapon(EWeaponType InType);
 	
 
 protected:

@@ -16,22 +16,26 @@
 ADroppedWeapon::ADroppedWeapon()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = true;
 
 	bReplicates = true;
 	SetReplicateMovement(true);
 
-	WeaponRoot = CreateDefaultSubobject<USceneComponent>(TEXT("WeaponRoot"));
-	SetRootComponent(WeaponRoot);
+	//WeaponRoot = CreateDefaultSubobject<USceneComponent>(TEXT("WeaponRoot"));
+	//SetRootComponent(WeaponRoot);
 
 	WeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("WeaponMesh"));
-	WeaponMesh->SetupAttachment(WeaponRoot);
+	//WeaponMesh->SetupAttachment(WeaponRoot);
+	SetRootComponent(WeaponMesh);
 	WeaponMesh->SetRelativeRotation(FRotator(0.f, -90.f, 0.f));
-	WeaponMesh->SetSimulatePhysics(false);
+	//WeaponMesh->SetUpdateKinematicFromSimulation(true);
+	//WeaponMesh->PhysicsTransformUpdateMode = EPhysicsTransformUpdateMode::ComponentTransformIsKinematic;
 
 	SphereCollision = CreateDefaultSubobject<USphereComponent>(TEXT("SphereCollision"));
 	SphereCollision->SetupAttachment(WeaponMesh);
 	SphereCollision->InitSphereRadius(70.f);
+
+	//WeaponLocation = FVector_NetQuantize(FVector(0.f, 0.f, 0.f));
 
 	SetupComponentsDroppedCollision();
 }
@@ -44,14 +48,53 @@ void ADroppedWeapon::BeginPlay()
 	SphereCollision->OnComponentBeginOverlap.AddDynamic(this, &ADroppedWeapon::OnWeaponBeginOverlap);
 
 	bIsWeaponIdSpecified = InitializePlacedWeapon();
+
+	//if (HasAuthority())
+	//{
+	//	WeaponMesh->SetSimulatePhysics(true);
+	//	SetActorTickEnabled(false);
+	//
+	//	GetWorld()->GetTimerManager().SetTimer(SynchronizationHandle, FTimerDelegate::CreateLambda([this]() {
+	//
+	//		WeaponLocation = GetActorLocation();
+	//		WeaponRotation = GetActorRotation().Vector();
+	//
+	//		}), 0.1f, true);
+	//}
+	//else
+	//{
+	//	WeaponMesh->SetSimulatePhysics(false);
+	//	SetActorTickEnabled(false);
+	//}
 }
 
-// Called every frame
-//void ADroppedWeapon::Tick(float DeltaTime)
-//{
-//	Super::Tick(DeltaTime);
-//
-//}
+void ADroppedWeapon::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	Super::EndPlay(EndPlayReason);
+
+	GetWorld()->GetTimerManager().ClearAllTimersForObject(this);
+}
+
+// 틱이 활성화 되었다는 것은 WeaponLocation이 서버에서 변화했다는 것이다.
+void ADroppedWeapon::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+	
+	//FVector NewLocation = FMath::VInterpTo(GetActorLocation(), WeaponLocation, DeltaTime, 50000.f);
+	//FRotator NewRotation = FMath::RInterpTo(GetActorRotation(), WeaponRotation.Rotation(), DeltaTime, 50000.f);
+
+	//SetActorLocationAndRotation(NewLocation, NewRotation.Quaternion());
+}
+
+void ADroppedWeapon::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ADroppedWeapon, bIsWeaponIdSpecified);
+	DOREPLIFETIME(ADroppedWeapon, ThisWeaponIdNumber);
+	DOREPLIFETIME(ADroppedWeapon, ThisWeaponType);
+	//DOREPLIFETIME(ADroppedWeapon, WeaponLocation);
+}
 
 void ADroppedWeapon::OnWeaponBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -101,6 +144,8 @@ bool ADroppedWeapon::ExternalInitialize(const uint8 InIdNumber)
 	return bIsWeaponIdSpecified;
 }
 
+USkeletalMeshComponent* ADroppedWeapon::GetWeaponMesh() const { return WeaponMesh; }
+
 bool ADroppedWeapon::InitializePlacedWeapon()
 {
 	if (PlacedWeaponInitIdNumber == 0)
@@ -125,6 +170,7 @@ bool ADroppedWeapon::InitializePlacedWeapon()
 
 void ADroppedWeapon::SetupComponentsDroppedCollision()
 {
+	
 	WeaponMesh->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
 	WeaponMesh->SetCollisionObjectType(ECollisionChannel::ECC_WorldStatic);
 	WeaponMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
@@ -133,3 +179,18 @@ void ADroppedWeapon::SetupComponentsDroppedCollision()
 
 	SphereCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 }
+
+void ADroppedWeapon::OnRep_bIsWeaponIdSpecified()
+{
+	if (!(ThisWeaponIdNumber > 0))
+		return;
+
+	UWeaponDataAsset* TempWeaponData = GetWorld()->GetGameInstance()->GetSubsystem<UWeaponPreLoader>()->GetWeaponDataByWeaponId(ThisWeaponIdNumber);
+	WeaponMesh->SetSkeletalMesh(TempWeaponData->WeaponMesh.Get());
+	SetupComponentsDroppedCollision();
+}
+
+//void ADroppedWeapon::OnRep_WeaponLocation()
+//{
+//	SetActorTickEnabled(true);
+//}

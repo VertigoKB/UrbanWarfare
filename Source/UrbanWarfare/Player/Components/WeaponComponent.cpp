@@ -165,14 +165,25 @@ void UWeaponComponent::Server_OnTriggerEquipPistol_Implementation()
 
 void UWeaponComponent::Server_OnTriggerThrowWeapon_Implementation()
 {
+	if (EquippedWeaponId == 0)
+		return;
+
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 
 	//FVector TargetHeight = FVector(0.f, 0.f, 100.f);
 
-	FVector SpawnLocation = GetOwner<APlayerBase>()->GetActorForwardVector() * 1.05f;
-	ADroppedWeapon* DroppedWeapon = GetWorld()->SpawnActor<ADroppedWeapon>(ADroppedWeapon::StaticClass(), SpawnLocation, GetOwner<AActor>()->GetActorRotation(), SpawnParams);
+	APlayerBase* MyOwnerPawn = GetOwner<APlayerBase>();
+	
+	FVector SpawnLocation = MyOwnerPawn->GetActorLocation() + FVector(0.f, 0.f, 50.f);
+	FRotator SpawnRotation = MyOwnerPawn->GetActorRotation();
+	ADroppedWeapon* DroppedWeapon = GetWorld()->SpawnActor<ADroppedWeapon>(ADroppedWeapon::StaticClass(), SpawnLocation, SpawnRotation, SpawnParams);
 	DroppedWeapon->ExternalInitialize(EquippedWeaponId);
+
+	FVector ForwardVector = MyOwnerPawn->GetActorForwardVector();
+	FVector UpVector = FVector::UpVector;
+	FVector ThrowPower = (ForwardVector + UpVector * 0.3f).GetSafeNormal() * 550.f;
+	DroppedWeapon->GetWeaponMesh()->AddImpulse(ThrowPower);
 
 	WeaponInventory.SetItem(static_cast<uint8>(EquippedWeaponType), 0);
 	
@@ -201,6 +212,14 @@ void UWeaponComponent::Server_OnTriggerThrowWeapon_Implementation()
 
 		OnRep_EquippedWeaponId();
 	}
+}
+
+void UWeaponComponent::Multicast_ReloadWeapon_Implementation(EWeaponType InType)
+{
+	UAnimInstance* AnimInstance = GetOwner<APlayerBase>()->GetTheMesh()->GetAnimInstance();
+
+	//AnimInstance->Montage_Play()
+	
 }
 
 // https://chatgpt.com/share/67ef9b17-750c-8010-8005-a206185355d3
