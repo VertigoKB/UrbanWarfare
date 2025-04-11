@@ -34,10 +34,7 @@ void UWarfareAnim::NativeInitializeAnimation()
 			if (This->bInitFlag)
 			{
 				This->GetWorld()->GetTimerManager().ClearTimer(This->InitTimer);
-			}
-			else
-			{
-				LOG_EFUNC(TEXT("Failed to cach ThePawn."))
+				LOG_EFUNC(TEXT("Success to initialize UWarfareAnim"));
 			}
 			}), 0.3f, true);
 	}
@@ -75,7 +72,10 @@ bool UWarfareAnim::CacheAndInit()
 {
 	ThePlayer = Cast<APlayerBase>(TryGetPawnOwner());
 	if (!ThePlayer)
+	{
+		LOG_EFUNC(TEXT("ThePlayer is null"));
 		return false;
+	}
 
 	if (ThePlayer->ActorHasTag("CounterTrist"))
 	{
@@ -97,10 +97,16 @@ bool UWarfareAnim::CacheAndInit()
 
 	PlayerBehavior = ThePlayer->GetPlayerBehavior();
 	if (!PlayerBehavior)
+	{
+		LOG_EFUNC(TEXT("PlayerBehavior is null"));
 		return false;
+	}
 
 	if (!PlayerBehavior->bInitFlag)
+	{
+		LOG_EFUNC(TEXT("PlayerBehavior not initialied."));
 		return false;
+	}
 
 	return true;
 }

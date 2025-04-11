@@ -26,4 +26,7 @@ public:
 	TMap<uint8, UWeaponDataAsset*> WeaponDataMap;
 
 	bool bIsLoadSuccess = false;
+
+private:
+	FStreamableManager StreamableManager;
 };

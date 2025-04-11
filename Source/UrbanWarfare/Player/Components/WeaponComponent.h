@@ -43,6 +43,9 @@ private:
 
 	UFUNCTION()
 	void OnRep_EquippedWeaponId();
+	
+	//UFUNCTION()
+	//void OnRep_EquippedWeaponType();
 
 	UFUNCTION(Server, Reliable)
 	void Server_EquipWeapon(const uint8 InIdNumber, const EWeaponType InType);
@@ -56,13 +59,19 @@ private:
 	UFUNCTION(Server, Reliable)
 	void Server_OnTriggerThrowWeapon();
 
-	UFUNCTION(NetMulticast, Unreliable)
+	UFUNCTION(NetMulticast, Reliable)
 	void Multicast_ReloadWeapon(EWeaponType InType);
 	
 
 protected:
 	UPROPERTY()
 	TObjectPtr<class URegisterInputComponent> RegisterInputComponent;
+
+	UPROPERTY()
+	TObjectPtr<class UWarfareAnim> OwnerTheMeshAnim;
+
+	UPROPERTY()
+	TObjectPtr<class UWarfareAnim> OwnerThirdMeshAnim;
 
 	UPROPERTY(Replicated)
 	EWeaponType EquippedWeaponType = EWeaponType::UnArmed;
@@ -76,17 +85,17 @@ protected:
 	bool bCanLootWeapon = true;
 
 public:
-	// Debug
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool DebugBoolA = false;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool DebugBoolB = false;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool DebugBoolC = false;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	EWeaponType DebugWeaponType = EWeaponType::UnArmed;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	uint8 DebugWeaponIdA = 0;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	uint8 DebugWeaponIdB = 0;
+	//// Debug
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	//bool DebugBoolA = false;
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	//bool DebugBoolB = false;
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	//bool DebugBoolC = false;
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	//EWeaponType DebugWeaponType = EWeaponType::UnArmed;
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	//uint8 DebugWeaponIdA = 0;
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	//uint8 DebugWeaponIdB = 0;
 };

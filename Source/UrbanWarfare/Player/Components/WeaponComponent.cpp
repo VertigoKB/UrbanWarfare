@@ -8,9 +8,11 @@
 
 #include "UrbanWarfare/AssetConfig/BlueprintConfig.h"
 #include "UrbanWarfare/Player/PlayerBase.h"
+#include "UrbanWarfare/Player/WarfareAnim.h"
 #include "UrbanWarfare/Player/Components/RegisterInputComponent.h"
 #include "UrbanWarfare/Frameworks/GameInstance/WeaponPreLoader.h"
 #include "UrbanWarfare/Weapon/DropeedWeapon.h"
+#include "UrbanWarfare/Common/WarfareLogger.h"
 //#include "UrbanWarfare/Weapon/WeaponBase.h"
 
 // Sets default values for this component's properties
@@ -70,10 +72,6 @@ bool UWeaponComponent::IsPlayerHaveThisWeaponType(const EWeaponType InType) cons
 
 void UWeaponComponent::LootWeapon(const uint8 InWeaponIdNumber, const EWeaponType InType)
 {
-	/*FInventoryItem Looted;
-	Looted.WeaponId = InWeaponIdNumber;
-	WeaponInventory.AddItem(Looted);*/
-
 	WeaponInventory.SetItem(static_cast<uint8>(InType), InWeaponIdNumber);
 
 	if (EquippedWeaponId == 0)
@@ -84,11 +82,38 @@ EWeaponType UWeaponComponent::GetEquippedWeaponType() const { return EquippedWea
 
 bool UWeaponComponent::InitConstruct()
 {
-	RegisterInputComponent = GetOwner<APlayerBase>()->GetRegInputComp();
-	if (!RegisterInputComponent)
-		return false;
+	bool bIsSuccess = false;
 
-	return true;
+	switch (true)
+	{
+	case true:
+	default:
+		RegisterInputComponent = GetOwner<APlayerBase>()->GetRegInputComp();
+		if (!RegisterInputComponent)
+		{
+			LOG_EFUNC(TEXT("Cach failed: RegisterInputComponent"));
+			break;
+		}
+
+		OwnerTheMeshAnim = Cast<UWarfareAnim>(GetOwner<APlayerBase>()->GetTheMesh()->GetAnimInstance());
+		if (!OwnerTheMeshAnim)
+		{
+			LOG_EFUNC(TEXT("Cach failed: OwnerTheMeshAnim"));
+			break;
+		}
+
+		OwnerThirdMeshAnim = Cast<UWarfareAnim>(GetOwner<APlayerBase>()->GetThirdMesh()->GetAnimInstance());
+		if (!OwnerThirdMeshAnim)
+		{
+			LOG_EFUNC(TEXT("Cach failed: OwnerThirdMeshAnim"));
+			break;
+		}
+		
+		bIsSuccess = true;
+		break;
+	}
+
+	return bIsSuccess;
 }
 
 void UWeaponComponent::OnRep_WeaponInventory()
@@ -141,12 +166,13 @@ void UWeaponComponent::Server_OnTriggerEquipRifle_Implementation()
 {
 	uint8 TargetWeapon = WeaponInventory.Items[static_cast<uint8>(EWeaponType::Rifle)].WeaponId;
 
-	if (TargetWeapon != 0)
+	if (TargetWeapon != 0 && TargetWeapon != EquippedWeaponId)
 	{
 		EquippedWeaponId = TargetWeapon;
 		EquippedWeaponType = EWeaponType::Rifle;
 
 		OnRep_EquippedWeaponId();
+		Multicast_ReloadWeapon(EWeaponType::Rifle);
 	}
 }
 
@@ -154,12 +180,13 @@ void UWeaponComponent::Server_OnTriggerEquipPistol_Implementation()
 {
 	uint8 TargetWeapon = WeaponInventory.Items[static_cast<uint8>(EWeaponType::Pistol)].WeaponId;
 
-	if (TargetWeapon != 0)
+	if (TargetWeapon != 0 && TargetWeapon != EquippedWeaponId)
 	{
 		EquippedWeaponId = TargetWeapon;
 		EquippedWeaponType = EWeaponType::Pistol;
 
 		OnRep_EquippedWeaponId();
+		Multicast_ReloadWeapon(EWeaponType::Pistol);
 	}
 }
 
@@ -170,8 +197,6 @@ void UWeaponComponent::Server_OnTriggerThrowWeapon_Implementation()
 
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
-
-	//FVector TargetHeight = FVector(0.f, 0.f, 100.f);
 
 	APlayerBase* MyOwnerPawn = GetOwner<APlayerBase>();
 	
@@ -216,10 +241,26 @@ void UWeaponComponent::Server_OnTriggerThrowWeapon_Implementation()
 
 void UWeaponComponent::Multicast_ReloadWeapon_Implementation(EWeaponType InType)
 {
-	UAnimInstance* AnimInstance = GetOwner<APlayerBase>()->GetTheMesh()->GetAnimInstance();
+	UAnimInstance* AnimInstanceTheMesh = GetOwner<APlayerBase>()->GetTheMesh()->GetAnimInstance();
+	UAnimInstance* AnimInstanceTheThirdMesh = GetOwner<APlayerBase>()->GetThirdMesh()->GetAnimInstance();
+	UWarfareAnim* WarfareAnimTheMesh = Cast<UWarfareAnim>(AnimInstanceTheMesh);
+	UWarfareAnim* WarfareAnimTheThirdMesh = Cast<UWarfareAnim>(AnimInstanceTheThirdMesh);
 
-	//AnimInstance->Montage_Play()
-	
+	if (!(AnimInstanceTheMesh) || !(AnimInstanceTheThirdMesh) || !(WarfareAnimTheMesh) || !(WarfareAnimTheThirdMesh))
+	{
+		LOG_EFUNC(TEXT("AnimInstance Issue"))
+	}
+
+	switch (InType)
+	{
+	case EWeaponType::Rifle:
+			WarfareAnimTheMesh->PlayMontage_ReloadRifle();
+			WarfareAnimTheThirdMesh->PlayMontage_ReloadRifle();
+		break;
+	case EWeaponType::Pistol:
+			WarfareAnimTheMesh->PlayMontage_ReloadPistol();
+			WarfareAnimTheThirdMesh->PlayMontage_ReloadPistol();
+		break;
+	}
 }
-
 // https://chatgpt.com/share/67ef9b17-750c-8010-8005-a206185355d3

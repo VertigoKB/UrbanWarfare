@@ -70,6 +70,14 @@ void APlayerBase::BeginPlay()
 
 	//UWeaponDataAsset* WeaponData = GetWorld()->GetGameInstance()->GetSubsystem<UWeaponPreLoader>()->GetWeaponDataByWeaponId(1);
 	//TheRifleMesh->SetSkeletalMesh(WeaponData->WeaponMesh.Get());
+
+	if (IsLocallyControlled())
+	{
+		FAttachmentTransformRules Rules = FAttachmentTransformRules(EAttachmentRule::KeepRelative, true);
+
+		TheRifleMesh->AttachToComponent(TheMesh, Rules, FName("RifleSocket"));
+		ThePistolMesh->AttachToComponent(TheMesh, Rules, FName("PistolSocket"));
+	}
 	
 }
 
@@ -89,7 +97,7 @@ void APlayerBase::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
 
-
+	// 서버에서만 호출됨
 
 }
 
