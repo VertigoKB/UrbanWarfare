@@ -58,6 +58,9 @@ void AWarfareController::SpawnPlayer(ETeam InTeam, const FTransform& SpawnTrasfo
 
 	PlayerPawn = GetWorld()->SpawnActor<APlayerBase>(PlayerType, SpawnTrasform, SpawnParam);
 
+	OnPlayerSpawned.ExecuteIfBound(PlayerPawn);
+
+
 	//if (IsLocalController())
 	//	PlayerPawn->SetupFirstPersonViewSocket();
 

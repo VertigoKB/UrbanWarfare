@@ -73,6 +73,7 @@ bool UWeaponComponent::IsPlayerHaveThisWeaponType(const EWeaponType InType) cons
 void UWeaponComponent::LootWeapon(const uint8 InWeaponIdNumber, const EWeaponType InType)
 {
 	WeaponInventory.SetItem(static_cast<uint8>(InType), InWeaponIdNumber);
+	OnRep_WeaponInventory();
 
 	if (EquippedWeaponId == 0)
 		Server_EquipWeapon(InWeaponIdNumber, InType);
@@ -118,7 +119,7 @@ bool UWeaponComponent::InitConstruct()
 
 void UWeaponComponent::OnRep_WeaponInventory()
 {
-
+	OnInventoryChange.ExecuteIfBound(WeaponInventory.Items);
 }
 
 void UWeaponComponent::OnRep_EquippedWeaponId()
@@ -154,12 +155,19 @@ void UWeaponComponent::OnRep_EquippedWeaponId()
 		ensure(false);
 }
 
+void UWeaponComponent::OnRep_EquippedWeaponType()
+{
+	OnLocalPlayerEquipWeapon.ExecuteIfBound(EquippedWeaponType);
+
+}
+
 void UWeaponComponent::Server_EquipWeapon_Implementation(const uint8 InIdNumber, const EWeaponType InType)
 {
 	EquippedWeaponId = InIdNumber;
 	EquippedWeaponType = InType;
 
 	OnRep_EquippedWeaponId();
+	OnRep_EquippedWeaponType();
 }
 
 void UWeaponComponent::Server_OnTriggerEquipRifle_Implementation()
@@ -172,6 +180,7 @@ void UWeaponComponent::Server_OnTriggerEquipRifle_Implementation()
 		EquippedWeaponType = EWeaponType::Rifle;
 
 		OnRep_EquippedWeaponId();
+		OnRep_EquippedWeaponType();
 		Multicast_ReloadWeapon(EWeaponType::Rifle);
 	}
 }
@@ -186,6 +195,7 @@ void UWeaponComponent::Server_OnTriggerEquipPistol_Implementation()
 		EquippedWeaponType = EWeaponType::Pistol;
 
 		OnRep_EquippedWeaponId();
+		OnRep_EquippedWeaponType();
 		Multicast_ReloadWeapon(EWeaponType::Pistol);
 	}
 }
@@ -211,6 +221,8 @@ void UWeaponComponent::Server_OnTriggerThrowWeapon_Implementation()
 	DroppedWeapon->GetWeaponMesh()->AddImpulse(ThrowPower);
 
 	WeaponInventory.SetItem(static_cast<uint8>(EquippedWeaponType), 0);
+	OnRep_WeaponInventory();
+
 	
 	uint8 AnotherWeaponInInventory = 0;
 	for (const auto& Iter : WeaponInventory.Items)
@@ -229,6 +241,8 @@ void UWeaponComponent::Server_OnTriggerThrowWeapon_Implementation()
 		EquippedWeaponType = WeaponData->WeaponType;
 
 		OnRep_EquippedWeaponId();
+		OnRep_EquippedWeaponType();
+
 	}
 	else
 	{
@@ -236,6 +250,7 @@ void UWeaponComponent::Server_OnTriggerThrowWeapon_Implementation()
 		EquippedWeaponType = EWeaponType::UnArmed;
 
 		OnRep_EquippedWeaponId();
+		OnRep_EquippedWeaponType();
 	}
 }
 

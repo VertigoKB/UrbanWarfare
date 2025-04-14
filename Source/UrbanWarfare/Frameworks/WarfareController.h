@@ -7,9 +7,8 @@
 #include "UrbanWarfare/Common/CommonEnums.h"
 #include "WarfareController.generated.h"
 
-/**
- * 
- */
+DECLARE_DELEGATE_OneParam(FOnPlayerSpawned, class APlayerBase*)
+
 UCLASS()
 class URBANWARFARE_API AWarfareController : public APlayerController
 {
@@ -35,6 +34,9 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void OnPossess(APawn* InPawn) override;
 	virtual void OnUnPossess() override;
+
+public:
+	FOnPlayerSpawned OnPlayerSpawned;
 
 protected:
 

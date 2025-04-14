@@ -9,6 +9,10 @@
 #include "SerializedWeaponInventory.h"
 #include "WeaponComponent.generated.h"
 
+DECLARE_DELEGATE_OneParam(FOnInventoryChange, const TArray<FInventoryItem>&)
+DECLARE_DELEGATE_OneParam(FOnLocalPlayerEquipWeapon, EWeaponType)
+
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class URBANWARFARE_API UWeaponComponent : public UActorComponent
 {
@@ -43,6 +47,9 @@ private:
 
 	UFUNCTION()
 	void OnRep_EquippedWeaponId();
+
+	UFUNCTION()
+	void OnRep_EquippedWeaponType();
 	
 	//UFUNCTION()
 	//void OnRep_EquippedWeaponType();
@@ -61,7 +68,10 @@ private:
 
 	UFUNCTION(NetMulticast, Reliable)
 	void Multicast_ReloadWeapon(EWeaponType InType);
-	
+
+public:
+	FOnInventoryChange OnInventoryChange;
+	FOnLocalPlayerEquipWeapon OnLocalPlayerEquipWeapon;
 
 protected:
 	UPROPERTY()
@@ -73,7 +83,7 @@ protected:
 	UPROPERTY()
 	TObjectPtr<class UWarfareAnim> OwnerThirdMeshAnim;
 
-	UPROPERTY(Replicated)
+	UPROPERTY(ReplicatedUsing = OnRep_EquippedWeaponType)
 	EWeaponType EquippedWeaponType = EWeaponType::UnArmed;
 
 	UPROPERTY(ReplicatedUsing = OnRep_EquippedWeaponId)
@@ -83,6 +93,8 @@ protected:
 	FWeaponInventory WeaponInventory;
 
 	bool bCanLootWeapon = true;
+
+private:
 
 public:
 	//// Debug

@@ -8,6 +8,7 @@
 #include "UrbanWarfare/Frameworks/WarfareController.h"
 #include "UrbanWarfare/Frameworks/Components/CinematicComponent.h"
 #include "UrbanWarfare/UI/TeamSelection.h"
+#include "UrbanWarfare/UI/MainWidget.h"
 #include "UrbanWarfare/Common/WarfareLogger.h"
 
 AWarfareHud::AWarfareHud()
@@ -22,9 +23,13 @@ void AWarfareHud::BeginPlay()
 {
 	Super::BeginPlay();
 
-	CreateMainMenuWidget();
+	if (!BlueprintConfig)
+		return;
 
-	AWarfareController* WarfareController = Cast<AWarfareController>(GetWorld()->GetFirstPlayerController());
+	CreateTeamSelectionWidget();
+	CreateMainWidget();
+
+	//AWarfareController* WarfareController = Cast<AWarfareController>(GetWorld()->GetFirstPlayerController());
 
 }
 
@@ -34,15 +39,16 @@ void AWarfareHud::EndPlay(const EEndPlayReason::Type EndPlayReason)
 }
 
 
-void AWarfareHud::CreateMainMenuWidget()
+void AWarfareHud::CreateTeamSelectionWidget()
 {
-	if (!BlueprintConfig)
-	{
-		LOG_NULL(BlueprintConfig);
-		return;
-	}
-
 	TeamSelection = CreateWidget<UTeamSelection>(GetWorld(), BlueprintConfig->TeamSelection);
 	if (TeamSelection)
 		TeamSelection->AddToViewport();
+}
+
+void AWarfareHud::CreateMainWidget()
+{
+	MainWidget = CreateWidget<UMainWidget>(GetWorld(), BlueprintConfig->MainWidget);
+	if (MainWidget)
+		MainWidget->AddToViewport();
 }

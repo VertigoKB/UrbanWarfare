@@ -31,7 +31,7 @@ public:
 	TSoftObjectPtr<USkeletalMesh> WeaponMesh;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	TSoftObjectPtr<UTexture2D> WeaponIcon;
+	TObjectPtr<UTexture2D> WeaponIcon;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	EWeaponType WeaponType;

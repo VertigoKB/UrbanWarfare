@@ -26,9 +26,8 @@ protected:
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 public:
-
-	UFUNCTION()
-	void CreateMainMenuWidget();
+	void CreateTeamSelectionWidget();
+	void CreateMainWidget();
 	
 protected:
 	UPROPERTY(EditDefaultsOnly)
@@ -36,6 +35,9 @@ protected:
 
 	UPROPERTY()
 	TObjectPtr<class UTeamSelection> TeamSelection;
+
+	UPROPERTY()
+	TObjectPtr<class UMainWidget> MainWidget;
 
 	UPROPERTY()
 	TObjectPtr<class UCinematicComponent> CinematicComponent;
