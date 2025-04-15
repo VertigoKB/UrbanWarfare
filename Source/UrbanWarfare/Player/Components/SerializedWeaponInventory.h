@@ -59,6 +59,28 @@ struct FWeaponInventory : public FFastArraySerializer
 		}
 	}
 
+	//void SetItem(int32 Index, const FInventoryItem& NewItem)
+	//{
+	//	if (!Items.IsValidIndex(Index))
+	//	{
+	//		LOG_SIMPLE(TEXT("SetItemByIndex failed: Invalid index %d"), Index);
+	//		return;
+	//	}
+
+	//	FInventoryItem& ExistingItem = Items[Index];
+
+	//	// ✅ ReplicationID 유지
+	//	uint32 OriginalID = ExistingItem.ReplicationID;
+
+	//	Items[Index] = NewItem;
+	//	Items[Index].ReplicationID = OriginalID;
+
+	//	// ✅ Dirty 처리
+	//	MarkItemDirty(Items[Index]);
+
+	//	LOG_SIMPLE(TEXT("SetItemByIndex: Updated item at %d with WeaponId %d"), Index, NewItem.WeaponId);
+	//}
+
 	// 서버에서 변경 사항을 클라이언트에 동기화할 때 호출되는 함수
 	bool NetDeltaSerialize(FNetDeltaSerializeInfo& DeltaParms)
 	{

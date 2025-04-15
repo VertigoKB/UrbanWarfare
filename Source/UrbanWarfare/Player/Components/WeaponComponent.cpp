@@ -38,10 +38,14 @@ void UWeaponComponent::BeginPlay()
 		RegisterInputComponent->OnThrowWeapon.BindUObject(this, &UWeaponComponent::Server_OnTriggerThrowWeapon);
 	}
 
-	FInventoryItem InitItem;
-	InitItem.WeaponId = 0;
-	WeaponInventory.Items.Init(InitItem, 4);
-	WeaponInventory.MarkArrayDirty();
+	if (GetOwner()->HasAuthority())
+	{
+		FInventoryItem InitItem;
+		InitItem.WeaponId = 0;
+		//InitItem.ReplicationID = GenerateReplicationID();
+		WeaponInventory.Items.Init(InitItem, 4);
+		WeaponInventory.MarkArrayDirty();
+	}
 }
 
 

@@ -57,12 +57,12 @@ void URegisterInputComponent::BeginPlay()
 		}
 		else
 		{
-			LOG_EFUNC(TEXT("Failed to initialize. Count: %d"), InitCount);
+			//LOG_EFUNC(TEXT("Failed to initialize. Count: %d"), InitCount);
 			InitCount++;
 
 			if (InitCount > 10)
 			{
-				LOG_EFUNC(TEXT("Unable to initialize. Process end."));
+				//LOG_EFUNC(TEXT("Unable to initialize. Process end."));
 				SetActive(false);
 				GetWorld()->GetTimerManager().ClearTimer(InitTimer);
 			}

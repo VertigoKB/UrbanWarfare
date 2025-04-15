@@ -15,6 +15,13 @@ AWarfareController::AWarfareController()
 {
 }
 
+void AWarfareController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AWarfareController, PlayerPawn);
+}
+
 UBlueprintConfig* AWarfareController::GetBlueprintConfig() { return BlueprintConfig; }
 APlayerBase* AWarfareController::GetPlayerPawn() { return PlayerPawn; }
 void AWarfareController::SetPlayerPawn(APlayerBase* InPlayerPawn) { PlayerPawn = InPlayerPawn; }
@@ -58,13 +65,12 @@ void AWarfareController::SpawnPlayer(ETeam InTeam, const FTransform& SpawnTrasfo
 
 	PlayerPawn = GetWorld()->SpawnActor<APlayerBase>(PlayerType, SpawnTrasform, SpawnParam);
 
-	OnPlayerSpawned.ExecuteIfBound(PlayerPawn);
-
-
-	//if (IsLocalController())
-	//	PlayerPawn->SetupFirstPersonViewSocket();
 
 	Possess(PlayerPawn);
+
+	if (IsLocalController())
+		OnRep_PlayerPawn();
+	
 }
 
 void AWarfareController::ClientRequestStopSequenceToHud_Implementation()
@@ -93,4 +99,9 @@ void AWarfareController::OnPossess(APawn* InPawn)
 void AWarfareController::OnUnPossess()
 {
 	Super::OnUnPossess();
+}
+
+void AWarfareController::OnRep_PlayerPawn()
+{
+	OnPlayerSpawned.ExecuteIfBound(PlayerPawn);
 }

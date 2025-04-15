@@ -17,6 +17,8 @@ class URBANWARFARE_API AWarfareController : public APlayerController
 public:
 	AWarfareController();
 
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
 	class UBlueprintConfig* GetBlueprintConfig();
 	class APlayerBase* GetPlayerPawn();
 	void SetPlayerPawn(class APlayerBase* InPlayerPawn);
@@ -35,6 +37,10 @@ protected:
 	virtual void OnPossess(APawn* InPawn) override;
 	virtual void OnUnPossess() override;
 
+private:
+	UFUNCTION()
+	void OnRep_PlayerPawn();
+
 public:
 	FOnPlayerSpawned OnPlayerSpawned;
 
@@ -44,6 +50,7 @@ protected:
 	TObjectPtr<class UBlueprintConfig> BlueprintConfig;
 
 private:
-	UPROPERTY()
+	UPROPERTY(ReplicatedUsing = OnRep_PlayerPawn)
 	TObjectPtr<class APlayerBase> PlayerPawn;
+
 };
