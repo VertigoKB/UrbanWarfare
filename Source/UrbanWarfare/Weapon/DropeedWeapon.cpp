@@ -40,6 +40,17 @@ ADroppedWeapon::ADroppedWeapon()
 	SetupComponentsDroppedCollision();
 }
 
+void ADroppedWeapon::OnConstruction(const FTransform& Transform)
+{
+	Super::OnConstruction(Transform);
+
+	if (WeaponMesh && WeaponMesh->GetAttachParent() == WeaponMesh)
+	{
+		WeaponMesh->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
+		UE_LOG(LogTemp, Warning, TEXT("무기 메쉬가 자기 자신에 붙으려는 시도를 감지하고 무시함"));
+	}
+}
+
 // Called when the game starts or when spawned
 void ADroppedWeapon::BeginPlay()
 {
@@ -187,6 +198,7 @@ void ADroppedWeapon::OnRep_bIsWeaponIdSpecified()
 
 	UWeaponDataAsset* TempWeaponData = GetWorld()->GetGameInstance()->GetSubsystem<UWeaponPreLoader>()->GetWeaponDataByWeaponId(ThisWeaponIdNumber);
 	WeaponMesh->SetSkeletalMesh(TempWeaponData->WeaponMesh.Get());
+	WeaponMesh->SetSimulatePhysics(true);
 	SetupComponentsDroppedCollision();
 }
 
