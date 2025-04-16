@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Engine/DataAsset.h"
 #include "UrbanWarfare/Common/CommonEnums.h"
+#include "UrbanWarfare/Common/QuantizedFloat.h"
 #include "WeaponDataAsset.generated.h"
 
 /**
@@ -21,6 +22,8 @@ public:
 		return FPrimaryAssetId("Weapon", GetFName());
 	}
 
+	void InitiallizeValues();
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	FName WeaponName;
 
@@ -34,9 +37,19 @@ public:
 	TObjectPtr<UTexture2D> WeaponIcon;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	TObjectPtr<class UNiagaraSystem> MuzzleFlash;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	EWeaponType WeaponType;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	float RoundPerMinute;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	float Damage;
+
+	float RoundInterval;
+	FQuantizedFloat CompressedRPM;
+	FQuantizedFloat CompressedDamage;
 
 };

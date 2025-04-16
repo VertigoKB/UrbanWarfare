@@ -12,6 +12,7 @@
 #include "Components/PlayerBehaviorComponent.h"
 #include "Components/PlayerSoundComponent.h"
 #include "Components/WeaponComponent.h"
+#include "Components/AttackComponent.h"
 #include "UrbanWarfare/Common/WarfareLogger.h"
 #include "UrbanWarfare/Frameworks/GameInstance/WeaponPreLoader.h"
 #include "UrbanWarfare/Weapon/WeaponData/WeaponDataAsset.h"
@@ -177,6 +178,9 @@ void APlayerBase::SetupCustomComponents()
 
 	WeaponComponent = CreateDefaultSubobject<UWeaponComponent>(TEXT("WeaponComponent"));
 	WeaponComponent->SetIsReplicated(true);
+
+	AttackComponent = CreateDefaultSubobject<UAttackComponent>(TEXT("AttackComponent"));
+	AttackComponent->SetIsReplicated(true);
 }
 
 void APlayerBase::SetupMesh()

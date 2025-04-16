@@ -24,7 +24,7 @@ public class UrbanWarfare : ModuleRules
 		});
 			
 
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "NetCore","InputCore", "EnhancedInput", "AnimGraphRuntime", "LevelSequence", "MovieScene", "CinematicCamera" });
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "NetCore","InputCore", "EnhancedInput", "AnimGraphRuntime", "LevelSequence", "MovieScene", "CinematicCamera", "Niagara" });
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 

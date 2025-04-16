@@ -172,6 +172,7 @@ void UWeaponComponent::Server_EquipWeapon_Implementation(const uint8 InIdNumber,
 
 	OnRep_EquippedWeaponId();
 	OnRep_EquippedWeaponType();
+	Multicast_ReloadWeapon(InType);
 }
 
 void UWeaponComponent::Server_OnTriggerEquipRifle_Implementation()

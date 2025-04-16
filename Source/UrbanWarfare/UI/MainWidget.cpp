@@ -19,6 +19,8 @@ void UMainWidget::NativeConstruct()
 
 	GetOwningPlayer<AWarfareController>()->OnPlayerSpawned.BindUObject(this, &UMainWidget::OnPlayerSpawned);
 
+	SetVisibility(ESlateVisibility::Hidden);
+
 	//GetWorld()->GetTimerManager().SetTimer(InitHandle, FTimerDelegate::CreateLambda([this]() {
 
 	//	if (InitCount > 0)
@@ -91,6 +93,7 @@ bool UMainWidget::InitConstruct()
 
 void UMainWidget::OnPlayerSpawned(APlayerBase* InPlayer)
 {
+	SetVisibility(ESlateVisibility::HitTestInvisible);
 	WeaponComponent = InPlayer->GetWeaponComponent();
 	WeaponComponent->OnInventoryChange.BindUObject(WeaponHud, &UWeaponHud::OnInventoryChange);
 	WeaponComponent->OnLocalPlayerEquipWeapon.BindUObject(WeaponHud, &UWeaponHud::OnEquipWeapon);

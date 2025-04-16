@@ -94,8 +94,8 @@ bool URegisterInputComponent::CachAndInit()
 		return false;
 	}
 
-	if (!PlayerPawn->IsLocallyControlled())
-		return false;
+	//if (!PlayerPawn->IsLocallyControlled())
+	//	return false;
 
 	return true;
 }

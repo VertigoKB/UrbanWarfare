@@ -2,3 +2,10 @@
 
 
 #include "WeaponDataAsset.h"
+
+void UWeaponDataAsset::InitiallizeValues()
+{
+	RoundInterval = 60.f / RoundPerMinute;
+	CompressedRPM.SetFloat(RoundPerMinute);
+	CompressedDamage.SetFloat(Damage);
+}

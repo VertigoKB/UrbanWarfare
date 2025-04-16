@@ -44,14 +44,17 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Input")
 	TObjectPtr<class UInputAction> Jump;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Input")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Input|Weapon")
 	TObjectPtr<class UInputAction> EquipRifle;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Input")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Input|Weapon")
 	TObjectPtr<class UInputAction> EquipPistol;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Input")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Input|Weapon")
 	TObjectPtr<class UInputAction> ThrowWeapon;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Input|Weapon")
+	TObjectPtr<class UInputAction> Attack;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Input")
 	TObjectPtr<class UInputAction> Test;

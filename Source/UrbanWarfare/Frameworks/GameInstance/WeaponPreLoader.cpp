@@ -50,6 +50,7 @@ bool UWeaponPreLoader::LoadWeaponDataAsset()
 			LOG_SIMPLE(TEXT("UWeaponPreLoader failed to load"));
 			return false;
 		}
+		WeaponData->InitiallizeValues();
 		WeaponData->WeaponMesh.LoadSynchronous();
 
 		WeaponDataMap.Add(WeaponData->WeaponIdNumber, WeaponData);

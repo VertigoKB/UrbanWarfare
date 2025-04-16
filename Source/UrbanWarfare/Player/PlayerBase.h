@@ -114,6 +114,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Custom Components")
 	TObjectPtr<class UWeaponComponent> WeaponComponent;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Custom Components")
+	TObjectPtr<class UAttackComponent> AttackComponent;
 protected:
 	// Editable Constant
 
