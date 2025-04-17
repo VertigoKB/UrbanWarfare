@@ -16,6 +16,7 @@ DECLARE_DELEGATE(FOnTestInput)
 DECLARE_DELEGATE(FOnInputEquipRifle)
 DECLARE_DELEGATE(FOnInputEquipPistol)
 DECLARE_DELEGATE(FOnInputThrowWeapon)
+DECLARE_DELEGATE(FOnAttack);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class URBANWARFARE_API URegisterInputComponent : public UActorComponent
@@ -52,6 +53,7 @@ protected:
 	void InputEquipRifle(const FInputActionValue& Value);
 	void InputEquipPistol(const FInputActionValue& Value);
 	void InputThrowWeapon(const FInputActionValue& Value);
+	void InputAttack(const FInputActionValue& Value);
 	
 
 	void InputTest(const FInputActionValue& Value);
@@ -78,6 +80,7 @@ public:
 	FOnInputEquipRifle OnInputEquipRifle;
 	FOnInputEquipPistol OnInputEquipPistol;
 	FOnInputThrowWeapon OnThrowWeapon;
+	FOnAttack OnAttack;
 
 public:
 	FOnTestInput OnTestInput;

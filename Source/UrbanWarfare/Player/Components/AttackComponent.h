@@ -22,16 +22,43 @@ protected:
 
 private:
 	bool InitConsruct();
+	void OnInitializationComplete();
 
+	UFUNCTION(Server, Reliable)
+	void Server_TriggerAttack();
+
+	void AttackLineTrace();
+
+	void OnWeaponChange();
 public:	
-	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason);
+	//virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 public:
 
 protected:
 
 private:
+	bool bIsTriggeredAttack = false;
+	float Damage = 0.f;
+	float AttackInterval = 0.1f;
+	FTimerHandle RoundIntervalHandle;
+	
+
+private:
+	UPROPERTY()
+	TObjectPtr<class APlayerBase> OwnerPawn;
+	UPROPERTY()
+	TObjectPtr<class AWarfareController> OwnerPlayerController;
+	UPROPERTY()
+	TObjectPtr<class URegisterInputComponent> RegisterInputComponent;
+	UPROPERTY()
+	TObjectPtr<class UWeaponComponent> WeaponComponent;
+	UPROPERTY()
+	TObjectPtr<class UWeaponPreLoader> WeaponPreLoader;
+
 	bool bInitFlag = false;
+	uint8 InitCount = 10;
+	FTimerHandle InitTimer;
 		
 };

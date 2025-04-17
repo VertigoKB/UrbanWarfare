@@ -28,6 +28,8 @@ public:
 	class USkeletalMeshComponent* GetRifleMesh() const;
 	class USkeletalMeshComponent* GetPistolMesh() const;
 	class UWeaponComponent* GetWeaponComponent() const;
+	class UAttackComponent* GetAttackComponent() const;
+	class UCameraComponent* GetPlayerCamera() const;
 	class UBlueprintConfig* GetBlueprintConfig() const;
 	bool IsPlayerFalling() const;
 protected:

@@ -6,6 +6,6 @@
 void UWeaponDataAsset::InitiallizeValues()
 {
 	RoundInterval = 60.f / RoundPerMinute;
-	CompressedRPM.SetFloat(RoundPerMinute);
-	CompressedDamage.SetFloat(Damage);
+	//CompressedRPM.SetFloat(RoundPerMinute);
+	//CompressedDamage.SetFloat(Damage);
 }

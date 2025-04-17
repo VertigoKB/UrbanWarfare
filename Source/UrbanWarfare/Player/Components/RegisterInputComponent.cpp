@@ -63,7 +63,6 @@ void URegisterInputComponent::BeginPlay()
 			if (InitCount > 10)
 			{
 				//LOG_EFUNC(TEXT("Unable to initialize. Process end."));
-				SetActive(false);
 				GetWorld()->GetTimerManager().ClearTimer(InitTimer);
 			}
 		}
@@ -94,8 +93,11 @@ bool URegisterInputComponent::CachAndInit()
 		return false;
 	}
 
-	//if (!PlayerPawn->IsLocallyControlled())
-	//	return false;
+	if (!PlayerPawn->IsLocallyControlled())
+	{
+		InitCount = 10;
+		return false;
+	}
 
 	return true;
 }
@@ -117,6 +119,8 @@ void URegisterInputComponent::SetupEnhancedInput()
 		Input->BindAction(InputConfig->EquipRifle, ETriggerEvent::Started, this, &URegisterInputComponent::InputEquipRifle);
 		Input->BindAction(InputConfig->EquipPistol, ETriggerEvent::Started, this, &URegisterInputComponent::InputEquipPistol);
 		Input->BindAction(InputConfig->ThrowWeapon, ETriggerEvent::Started, this, &URegisterInputComponent::InputThrowWeapon);
+		Input->BindAction(InputConfig->Attack, ETriggerEvent::Started, this, &URegisterInputComponent::InputAttack);
+		Input->BindAction(InputConfig->Attack, ETriggerEvent::Completed, this, &URegisterInputComponent::InputAttack);
 		//Input->BindAction(InputConfig->Test, ETriggerEvent::Started, this, &URegisterInputComponent::InputTest);
 	}
 }
@@ -199,6 +203,11 @@ void URegisterInputComponent::InputEquipPistol(const FInputActionValue& Value)
 void URegisterInputComponent::InputThrowWeapon(const FInputActionValue& Value)
 {
 	OnThrowWeapon.ExecuteIfBound();
+}
+
+void URegisterInputComponent::InputAttack(const FInputActionValue& Value)
+{
+	OnAttack.ExecuteIfBound();
 }
 
 

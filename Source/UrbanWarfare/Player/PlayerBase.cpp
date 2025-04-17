@@ -59,6 +59,8 @@ USkeletalMeshComponent* APlayerBase::GetThirdMesh() const { return TheThirdMesh;
 USkeletalMeshComponent* APlayerBase::GetRifleMesh() const { return TheRifleMesh; }
 USkeletalMeshComponent* APlayerBase::GetPistolMesh() const { return ThePistolMesh; }
 UWeaponComponent* APlayerBase::GetWeaponComponent() const { return WeaponComponent; }
+UAttackComponent* APlayerBase::GetAttackComponent() const{ return AttackComponent; }
+UCameraComponent* APlayerBase::GetPlayerCamera() const { return TheCamera; }
 UBlueprintConfig* APlayerBase::GetBlueprintConfig() const { return BlueprintConfig; }
 bool APlayerBase::IsPlayerFalling() const { return TheMovement->IsFalling(); }
 

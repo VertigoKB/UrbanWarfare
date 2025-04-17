@@ -11,7 +11,7 @@
 
 DECLARE_DELEGATE_OneParam(FOnInventoryChange, const TArray<FInventoryItem>&)
 DECLARE_DELEGATE_OneParam(FOnLocalPlayerEquipWeapon, EWeaponType)
-
+DECLARE_DELEGATE(FOnWeaponChange)
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class URBANWARFARE_API UWeaponComponent : public UActorComponent
@@ -37,6 +37,8 @@ public:
 	void LootWeapon(const uint8 InWeaponIdNumber, const EWeaponType InType);
 
 	EWeaponType GetEquippedWeaponType() const;
+	inline float GetCurrentDamage() const { return Damage; }
+	inline float GetCurrentAttackInterval() const { return AttackInterval; }
 
 private:
 
@@ -72,6 +74,7 @@ private:
 public:
 	FOnInventoryChange OnInventoryChange;
 	FOnLocalPlayerEquipWeapon OnLocalPlayerEquipWeapon;
+	FOnWeaponChange OnWeaponChange;
 
 protected:
 	UPROPERTY()
@@ -95,6 +98,9 @@ protected:
 	bool bCanLootWeapon = true;
 
 private:
+
+	float Damage = 0.f;
+	float AttackInterval = 0.f;
 
 public:
 	//// Debug

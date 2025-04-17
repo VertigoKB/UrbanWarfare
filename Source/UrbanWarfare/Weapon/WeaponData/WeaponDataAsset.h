@@ -37,7 +37,7 @@ public:
 	TObjectPtr<UTexture2D> WeaponIcon;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	TObjectPtr<class UNiagaraSystem> MuzzleFlash;
+	TObjectPtr<class UParticleSystem> MuzzleFlash;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	EWeaponType WeaponType;
@@ -49,7 +49,7 @@ public:
 	float Damage;
 
 	float RoundInterval;
-	FQuantizedFloat CompressedRPM;
-	FQuantizedFloat CompressedDamage;
+	//FQuantizedFloat CompressedRPM;
+	//FQuantizedFloat CompressedDamage;
 
 };
