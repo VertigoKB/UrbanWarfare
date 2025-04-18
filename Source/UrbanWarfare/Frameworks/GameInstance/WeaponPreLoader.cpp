@@ -64,6 +64,15 @@ UWeaponDataAsset* UWeaponPreLoader::GetWeaponDataByWeaponId(uint8 InNumber)
 {
 	UWeaponDataAsset** TargetData = WeaponDataMap.Find(InNumber);
 
-	// 게임 인스턴스에 존재하지 않는 무기의 데이터를 요청하면, 여기서 중단됩니다.
-	return *TargetData;
+	if (*TargetData)
+		return *TargetData;
+	else
+	{
+		UWeaponDataAsset** ErrorData = WeaponDataMap.Find(1);
+		//UWeaponPreLoader에 잘못된 데이터가 요청되어 ID_1 무기가 반환됨.
+		ensure(false);
+		return *ErrorData;
+	}
+
+
 }
