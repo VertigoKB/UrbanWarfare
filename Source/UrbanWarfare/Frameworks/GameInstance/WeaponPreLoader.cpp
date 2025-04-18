@@ -62,10 +62,13 @@ bool UWeaponPreLoader::LoadWeaponDataAsset()
 
 UWeaponDataAsset* UWeaponPreLoader::GetWeaponDataByWeaponId(uint8 InNumber)
 {
-	UWeaponDataAsset** TargetData = WeaponDataMap.Find(InNumber);
+	
 
-	if (*TargetData)
+	if (WeaponDataMap.Contains(InNumber))
+	{
+		UWeaponDataAsset** TargetData = WeaponDataMap.Find(InNumber);
 		return *TargetData;
+	}
 	else
 	{
 		UWeaponDataAsset** ErrorData = WeaponDataMap.Find(1);
