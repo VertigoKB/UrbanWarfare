@@ -5,6 +5,7 @@
 #include "Camera/PlayerCameraManager.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/PlayerController.h"
+#include "Kismet/GameplayStatics.h"
 #include "DrawDebugHelpers.h"
 
 #include "UrbanWarfare/Player/PlayerBase.h"
@@ -24,6 +25,19 @@ UAttackComponent::UAttackComponent()
 	// ...
 }
 
+void UAttackComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	
+	DOREPLIFETIME(UAttackComponent, bEffectFlag);
+}
+
+void UAttackComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	Super::EndPlay(EndPlayReason);
+	GetWorld()->GetTimerManager().ClearAllTimersForObject(this);
+}
+
 
 // Called when the game starts
 void UAttackComponent::BeginPlay()
@@ -38,69 +52,47 @@ void UAttackComponent::BeginPlay()
 			bInitFlag = InitConsruct();
 			if (bInitFlag)
 			{
-				LOG_NETEFUNC(TEXT("Initialization successfully complete."));
 				OnInitializationComplete();
 				GetWorld()->GetTimerManager().ClearTimer(InitTimer);
 			}
 			else
 			{
 				if (InitCount > 0)
-				{
-					LOG_NETEFUNC(TEXT("Retry initialization. Count: %d"), InitCount--);
-				}
+					InitCount--;
 				else
-				{
-					LOG_NETEFUNC(TEXT("Unable to initialize."));
 					GetWorld()->GetTimerManager().ClearTimer(InitTimer);
-				}
 			}
 
-			}), 0.1f, true);
+			}), 0.2f, true);
 	}
+	else
+		OnInitializationComplete();
 	
 }
 
 bool UAttackComponent::InitConsruct()
 {
-	bool IsAuth = GetOwner()->HasAuthority();
-	bool IsLocal = GetOwner<APlayerBase>()->IsLocallyControlled();
-	FString WhatName = GetOwner()->GetName();
+	OwnerPawn = GetOwner<APlayerBase>();
+	if (!OwnerPawn)
+		return false;
 
-	switch (true)
-	{
-	case true:
-	default:
-	{
-		OwnerPawn = GetOwner<APlayerBase>();
-		if (!OwnerPawn)
-		{
-			LOG_NETEFUNC(TEXT("Initialization failed: OwnerPawn"));
-			break;
-		}
-		OwnerPlayerController = OwnerPawn->GetController<AWarfareController>();
-		if (!OwnerPlayerController)
-		{
-			LOG_NETEFUNC(TEXT("Initialization failed: OwnerPlayerController"));
-			break;
-		}
-		RegisterInputComponent = OwnerPawn->GetRegInputComp();
-		if (!RegisterInputComponent)
-		{
-			LOG_NETEFUNC(TEXT("Initialization failed: RegisterInputComponent"));
-			break;
-		}
-		WeaponComponent = OwnerPawn->GetWeaponComponent();
-		if (!WeaponComponent)
-		{
-			LOG_NETEFUNC(TEXT("Initialization failed: WeaponComponent"));
-			break;
-		}
+	OwnerPlayerController = GetWorld()->GetFirstPlayerController();
+	if (!OwnerPlayerController)
+		return false;
 
-		return true;
-		break;
-	}
-	}
-	return false;
+	RegisterInputComponent = OwnerPawn->GetRegInputComp();
+	if (!RegisterInputComponent)
+		return false;
+
+	WeaponComponent = OwnerPawn->GetWeaponComponent();
+	if (!WeaponComponent)
+		return false;
+
+	WeaponPreLoader = GetWorld()->GetGameInstance()->GetSubsystem<UWeaponPreLoader>();
+	if (!WeaponPreLoader)
+		return false;
+
+	return true;
 }
 
 void UAttackComponent::OnInitializationComplete()
@@ -113,38 +105,40 @@ void UAttackComponent::Server_TriggerAttack_Implementation()
 {
 	bIsTriggeredAttack = !bIsTriggeredAttack;
 
-	switch (bIsTriggeredAttack)
+	if (bIsTriggeredAttack)
 	{
-	case true:
 		AttackInterval = WeaponComponent->GetCurrentAttackInterval();
 		Damage = WeaponComponent->GetCurrentDamage();
+		bEffectFlag = true;
+		OnRep_bEffectFlag();
 		GetWorld()->GetTimerManager().SetTimer(RoundIntervalHandle, this, &UAttackComponent::AttackLineTrace, AttackInterval, true, 0.f);
-		break;
-	case false:
+	}
+	else
+	{
+		bEffectFlag = false;
+		OnRep_bEffectFlag();
 		GetWorld()->GetTimerManager().ClearTimer(RoundIntervalHandle);
-		break;
 	}
 }
 
 void UAttackComponent::AttackLineTrace()
 {
-	LOG_SIMPLE(TEXT("Action"));
 	FHitResult HitResult;
 	//FVector StartLocation = OwnerPlayerController->PlayerCameraManager->GetCameraLocation();
 	FVector StartLocation = OwnerPawn->GetPlayerCamera()->GetComponentLocation();
-	FVector TargetLocation = OwnerPawn->GetActorForwardVector() * 20000.f;
+	FVector TargetLocation = OwnerPawn->GetPlayerCamera()->GetForwardVector() * 20000.f;
 	FVector EndLocation = StartLocation + TargetLocation;
 
 	FCollisionQueryParams CollisionParams;
 	CollisionParams.AddIgnoredActor(GetOwner());
 
-	bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECollisionChannel::ECC_Visibility, CollisionParams);
-	
+	bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECollisionChannel::ECC_Pawn, CollisionParams);
+
 	DrawDebugLine(GetWorld(), StartLocation, EndLocation, FColor::Red, false, 1.f);
 	if (bHit)
 	{
 		FString TargetActor = *HitResult.GetActor()->GetActorNameOrLabel();
-		LOG_SIMPLE(TEXT("Test: hit Actor is %s"), *TargetActor);
+		//LOG_SIMPLE(TEXT("Test: hit Actor is %s"), *TargetActor);
 	}
 }
 
@@ -162,11 +156,51 @@ void UAttackComponent::OnWeaponChange()
 	}
 }
 
-
-void UAttackComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
+void UAttackComponent::OnRep_bEffectFlag()
 {
-	Super::EndPlay(EndPlayReason);
-	GetWorld()->GetTimerManager().ClearAllTimersForObject(this);
+	DebugFlowA = true;
+
+	if (bEffectFlag)
+	{
+		DebugFlowB = true;
+		DebugFlowC = false;
+
+		uint8 EquippedWeaponNumber = WeaponComponent->GetEquippedWeaponId();
+		UWeaponDataAsset* EquippedWeaponData = WeaponPreLoader->GetWeaponDataByWeaponId(EquippedWeaponNumber);
+
+		ParticleToPlay = EquippedWeaponData->MuzzleFlash;
+
+		ComponentToPlay = nullptr;
+		switch (EquippedWeaponData->WeaponType)
+		{
+		case EWeaponType::Rifle:
+			ComponentToPlay = OwnerPawn->GetRifleMesh();
+			break;
+		case EWeaponType::Pistol:
+			ComponentToPlay = OwnerPawn->GetPistolMesh();
+			break;
+		default:
+			ComponentToPlay = OwnerPawn->GetRifleMesh();
+			break;
+		}
+
+		AttackInterval = WeaponComponent->GetCurrentAttackInterval();
+		GetWorld()->GetTimerManager().SetTimer(EffectHandle, FTimerDelegate::CreateLambda([this]() {
+
+			UGameplayStatics::SpawnEmitterAttached(ParticleToPlay, ComponentToPlay, FName("MuzzleSocket"),
+				FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::KeepRelativeOffset, true,
+				EPSCPoolMethod::AutoRelease);
+
+
+			}), AttackInterval, true);
+	}
+	else
+	{
+		GetWorld()->GetTimerManager().ClearTimer(EffectHandle);
+		DebugFlowA = false;
+		DebugFlowB = false;
+		DebugFlowC = true;
+	}
 }
 
 // Called every frame

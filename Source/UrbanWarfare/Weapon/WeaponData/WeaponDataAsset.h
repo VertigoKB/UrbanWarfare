@@ -24,31 +24,36 @@ public:
 
 	void InitiallizeValues();
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	UPROPERTY(EditDefaultsOnly)
 	FName WeaponName;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	UPROPERTY(EditDefaultsOnly)
 	uint8 WeaponIdNumber;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	UPROPERTY(EditDefaultsOnly)
 	TSoftObjectPtr<USkeletalMesh> WeaponMesh;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<UTexture2D> WeaponIcon;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<class UParticleSystem> MuzzleFlash;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	UPROPERTY(EditDefaultsOnly)
 	EWeaponType WeaponType;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	UPROPERTY(EditDefaultsOnly)
 	float RoundPerMinute;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	UPROPERTY(EditDefaultsOnly)
 	float Damage;
 
+	UPROPERTY(EditDefaultsOnly)
+
 	float RoundInterval;
+
+	UPROPERTY(EditDefaultsOnly)
+	uint8 MaxAmmoPerMag;
 	//FQuantizedFloat CompressedRPM;
 	//FQuantizedFloat CompressedDamage;
 

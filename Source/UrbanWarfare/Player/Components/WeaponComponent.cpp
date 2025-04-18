@@ -84,6 +84,7 @@ void UWeaponComponent::LootWeapon(const uint8 InWeaponIdNumber, const EWeaponTyp
 }
 
 EWeaponType UWeaponComponent::GetEquippedWeaponType() const { return EquippedWeaponType; }
+uint8 UWeaponComponent::GetEquippedWeaponId() const { return EquippedWeaponId; }
 
 bool UWeaponComponent::InitConstruct()
 {

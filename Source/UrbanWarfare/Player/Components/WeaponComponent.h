@@ -37,6 +37,7 @@ public:
 	void LootWeapon(const uint8 InWeaponIdNumber, const EWeaponType InType);
 
 	EWeaponType GetEquippedWeaponType() const;
+	uint8 GetEquippedWeaponId() const;
 	inline float GetCurrentDamage() const { return Damage; }
 	inline float GetCurrentAttackInterval() const { return AttackInterval; }
 

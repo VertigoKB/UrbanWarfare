@@ -16,6 +16,9 @@ public:
 	// Sets default values for this component's properties
 	UAttackComponent();
 
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	//virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason);
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
@@ -30,26 +33,32 @@ private:
 	void AttackLineTrace();
 
 	void OnWeaponChange();
-public:	
-	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason);
-	//virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-public:
+	UFUNCTION()
+	void OnRep_bEffectFlag();
 
 protected:
 
 private:
+	UPROPERTY(ReplicatedUsing = OnRep_bEffectFlag)
+	bool bEffectFlag = false;
+	UPROPERTY()
+	TObjectPtr<USkeletalMeshComponent> ComponentToPlay;
+	UPROPERTY()
+	TObjectPtr<UParticleSystem> ParticleToPlay;
+
 	bool bIsTriggeredAttack = false;
 	float Damage = 0.f;
 	float AttackInterval = 0.1f;
 	FTimerHandle RoundIntervalHandle;
+	FTimerHandle EffectHandle;
 	
 
 private:
 	UPROPERTY()
 	TObjectPtr<class APlayerBase> OwnerPawn;
 	UPROPERTY()
-	TObjectPtr<class AWarfareController> OwnerPlayerController;
+	TObjectPtr<class APlayerController> OwnerPlayerController;
 	UPROPERTY()
 	TObjectPtr<class URegisterInputComponent> RegisterInputComponent;
 	UPROPERTY()
@@ -60,5 +69,26 @@ private:
 	bool bInitFlag = false;
 	uint8 InitCount = 10;
 	FTimerHandle InitTimer;
+
+public:
+	UPROPERTY(BlueprintReadWrite)
+	bool DebugFlowA = false;
+	UPROPERTY(BlueprintReadWrite)
+	bool DebugFlowB = false;
+	UPROPERTY(BlueprintReadWrite)
+	bool DebugFlowC = false;
+	UPROPERTY(BlueprintReadWrite)
+	bool DebugFailedInitA = false;
+	UPROPERTY(BlueprintReadWrite)
+	bool DebugFailedInitB = false;
+	UPROPERTY(BlueprintReadWrite)
+	bool DebugFailedInitC = false;
+	UPROPERTY(BlueprintReadWrite)
+	bool DebugFailedInitD = false;
+	UPROPERTY(BlueprintReadWrite)
+	bool DebugFailedInitE = false;
+
+	
+
 		
 };
