@@ -29,7 +29,8 @@ void UAttackComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	
-	DOREPLIFETIME(UAttackComponent, bEffectFlag);
+	DOREPLIFETIME(UAttackComponent, bAutoModeEffectFlag);
+	DOREPLIFETIME(UAttackComponent, bSingleModeEffectFlag);
 }
 
 void UAttackComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -103,22 +104,58 @@ void UAttackComponent::OnInitializationComplete()
 
 void UAttackComponent::Server_TriggerAttack_Implementation()
 {
-	bIsTriggeredAttack = !bIsTriggeredAttack;
+	uint8 EquippedWeaponNumber = WeaponComponent->GetEquippedWeaponId();
+	UWeaponDataAsset* EquippedWeaponData = WeaponPreLoader->GetWeaponDataByWeaponId(EquippedWeaponNumber);
 
-	if (bIsTriggeredAttack)
+	bIsAttackTriggered = !bIsAttackTriggered;
+
+	switch (EquippedWeaponData->FiringMode)
 	{
-		AttackInterval = WeaponComponent->GetCurrentAttackInterval();
-		Damage = WeaponComponent->GetCurrentDamage();
-		bEffectFlag = true;
-		OnRep_bEffectFlag();
-		GetWorld()->GetTimerManager().SetTimer(RoundIntervalHandle, this, &UAttackComponent::AttackLineTrace, AttackInterval, true, 0.f);
+	case EFiringMode::Single:
+
+		if (bIsAttackTriggered && bSingleAttackActive)
+		{
+			bSingleAttackActive = false;
+
+			AttackInterval = WeaponComponent->GetCurrentAttackInterval();
+			Damage = WeaponComponent->GetCurrentDamage();
+
+			AttackLineTrace();
+
+			bSingleModeEffectFlag = !bSingleModeEffectFlag;
+			OnRep_bSingleModeEffectFlag();
+
+			GetWorld()->GetTimerManager().SetTimer(RoundIntervalHandle, FTimerDelegate::CreateLambda([this]() {
+				bSingleAttackActive = true;
+				}), AttackInterval, false);
+		}
+
+		break;
+	case EFiringMode::Auto:
+
+		if (bIsAttackTriggered)
+		{
+			AttackInterval = WeaponComponent->GetCurrentAttackInterval();
+			Damage = WeaponComponent->GetCurrentDamage();
+
+			bAutoModeEffectFlag = true;
+			OnRep_bAutoModeEffectFlag();
+			GetWorld()->GetTimerManager().SetTimer(RoundIntervalHandle, this, &UAttackComponent::AttackLineTrace, AttackInterval, true, 0.f);
+		}
+		else
+		{
+			bAutoModeEffectFlag = false;
+			OnRep_bAutoModeEffectFlag();
+			GetWorld()->GetTimerManager().ClearTimer(RoundIntervalHandle);
+		}
+
+		break;
+	case EFiringMode::Burst:
+		break;
+	case EFiringMode::Manual:
+		break;
 	}
-	else
-	{
-		bEffectFlag = false;
-		OnRep_bEffectFlag();
-		GetWorld()->GetTimerManager().ClearTimer(RoundIntervalHandle);
-	}
+	
 }
 
 void UAttackComponent::AttackLineTrace()
@@ -145,7 +182,7 @@ void UAttackComponent::AttackLineTrace()
 void UAttackComponent::OnWeaponChange()
 {
 	if (GetOwner()->HasAuthority() &&
-		bIsTriggeredAttack)
+		bIsAttackTriggered)
 	{
 		if (GetWorld()->GetTimerManager().IsTimerActive(RoundIntervalHandle))
 			GetWorld()->GetTimerManager().ClearTimer(RoundIntervalHandle);
@@ -156,50 +193,53 @@ void UAttackComponent::OnWeaponChange()
 	}
 }
 
-void UAttackComponent::OnRep_bEffectFlag()
+void UAttackComponent::OnRep_bAutoModeEffectFlag()
 {
-	DebugFlowA = true;
+	if (!bInitFlag)
+		return;
 
-	if (bEffectFlag)
+	if (bAutoModeEffectFlag)
 	{
-		DebugFlowB = true;
-		DebugFlowC = false;
-
 		uint8 EquippedWeaponNumber = WeaponComponent->GetEquippedWeaponId();
 		UWeaponDataAsset* EquippedWeaponData = WeaponPreLoader->GetWeaponDataByWeaponId(EquippedWeaponNumber);
 
 		ParticleToPlay = EquippedWeaponData->MuzzleFlash;
-
-		ComponentToPlay = nullptr;
-		switch (EquippedWeaponData->WeaponType)
-		{
-		case EWeaponType::Rifle:
-			ComponentToPlay = OwnerPawn->GetRifleMesh();
-			break;
-		case EWeaponType::Pistol:
-			ComponentToPlay = OwnerPawn->GetPistolMesh();
-			break;
-		default:
-			ComponentToPlay = OwnerPawn->GetRifleMesh();
-			break;
-		}
+		ComponentToPlay = OwnerPawn->GetWeaponMesh();
 
 		AttackInterval = WeaponComponent->GetCurrentAttackInterval();
 		GetWorld()->GetTimerManager().SetTimer(EffectHandle, FTimerDelegate::CreateLambda([this]() {
 
-			UGameplayStatics::SpawnEmitterAttached(ParticleToPlay, ComponentToPlay, FName("MuzzleSocket"),
-				FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::KeepRelativeOffset, true,
-				EPSCPoolMethod::AutoRelease);
-
-
+			if (ComponentToPlay->SkeletalMesh)
+			{
+				UGameplayStatics::SpawnEmitterAttached(ParticleToPlay, ComponentToPlay, FName("MuzzleSocket"),
+					FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::KeepRelativeOffset, true,
+					EPSCPoolMethod::AutoRelease);
+			}
+			
 			}), AttackInterval, true);
 	}
 	else
 	{
 		GetWorld()->GetTimerManager().ClearTimer(EffectHandle);
-		DebugFlowA = false;
-		DebugFlowB = false;
-		DebugFlowC = true;
+	}
+}
+
+void UAttackComponent::OnRep_bSingleModeEffectFlag()
+{
+	if (!bInitFlag)
+		return;
+
+	uint8 EquippedWeaponNumber = WeaponComponent->GetEquippedWeaponId();
+	UWeaponDataAsset* EquippedWeaponData = WeaponPreLoader->GetWeaponDataByWeaponId(EquippedWeaponNumber);
+
+	ParticleToPlay = EquippedWeaponData->MuzzleFlash;
+	ComponentToPlay = OwnerPawn->GetWeaponMesh();
+
+	if (ComponentToPlay->SkeletalMesh)
+	{
+		UGameplayStatics::SpawnEmitterAttached(ParticleToPlay, ComponentToPlay, FName("MuzzleSocket"),
+			FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::KeepRelativeOffset, true,
+			EPSCPoolMethod::AutoRelease);
 	}
 }
 

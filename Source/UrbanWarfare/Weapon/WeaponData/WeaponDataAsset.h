@@ -43,17 +43,18 @@ public:
 	EWeaponType WeaponType;
 
 	UPROPERTY(EditDefaultsOnly)
+	EFiringMode FiringMode;
+
+	UPROPERTY(EditDefaultsOnly)
 	float RoundPerMinute;
 
 	UPROPERTY(EditDefaultsOnly)
 	float Damage;
 
 	UPROPERTY(EditDefaultsOnly)
+	uint8 MaxAmmoPerMag;
 
 	float RoundInterval;
-
-	UPROPERTY(EditDefaultsOnly)
-	uint8 MaxAmmoPerMag;
 	//FQuantizedFloat CompressedRPM;
 	//FQuantizedFloat CompressedDamage;
 

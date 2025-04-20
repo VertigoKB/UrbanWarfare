@@ -35,19 +35,27 @@ private:
 	void OnWeaponChange();
 
 	UFUNCTION()
-	void OnRep_bEffectFlag();
+	void OnRep_bAutoModeEffectFlag();
+	UFUNCTION()
+	void OnRep_bSingleModeEffectFlag();
 
 protected:
 
 private:
-	UPROPERTY(ReplicatedUsing = OnRep_bEffectFlag)
-	bool bEffectFlag = false;
+	UPROPERTY(ReplicatedUsing = OnRep_bAutoModeEffectFlag)
+	bool bAutoModeEffectFlag = false;
+
+	// This replicated variable is used solely to invoke a callback; its boolean value carries no intrinsic meaning.
+	UPROPERTY(ReplicatedUsing = OnRep_bSingleModeEffectFlag)
+	bool bSingleModeEffectFlag = false;	
+
 	UPROPERTY()
 	TObjectPtr<USkeletalMeshComponent> ComponentToPlay;
 	UPROPERTY()
 	TObjectPtr<UParticleSystem> ParticleToPlay;
 
-	bool bIsTriggeredAttack = false;
+	bool bIsAttackTriggered = false;
+	bool bSingleAttackActive = true;	// SingleAttack cool time.
 	float Damage = 0.f;
 	float AttackInterval = 0.1f;
 	FTimerHandle RoundIntervalHandle;
@@ -70,23 +78,23 @@ private:
 	uint8 InitCount = 10;
 	FTimerHandle InitTimer;
 
-public:
-	UPROPERTY(BlueprintReadWrite)
-	bool DebugFlowA = false;
-	UPROPERTY(BlueprintReadWrite)
-	bool DebugFlowB = false;
-	UPROPERTY(BlueprintReadWrite)
-	bool DebugFlowC = false;
-	UPROPERTY(BlueprintReadWrite)
-	bool DebugFailedInitA = false;
-	UPROPERTY(BlueprintReadWrite)
-	bool DebugFailedInitB = false;
-	UPROPERTY(BlueprintReadWrite)
-	bool DebugFailedInitC = false;
-	UPROPERTY(BlueprintReadWrite)
-	bool DebugFailedInitD = false;
-	UPROPERTY(BlueprintReadWrite)
-	bool DebugFailedInitE = false;
+//public:
+//	UPROPERTY(BlueprintReadWrite)
+//	bool DebugFlowA = false;
+//	UPROPERTY(BlueprintReadWrite)
+//	bool DebugFlowB = false;
+//	UPROPERTY(BlueprintReadWrite)
+//	bool DebugFlowC = false;
+//	UPROPERTY(BlueprintReadWrite)
+//	bool DebugFailedInitA = false;
+//	UPROPERTY(BlueprintReadWrite)
+//	bool DebugFailedInitB = false;
+//	UPROPERTY(BlueprintReadWrite)
+//	bool DebugFailedInitC = false;
+//	UPROPERTY(BlueprintReadWrite)
+//	bool DebugFailedInitD = false;
+//	UPROPERTY(BlueprintReadWrite)
+//	bool DebugFailedInitE = false;
 
 	
 

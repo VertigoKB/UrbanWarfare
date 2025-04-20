@@ -25,13 +25,17 @@ public:
 	class UPlayerSoundComponent* GetSoundPlayer() const;
 	class USkeletalMeshComponent* GetTheMesh() const;
 	class USkeletalMeshComponent* GetThirdMesh() const;
-	class USkeletalMeshComponent* GetRifleMesh() const;
-	class USkeletalMeshComponent* GetPistolMesh() const;
+	/*class USkeletalMeshComponent* GetRifleMesh() const;
+	class USkeletalMeshComponent* GetPistolMesh() const;*/
+	class USkeletalMeshComponent* GetWeaponMesh() const;
 	class UWeaponComponent* GetWeaponComponent() const;
 	class UAttackComponent* GetAttackComponent() const;
 	class UCameraComponent* GetPlayerCamera() const;
 	class UBlueprintConfig* GetBlueprintConfig() const;
 	bool IsPlayerFalling() const;
+
+	void AttachWeaponMeshToRifle();
+	void AttachWeaponMeshToPistol();
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -89,13 +93,7 @@ protected:
 	TObjectPtr<class USkeletalMeshComponent> TheThirdMesh;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon Mesh")
-	TObjectPtr<class USkeletalMeshComponent> TheRifleMesh;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon Mesh")
-	TObjectPtr<class USkeletalMeshComponent> ThePistolMesh;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon Mesh")
-	TObjectPtr<class USkeletalMeshComponent> RifleHandMesh;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon Mesh")
-	TObjectPtr<class USkeletalMeshComponent> PistolHandMesh;
+	TObjectPtr<class USkeletalMeshComponent> WeaponMesh;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Camera")
 	TObjectPtr<class USpringArmComponent> TheSpringArm;
@@ -119,11 +117,6 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Custom Components")
 	TObjectPtr<class UAttackComponent> AttackComponent;
-protected:
-	// Editable Constant
-
-	UPROPERTY(EditDefaultsOnly, Category = "UrbanWarfare")
-	bool DebugCamera = false;
 
 public:
 	UFUNCTION(BlueprintImplementableEvent)

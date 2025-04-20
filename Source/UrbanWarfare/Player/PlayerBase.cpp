@@ -56,13 +56,24 @@ UPlayerBehaviorComponent* APlayerBase::GetPlayerBehavior() const { return Player
 UPlayerSoundComponent* APlayerBase::GetSoundPlayer() const { return PlayerSoundComponent; }
 USkeletalMeshComponent* APlayerBase::GetTheMesh() const { return TheMesh; }
 USkeletalMeshComponent* APlayerBase::GetThirdMesh() const { return TheThirdMesh; }
-USkeletalMeshComponent* APlayerBase::GetRifleMesh() const { return TheRifleMesh; }
-USkeletalMeshComponent* APlayerBase::GetPistolMesh() const { return ThePistolMesh; }
+USkeletalMeshComponent* APlayerBase::GetWeaponMesh() const { return WeaponMesh; }
 UWeaponComponent* APlayerBase::GetWeaponComponent() const { return WeaponComponent; }
 UAttackComponent* APlayerBase::GetAttackComponent() const{ return AttackComponent; }
 UCameraComponent* APlayerBase::GetPlayerCamera() const { return TheCamera; }
 UBlueprintConfig* APlayerBase::GetBlueprintConfig() const { return BlueprintConfig; }
 bool APlayerBase::IsPlayerFalling() const { return TheMovement->IsFalling(); }
+
+void APlayerBase::AttachWeaponMeshToRifle()
+{
+	FAttachmentTransformRules Rules = FAttachmentTransformRules(EAttachmentRule::KeepRelative, true);
+	WeaponMesh->AttachToComponent(TheThirdMesh, Rules, FName("RifleSocket"));
+}
+
+void APlayerBase::AttachWeaponMeshToPistol()
+{
+	FAttachmentTransformRules Rules = FAttachmentTransformRules(EAttachmentRule::KeepRelative, true);
+	WeaponMesh->AttachToComponent(TheThirdMesh, Rules, FName("PistolSocket"));
+}
 
 // Called when the game starts or when spawned
 void APlayerBase::BeginPlay()
@@ -78,8 +89,7 @@ void APlayerBase::BeginPlay()
 	{
 		FAttachmentTransformRules Rules = FAttachmentTransformRules(EAttachmentRule::KeepRelative, true);
 
-		TheRifleMesh->AttachToComponent(TheMesh, Rules, FName("RifleSocket"));
-		ThePistolMesh->AttachToComponent(TheMesh, Rules, FName("PistolSocket"));
+		WeaponMesh->AttachToComponent(TheThirdMesh, Rules, FName("RifleSocket"));
 	}
 	
 }
@@ -151,11 +161,8 @@ void APlayerBase::SetupBasicComponents()
 	TheThirdMesh->bOwnerNoSee = true;
 	TheThirdMesh->SetCastHiddenShadow(true);
 
-	TheRifleMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("RifleMesh"));
-	TheRifleMesh->SetupAttachment(TheThirdMesh, FName("RifleSocket"));
-
-	ThePistolMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("PistolMesh"));
-	ThePistolMesh->SetupAttachment(TheThirdMesh, FName("PistolSocket"));
+	WeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("WeaponMesh"));
+	WeaponMesh->SetupAttachment(TheThirdMesh, FName("RifleSocket"));
 
 	TheSpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
 	TheSpringArm->SetupAttachment(TheMesh);
@@ -191,9 +198,6 @@ void APlayerBase::SetupMesh()
 		TheSpringArm->AttachToComponent(TheMesh, FAttachmentTransformRules::KeepRelativeTransform, TEXT("CameraSocket"));
 
 	TheMesh->HideBoneByName(TEXT("head"), PBO_None);
-
-	if (DebugCamera)
-		TheSpringArm->TargetArmLength = 600.f;
 }
 
 //void APlayerBase::SetupFirstPersonViewSocket()

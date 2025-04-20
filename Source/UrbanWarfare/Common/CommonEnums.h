@@ -27,3 +27,12 @@ enum class EWeaponItem : uint8
 	AK47,
 	M4A1
 };
+
+UENUM()
+enum class EFiringMode : uint8
+{
+	Single = 0,
+	Auto,
+	Burst,
+	Manual
+};

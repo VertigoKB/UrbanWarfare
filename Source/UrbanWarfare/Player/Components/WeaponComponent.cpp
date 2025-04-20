@@ -131,8 +131,7 @@ void UWeaponComponent::OnRep_EquippedWeaponId()
 {
 	if (EquippedWeaponId == 0)
 	{
-		GetOwner<APlayerBase>()->GetRifleMesh()->SetSkeletalMesh(nullptr);
-		GetOwner<APlayerBase>()->GetPistolMesh()->SetSkeletalMesh(nullptr);
+		GetOwner<APlayerBase>()->GetWeaponMesh()->SetVisibility(false);
 		return;
 	}
 
@@ -146,16 +145,17 @@ void UWeaponComponent::OnRep_EquippedWeaponId()
 		switch (TempWeaponData->WeaponType)
 		{
 		case EWeaponType::UnArmed:
-			GetOwner<APlayerBase>()->GetRifleMesh()->SetSkeletalMesh(nullptr);
-			GetOwner<APlayerBase>()->GetPistolMesh()->SetSkeletalMesh(nullptr);
+			GetOwner<APlayerBase>()->GetWeaponMesh()->SetVisibility(false);
 			break;
 		case EWeaponType::Rifle:
-			GetOwner<APlayerBase>()->GetRifleMesh()->SetSkeletalMesh(TempWeaponData->WeaponMesh.Get());
-			GetOwner<APlayerBase>()->GetPistolMesh()->SetSkeletalMesh(nullptr);
+			GetOwner<APlayerBase>()->GetWeaponMesh()->SetVisibility(true);
+			GetOwner<APlayerBase>()->GetWeaponMesh()->SetSkeletalMesh(TempWeaponData->WeaponMesh.Get());
+			GetOwner<APlayerBase>()->AttachWeaponMeshToRifle();
 			break;
 		case EWeaponType::Pistol:
-			GetOwner<APlayerBase>()->GetRifleMesh()->SetSkeletalMesh(nullptr);
-			GetOwner<APlayerBase>()->GetPistolMesh()->SetSkeletalMesh(TempWeaponData->WeaponMesh.Get());
+			GetOwner<APlayerBase>()->GetWeaponMesh()->SetVisibility(true);
+			GetOwner<APlayerBase>()->GetWeaponMesh()->SetSkeletalMesh(TempWeaponData->WeaponMesh.Get());
+			GetOwner<APlayerBase>()->AttachWeaponMeshToPistol();
 			break;
 		}
 	}
