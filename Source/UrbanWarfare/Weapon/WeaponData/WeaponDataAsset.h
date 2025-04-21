@@ -40,6 +40,9 @@ public:
 	TObjectPtr<class UParticleSystem> MuzzleFlash;
 
 	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<USoundBase> SingleGunShotSound;
+
+	UPROPERTY(EditDefaultsOnly)
 	EWeaponType WeaponType;
 
 	UPROPERTY(EditDefaultsOnly)

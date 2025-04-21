@@ -16,8 +16,15 @@ class URBANWARFARE_API UGunShotPlayer : public UObject
 	
 public:
 	void ExternalInitialize(class APlayerBase* const InOwnerPawn);
+
+private:
 	virtual void BeginDestroy() override;
 	void InitConstruct();
+
+	UFUNCTION()
+	void PlayGunShotSound();
+	UFUNCTION()
+	void OnWeaponChange();
 
 private:
 	UPROPERTY()
@@ -28,6 +35,11 @@ private:
 	TObjectPtr<class UWeaponComponent> WeaponComponent;
 	UPROPERTY()
 	TObjectPtr<class UAttackComponent> AttackComponent;
+	UPROPERTY()
+	TObjectPtr<class UWeaponPreLoader> WeaponPreLoader;
+
+	UPROPERTY()
+	TObjectPtr<USoundBase> GunShotSound;
 
 	bool bIsInitialized = false;
 	FTimerHandle InitTimer;

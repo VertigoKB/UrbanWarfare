@@ -2,9 +2,13 @@
 
 
 #include "GunShotPlayer.h"
+#include "Kismet/GameplayStatics.h"
+
 #include "UrbanWarfare/Player/PlayerBase.h"
 #include "UrbanWarfare/Player/Components/AttackComponent.h"
 #include "UrbanWarfare/Player/Components/WeaponComponent.h"
+#include "UrbanWarfare/Weapon/WeaponData/WeaponDataAsset.h"
+#include "UrbanWarfare/Frameworks/GameInstance/WeaponPreLoader.h"
 #include "UrbanWarfare/Common/WarfareLogger.h"
 
 void UGunShotPlayer::ExternalInitialize(APlayerBase* const InOwnerPawn)
@@ -59,4 +63,20 @@ void UGunShotPlayer::InitConstruct()
 	LOG_EFUNC(TEXT("The object successfully initialized."));
 	bIsInitialized = true;
 	World->GetTimerManager().ClearTimer(InitTimer);
+
+	WeaponComponent->OnWeaponChange.BindUObject(this, &UGunShotPlayer::OnWeaponChange);
+	AttackComponent->OnFire.BindUObject(this, &UGunShotPlayer::PlayGunShotSound);
+}
+
+void UGunShotPlayer::PlayGunShotSound()
+{
+	UGameplayStatics::PlaySoundAtLocation(World, GunShotSound, OwnerPawn->GetActorLocation());
+}
+
+void UGunShotPlayer::OnWeaponChange()
+{
+	uint8 WeaponId = WeaponComponent->GetEquippedWeaponId();
+	UWeaponDataAsset* CurrentWeaponData = World->GetGameInstance()->GetSubsystem<UWeaponPreLoader>()->GetWeaponDataByWeaponId(WeaponId);
+
+	GunShotSound = CurrentWeaponData->SingleGunShotSound;
 }

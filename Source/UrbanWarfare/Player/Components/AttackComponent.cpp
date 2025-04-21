@@ -135,12 +135,14 @@ void UAttackComponent::Server_TriggerAttack_Implementation()
 
 		if (bIsAttackTriggered)
 		{
+			AttackLineTrace();
+
 			AttackInterval = WeaponComponent->GetCurrentAttackInterval();
 			Damage = WeaponComponent->GetCurrentDamage();
 
 			bAutoModeEffectFlag = true;
 			OnRep_bAutoModeEffectFlag();
-			GetWorld()->GetTimerManager().SetTimer(RoundIntervalHandle, this, &UAttackComponent::AttackLineTrace, AttackInterval, true, 0.f);
+			GetWorld()->GetTimerManager().SetTimer(RoundIntervalHandle, this, &UAttackComponent::AttackLineTrace, AttackInterval, true);
 		}
 		else
 		{
@@ -207,8 +209,17 @@ void UAttackComponent::OnRep_bAutoModeEffectFlag()
 		ComponentToPlay = OwnerPawn->GetWeaponMesh();
 
 		AttackInterval = WeaponComponent->GetCurrentAttackInterval();
+
+		UGameplayStatics::SpawnEmitterAttached(ParticleToPlay, ComponentToPlay, FName("MuzzleSocket"),
+			FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::KeepRelativeOffset, true,
+			EPSCPoolMethod::AutoRelease);
+
+		OnFire.ExecuteIfBound();
+
 		GetWorld()->GetTimerManager().SetTimer(EffectHandle, FTimerDelegate::CreateLambda([this]() {
 
+
+			OnFire.ExecuteIfBound();
 			UGameplayStatics::SpawnEmitterAttached(ParticleToPlay, ComponentToPlay, FName("MuzzleSocket"),
 				FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::KeepRelativeOffset, true,
 				EPSCPoolMethod::AutoRelease);
@@ -231,6 +242,8 @@ void UAttackComponent::OnRep_bSingleModeEffectFlag()
 
 	ParticleToPlay = EquippedWeaponData->MuzzleFlash;
 	ComponentToPlay = OwnerPawn->GetWeaponMesh();
+
+	OnFire.ExecuteIfBound();
 
 	UGameplayStatics::SpawnEmitterAttached(ParticleToPlay, ComponentToPlay, FName("MuzzleSocket"),
 		FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::KeepRelativeOffset, true,
