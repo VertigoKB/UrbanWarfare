@@ -21,62 +21,13 @@ protected:
 	virtual void BeginPlay() override;
 
 public:	
-	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+	//virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	virtual void InitializeComponent() override;
-
-	//virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
-
-private:
-	UFUNCTION()
-	bool InitConstruct();
-
-protected:
-
-	UFUNCTION()
-	void PlayFootStepSound(const float SpeedSquared);
-	UFUNCTION()
-	void StopFootStepSound();
-
-protected:
-	UPROPERTY()
-	TObjectPtr<class APlayerBase> ThePlayer;
-
-	UPROPERTY()
-	TObjectPtr<class URegisterInputComponent> RegInputComp;
-
-	UPROPERTY()
-	TObjectPtr<class UPlayerBehaviorComponent> PlayerBehavior;
-
-	UPROPERTY()
-	TSoftObjectPtr<USoundBase> FootStepRef;
-
-	UPROPERTY()
-	TObjectPtr<class UBlueprintConfig> BlueprintConfig;
-
-	bool bAuthority = false;
-
-public:
-
-	bool bInitFlag = false;
-
-protected:
-	float FootStepSoundInterval = RunInterval;
-	float WalkInterval = 1.f;
-	float RunInterval = 0.42f;
-
-	float MinVelocitySquared = 40.f * 40.f;
-
-	bool bPlayingFootSteps = false;
 private:
 	UPROPERTY()
-	USoundBase* LoadedFootSteps;
-
-	FTimerHandle FootStepHandle;
-
-	FTimerHandle InitTimer;
-
-	uint8 InitCount = 1;
+	TObjectPtr<class UFootStepPlayer> FootStepPlayer;
+	UPROPERTY()
+	TObjectPtr<class UGunShotPlayer> GunShotPlayer;
 };

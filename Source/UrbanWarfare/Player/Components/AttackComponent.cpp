@@ -209,13 +209,10 @@ void UAttackComponent::OnRep_bAutoModeEffectFlag()
 		AttackInterval = WeaponComponent->GetCurrentAttackInterval();
 		GetWorld()->GetTimerManager().SetTimer(EffectHandle, FTimerDelegate::CreateLambda([this]() {
 
-			if (ComponentToPlay->SkeletalMesh)
-			{
-				UGameplayStatics::SpawnEmitterAttached(ParticleToPlay, ComponentToPlay, FName("MuzzleSocket"),
-					FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::KeepRelativeOffset, true,
-					EPSCPoolMethod::AutoRelease);
-			}
-			
+			UGameplayStatics::SpawnEmitterAttached(ParticleToPlay, ComponentToPlay, FName("MuzzleSocket"),
+				FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::KeepRelativeOffset, true,
+				EPSCPoolMethod::AutoRelease);
+
 			}), AttackInterval, true);
 	}
 	else
@@ -235,12 +232,9 @@ void UAttackComponent::OnRep_bSingleModeEffectFlag()
 	ParticleToPlay = EquippedWeaponData->MuzzleFlash;
 	ComponentToPlay = OwnerPawn->GetWeaponMesh();
 
-	if (ComponentToPlay->SkeletalMesh)
-	{
-		UGameplayStatics::SpawnEmitterAttached(ParticleToPlay, ComponentToPlay, FName("MuzzleSocket"),
-			FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::KeepRelativeOffset, true,
-			EPSCPoolMethod::AutoRelease);
-	}
+	UGameplayStatics::SpawnEmitterAttached(ParticleToPlay, ComponentToPlay, FName("MuzzleSocket"),
+		FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::KeepRelativeOffset, true,
+		EPSCPoolMethod::AutoRelease);
 }
 
 // Called every frame
