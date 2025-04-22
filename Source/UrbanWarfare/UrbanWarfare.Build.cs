@@ -19,6 +19,7 @@ public class UrbanWarfare : ModuleRules
 			Path.Combine(ModuleDirectory, "Player"),
 			Path.Combine(ModuleDirectory, "Player/Components"),
 			Path.Combine(ModuleDirectory, "Player/SoundPlayer"),
+			Path.Combine(ModuleDirectory, "Player/AnimNotify"),
 			Path.Combine(ModuleDirectory, "Weapon"),
 			Path.Combine(ModuleDirectory, "Weapon/WeaponData"),
 			Path.Combine(ModuleDirectory, "UI")

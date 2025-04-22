@@ -11,7 +11,7 @@
 
 DECLARE_DELEGATE_OneParam(FOnInventoryChange, const TArray<FInventoryItem>&)
 DECLARE_DELEGATE_OneParam(FOnLocalPlayerEquipWeapon, EWeaponType)
-DECLARE_DELEGATE(FOnWeaponChange)
+DECLARE_MULTICAST_DELEGATE(FOnWeaponChange)
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class URBANWARFARE_API UWeaponComponent : public UActorComponent

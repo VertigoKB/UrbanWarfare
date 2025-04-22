@@ -20,6 +20,9 @@ public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	//virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason);
+
+	void Server_SetbIsReloading(bool bFlag);
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
@@ -27,6 +30,7 @@ protected:
 private:
 	bool InitConsruct();
 	void OnInitializationComplete();
+	void OnTriggerAttack();
 
 	UFUNCTION(Server, Reliable)
 	void Server_TriggerAttack();
@@ -51,11 +55,15 @@ private:
 	UPROPERTY(ReplicatedUsing = OnRep_bSingleModeEffectFlag)
 	bool bSingleModeEffectFlag = false;	
 
+	UPROPERTY(Replicated)
+	bool bIsReloading = false;
+
 	UPROPERTY()
 	TObjectPtr<USkeletalMeshComponent> ComponentToPlay;
 	UPROPERTY()
 	TObjectPtr<UParticleSystem> ParticleToPlay;
 
+	
 	bool bIsAttackTriggered = false;
 	bool bSingleAttackActive = true;	// SingleAttack cool time.
 	float Damage = 0.f;

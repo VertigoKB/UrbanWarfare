@@ -138,7 +138,7 @@ void UWeaponComponent::OnRep_EquippedWeaponId()
 	UWeaponDataAsset* TempWeaponData = GetWorld()->GetGameInstance()->GetSubsystem<UWeaponPreLoader>()->GetWeaponDataByWeaponId(EquippedWeaponId);
 	AttackInterval = TempWeaponData->RoundInterval;
 	Damage = TempWeaponData->Damage;
-	OnWeaponChange.ExecuteIfBound();
+	OnWeaponChange.Broadcast();
 
 	if (TempWeaponData)
 	{

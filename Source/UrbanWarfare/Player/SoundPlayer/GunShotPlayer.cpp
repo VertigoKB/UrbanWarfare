@@ -64,7 +64,7 @@ void UGunShotPlayer::InitConstruct()
 	bIsInitialized = true;
 	World->GetTimerManager().ClearTimer(InitTimer);
 
-	WeaponComponent->OnWeaponChange.BindUObject(this, &UGunShotPlayer::OnWeaponChange);
+	WeaponComponent->OnWeaponChange.AddUObject(this, &UGunShotPlayer::OnWeaponChange);
 	AttackComponent->OnFire.BindUObject(this, &UGunShotPlayer::PlayGunShotSound);
 }
 
