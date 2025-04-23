@@ -30,16 +30,16 @@ public:
 	UPROPERTY(EditDefaultsOnly)
 	uint8 WeaponIdNumber;
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category = "Effect")
 	TSoftObjectPtr<USkeletalMesh> WeaponMesh;
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category = "Effect")
 	TObjectPtr<UTexture2D> WeaponIcon;
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category = "Effect")
 	TObjectPtr<class UParticleSystem> MuzzleFlash;
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category = "Effect")
 	TObjectPtr<USoundBase> SingleGunShotSound;
 
 	UPROPERTY(EditDefaultsOnly)
@@ -49,13 +49,16 @@ public:
 	EFiringMode FiringMode;
 
 	UPROPERTY(EditDefaultsOnly)
+	uint16 LoadableAmmoPerMag;
+
+	UPROPERTY(EditDefaultsOnly)
+	uint16 MaxAmmo;
+
+	UPROPERTY(EditDefaultsOnly)
 	float RoundPerMinute;
 
 	UPROPERTY(EditDefaultsOnly)
 	float Damage;
-
-	UPROPERTY(EditDefaultsOnly)
-	uint8 MaxAmmoPerMag;
 
 	float RoundInterval;
 	//FQuantizedFloat CompressedRPM;

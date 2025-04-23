@@ -31,6 +31,7 @@ private:
 	bool InitConsruct();
 	void OnInitializationComplete();
 	void OnTriggerAttack();
+	void OnCompleteAttack();
 
 	UFUNCTION(Server, Reliable)
 	void Server_TriggerAttack();
@@ -68,6 +69,7 @@ private:
 	bool bSingleAttackActive = true;	// SingleAttack cool time.
 	float Damage = 0.f;
 	float AttackInterval = 0.1f;
+	FTimerHandle TriggerHandle;
 	FTimerHandle RoundIntervalHandle;
 	FTimerHandle EffectHandle;
 	

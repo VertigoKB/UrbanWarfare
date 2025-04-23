@@ -64,6 +64,7 @@ void UWeaponComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 	DOREPLIFETIME(UWeaponComponent, WeaponInventory);
 	DOREPLIFETIME(UWeaponComponent, EquippedWeaponType);
 	DOREPLIFETIME(UWeaponComponent, EquippedWeaponId);
+	DOREPLIFETIME(UWeaponComponent, ExtraAmmo);
 }
 
 bool UWeaponComponent::IsPlayerHaveThisWeaponType(const EWeaponType InType) const

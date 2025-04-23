@@ -30,6 +30,7 @@ public:
 	class USkeletalMeshComponent* GetWeaponMesh() const;
 	class UWeaponComponent* GetWeaponComponent() const;
 	class UAttackComponent* GetAttackComponent() const;
+	class UAttackComponent* GetCombatComponent() const;
 	class UCameraComponent* GetPlayerCamera() const;
 	class UBlueprintConfig* GetBlueprintConfig() const;
 	bool IsPlayerFalling() const;
@@ -118,6 +119,8 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Custom Components")
 	TObjectPtr<class UAttackComponent> AttackComponent;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Custom Components")
+	TObjectPtr<class UCombatComponent> CombatComponent;
 public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void TestUrban();

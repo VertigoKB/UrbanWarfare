@@ -13,6 +13,7 @@
 #include "Components/PlayerSoundComponent.h"
 #include "Components/WeaponComponent.h"
 #include "Components/AttackComponent.h"
+#include "Components/CombatComponent.h"
 #include "UrbanWarfare/Common/WarfareLogger.h"
 #include "UrbanWarfare/Frameworks/GameInstance/WeaponPreLoader.h"
 #include "UrbanWarfare/Weapon/WeaponData/WeaponDataAsset.h"
@@ -59,6 +60,10 @@ USkeletalMeshComponent* APlayerBase::GetThirdMesh() const { return TheThirdMesh;
 USkeletalMeshComponent* APlayerBase::GetWeaponMesh() const { return WeaponMesh; }
 UWeaponComponent* APlayerBase::GetWeaponComponent() const { return WeaponComponent; }
 UAttackComponent* APlayerBase::GetAttackComponent() const{ return AttackComponent; }
+UAttackComponent* APlayerBase::GetCombatComponent() const
+{
+	return nullptr;
+}
 UCameraComponent* APlayerBase::GetPlayerCamera() const { return TheCamera; }
 UBlueprintConfig* APlayerBase::GetBlueprintConfig() const { return BlueprintConfig; }
 bool APlayerBase::IsPlayerFalling() const { return TheMovement->IsFalling(); }
@@ -190,6 +195,9 @@ void APlayerBase::SetupCustomComponents()
 
 	AttackComponent = CreateDefaultSubobject<UAttackComponent>(TEXT("AttackComponent"));
 	AttackComponent->SetIsReplicated(true);
+
+	CombatComponent = CreateDefaultSubobject<UCombatComponent>(TEXT("CombatComponent"));
+	CombatComponent->SetIsReplicated(true);
 }
 
 void APlayerBase::SetupMesh()

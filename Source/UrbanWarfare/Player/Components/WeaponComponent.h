@@ -93,6 +93,10 @@ protected:
 	UPROPERTY(ReplicatedUsing = OnRep_EquippedWeaponId)
 	uint8 EquippedWeaponId = 0;
 
+	uint16 CurrentAmmo = 0;
+	UPROPERTY(Replicated)
+	uint16 ExtraAmmo = 0;
+
 	UPROPERTY(ReplicatedUsing = OnRep_WeaponInventory)
 	FWeaponInventory WeaponInventory;
 

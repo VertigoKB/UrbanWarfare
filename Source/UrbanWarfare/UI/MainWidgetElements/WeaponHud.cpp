@@ -9,7 +9,7 @@
 
 #include "UrbanWarfare/UI/MainWidget.h"
 
-void UWeaponHud::ElementInitialize(UImage* InImageRifle, UImage* InImagePistol, UWorld* InWorld)
+void UWeaponHud::ExternalInitialize(UImage* InImageRifle, UImage* InImagePistol, UWorld* InWorld)
 {
 	ImageRifle = InImageRifle;
 	ImagePistol = InImagePistol;

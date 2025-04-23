@@ -6,7 +6,7 @@
 #include "UObject/NoExportTypes.h"
 
 #include "UrbanWarfare/Common/CommonEnums.h"
-#include "UrbanWarfare/Player/Components/SerializedWeaponInventory.h"
+#include "UrbanWarfare/Player/Components/OptionalClasses/SerializedWeaponInventory.h"
 
 #include "WeaponHud.generated.h"
 
@@ -19,7 +19,7 @@ class URBANWARFARE_API UWeaponHud : public UObject
 	GENERATED_BODY()
 
 public:
-	void ElementInitialize(class UImage* InImageRifle, class UImage* InImagePistol, UWorld* InWorld);
+	void ExternalInitialize(class UImage* InImageRifle, class UImage* InImagePistol, UWorld* InWorld);
 
 	UFUNCTION()
 	void OnInventoryChange(const TArray<FInventoryItem>& InInventory);

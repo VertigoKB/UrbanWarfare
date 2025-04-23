@@ -124,13 +124,26 @@ bool UAttackComponent::InitConsruct()
 
 void UAttackComponent::OnInitializationComplete()
 {
-	RegisterInputComponent->OnAttack.BindUObject(this, &UAttackComponent::Server_TriggerAttack);
+	RegisterInputComponent->OnAttack.BindUObject(this, &UAttackComponent::OnTriggerAttack);
+	RegisterInputComponent->OnCompleteAttack.BindUObject(this, &UAttackComponent::OnCompleteAttack);
 	WeaponComponent->OnWeaponChange.AddUObject(this, &UAttackComponent::OnWeaponChange);
 }
 
 void UAttackComponent::OnTriggerAttack()
 {
+	GetWorld()->GetTimerManager().SetTimer(TriggerHandle, FTimerDelegate::CreateLambda([this]() {
+
+		if (!bIsAttackTriggered)
+			Server_TriggerAttack();
+
+		}), 0.1f, true);
 }
+
+void UAttackComponent::OnCompleteAttack()
+{
+	GetWorld()->GetTimerManager().ClearTimer(TriggerHandle);
+}
+
 
 void UAttackComponent::Server_TriggerAttack_Implementation()
 {
