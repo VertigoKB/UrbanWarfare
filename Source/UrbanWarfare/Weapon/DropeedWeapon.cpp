@@ -9,6 +9,7 @@
 #include "UrbanWarfare/Player/PlayerBase.h"
 #include "UrbanWarfare/Player/Components/WeaponComponent.h"
 #include "UrbanWarfare/Frameworks/GameInstance/WeaponPreLoader.h"
+#include "UrbanWarfare/Common/CommonStructs.h"
 #include "UrbanWarfare/Common/WarfareLogger.h"
 #include "WeaponData/WeaponDataAsset.h"
 
@@ -122,6 +123,11 @@ void ADroppedWeapon::OnWeaponBeginOverlap(UPrimitiveComponent* OverlappedCompone
 			 //같은 종류의 무기를 들고있지않아야 함
 			if ((OverlappedPlayer->GetWeaponComponent()->IsPlayerHaveThisWeaponType(ThisWeaponType)) == false)
 			{
+				FDroppedWeaponData Data;
+				Data.WeaponId = ThisWeaponIdNumber;
+				Data.WeaponType = ThisWeaponType;
+				Data.AmmoInMag = AmmoInMag;
+				Data.ExtraAmmo = ExtraAmmo;
 				//https://chatgpt.com/g/g-f52QYAJK1-unreal-engine-5-expert/c/67ef85ee-24d8-8010-984b-cf9a670af542
 				OverlappedPlayer->GetWeaponComponent()->LootWeapon(ThisWeaponIdNumber, ThisWeaponType);
 				Destroy();

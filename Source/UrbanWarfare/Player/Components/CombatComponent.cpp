@@ -30,7 +30,8 @@ void UCombatComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(UCombatComponent, bIsAttacking);
+	DOREPLIFETIME(UCombatComponent, bAttackFlag);
+	DOREPLIFETIME(UCombatComponent, bIsReloading);
 }
 
 void UCombatComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -130,8 +131,8 @@ bool UCombatComponent::InitConstruct()
 
 void UCombatComponent::OnSuccessfullyInitialize()
 {
-	RegisterInputComponent->OnAttack.BindUObject(this, &UCombatComponent::OnStartedAttack);
-	RegisterInputComponent->OnCompleteAttack.BindUObject(this, &UCombatComponent::OnCompleteAttack);
+	RegisterInputComponent->OnInputAttack.BindUObject(this, &UCombatComponent::Client_OnStartedInput);
+	RegisterInputComponent->OnCompleteAttack.BindUObject(this, &UCombatComponent::Client_OnCompleteInput);
 	WeaponComponent->OnWeaponChange.AddUObject(this, &UCombatComponent::OnWeaponChange);
 
 	MuzzleFlashSpawner = NewObject<UMuzzleFlashSpawner>();
@@ -140,44 +141,67 @@ void UCombatComponent::OnSuccessfullyInitialize()
 	FireTraceHandler->ExternalInitialize(GetOwner<APlayerBase>());
 }
 
-void UCombatComponent::OnStartedAttack()
+void UCombatComponent::Client_OnStartedInput()
 {
-	GetWorld()->GetTimerManager().SetTimer(StartedInputHandle, FTimerDelegate::CreateLambda([this]() {
-
-		if (!bIsAttacking)
-		{
-			Server_RequestAttack();
-			Client_PerformAttack();
-		}
-
-		}), 0.1f, true);
+	Server_ExecuteAttack();
 }
 
-void UCombatComponent::OnCompleteAttack()
+void UCombatComponent::Client_OnCompleteInput()
 {
-	GetWorld()->GetTimerManager().ClearTimer(StartedInputHandle);
+	GetWorld()->GetTimerManager().ClearTimer(RoundIntervalHandle);
+	Server_StopContinuousAttack();
 }
 
-void UCombatComponent::OnWeaponChange()
+void UCombatComponent::Server_StopContinuousAttack_Implementation()
 {
+	bAttackFlag = false;
+	GetWorld()->GetTimerManager().ClearTimer(RoundIntervalHandle);
 }
 
-bool UCombatComponent::AttackLineTrace()
+void UCombatComponent::OnRep_bAttackFlag()
 {
+	if (bAttackFlag)
+	{
+		ExecuteAttack();
+		ProcessContinuousAttack();
+	}
+	else
+		GetWorld()->GetTimerManager().ClearTimer(RoundIntervalHandle);
 }
 
-void UCombatComponent::SpawnMuzzleFlash()
+void UCombatComponent::OnWeaponChange(uint8 InWeaponId)
 {
+	UWeaponDataAsset* EquippedWeaponData = GetWorld()->GetGameInstance()->GetSubsystem<UWeaponPreLoader>()->GetWeaponDataByWeaponId(InWeaponId);
+	RoundInterval = EquippedWeaponData->RoundInterval;
+	Damage = EquippedWeaponData->Damage;
+
+	if (GetWorld()->GetTimerManager().IsTimerActive(RoundIntervalHandle))
+	{
+		GetWorld()->GetTimerManager().ClearTimer(RoundIntervalHandle);
+		ProcessContinuousAttack();
+	}
 }
 
-void UCombatComponent::Client_PerformAttack()
+void UCombatComponent::ProcessContinuousAttack()
 {
-	AttackLineTrace();
-	SpawnMuzzleFlash();
+	GetWorld()->GetTimerManager().SetTimer(RoundIntervalHandle, this, &UCombatComponent::ExecuteAttack, RoundInterval, true);
 }
 
-void UCombatComponent::Server_RequestAttack_Implementation()
+void UCombatComponent::Server_ExecuteAttack_Implementation()
 {
+	ExecuteAttack();
+	bAttackFlag = true;
+	ProcessContinuousAttack();
+	OnRep_bAttackFlag(); // For Host
 }
 
+void UCombatComponent::ExecuteAttack()
+{
+	if (bIsReloading)
+		return;
 
+	MuzzleFlashSpawner->PlayMuzzleEffect();
+	if (bAuthority)
+		FireTraceHandler->AttackLineTrace();
+	OnAttack.Broadcast();
+}

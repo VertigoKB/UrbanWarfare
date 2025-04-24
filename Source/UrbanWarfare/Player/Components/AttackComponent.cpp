@@ -52,7 +52,7 @@ void UAttackComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	bInitFlag = InitConsruct();
+	/*bInitFlag = InitConsruct();
 	if (!bInitFlag)
 	{
 		GetWorld()->GetTimerManager().SetTimer(InitTimer, FTimerDelegate::CreateLambda([this]() {
@@ -77,7 +77,7 @@ void UAttackComponent::BeginPlay()
 	{
 		LOG_EFUNC(TEXT("Initialization success."));
 		OnInitializationComplete();
-	}
+	}*/
 	
 }
 
@@ -124,9 +124,9 @@ bool UAttackComponent::InitConsruct()
 
 void UAttackComponent::OnInitializationComplete()
 {
-	RegisterInputComponent->OnAttack.BindUObject(this, &UAttackComponent::OnTriggerAttack);
+	//RegisterInputComponent->OnAttack.BindUObject(this, &UAttackComponent::OnTriggerAttack);
 	RegisterInputComponent->OnCompleteAttack.BindUObject(this, &UAttackComponent::OnCompleteAttack);
-	WeaponComponent->OnWeaponChange.AddUObject(this, &UAttackComponent::OnWeaponChange);
+	//WeaponComponent->OnWeaponChange.AddUObject(this, &UAttackComponent::OnWeaponChange);
 }
 
 void UAttackComponent::OnTriggerAttack()
@@ -266,14 +266,14 @@ void UAttackComponent::OnRep_bAutoModeEffectFlag()
 				FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::KeepRelativeOffset, true,
 				EPSCPoolMethod::AutoRelease);
 
-			OnFire.ExecuteIfBound();
+			//OnFire.ExecuteIfBound();
 		}
 
 		GetWorld()->GetTimerManager().SetTimer(EffectHandle, FTimerDelegate::CreateLambda([this]() {
 
 			if (!bIsReloading)
 			{
-				OnFire.ExecuteIfBound();
+				//OnFire.ExecuteIfBound();
 				UGameplayStatics::SpawnEmitterAttached(ParticleToPlay, ComponentToPlay, FName("MuzzleSocket"),
 					FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::KeepRelativeOffset, true,
 					EPSCPoolMethod::AutoRelease);
@@ -297,7 +297,7 @@ void UAttackComponent::OnRep_bSingleModeEffectFlag()
 	ParticleToPlay = EquippedWeaponData->MuzzleFlash;
 	ComponentToPlay = OwnerPawn->GetWeaponMesh();
 
-	OnFire.ExecuteIfBound();
+	//OnFire.ExecuteIfBound();
 
 	UGameplayStatics::SpawnEmitterAttached(ParticleToPlay, ComponentToPlay, FName("MuzzleSocket"),
 		FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::KeepRelativeOffset, true,

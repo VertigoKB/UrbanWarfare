@@ -56,6 +56,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Input|Weapon")
 	TObjectPtr<class UInputAction> Attack;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Input|Weapon")
+	TObjectPtr<class UInputAction> Reload;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Input")
 	TObjectPtr<class UInputAction> Test;
 };

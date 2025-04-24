@@ -5,13 +5,14 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "UrbanWarfare/Common/CommonEnums.h"
+#include "UrbanWarfare/Common/CommonStructs.h"
 #include "UrbanWarfare/Weapon/WeaponData/WeaponDataAsset.h"
 #include "SerializedWeaponInventory.h"
 #include "WeaponComponent.generated.h"
 
 DECLARE_DELEGATE_OneParam(FOnInventoryChange, const TArray<FInventoryItem>&)
 DECLARE_DELEGATE_OneParam(FOnLocalPlayerEquipWeapon, EWeaponType)
-DECLARE_MULTICAST_DELEGATE(FOnWeaponChange)
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnWeaponChange, uint8)
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class URBANWARFARE_API UWeaponComponent : public UActorComponent
@@ -34,7 +35,7 @@ public:
 	bool IsPlayerHaveThisWeaponType(const EWeaponType InType) const;
 
 	// 이 함수는 ADroppedWeapon에 의해 HasAuthority true 확인후 호출됨
-	void LootWeapon(const uint8 InWeaponIdNumber, const EWeaponType InType);
+	void LootWeapon(const FDroppedWeaponData& InData);
 
 	EWeaponType GetEquippedWeaponType() const;
 	uint8 GetEquippedWeaponId() const;
@@ -69,6 +70,9 @@ private:
 	UFUNCTION(Server, Reliable)
 	void Server_OnTriggerThrowWeapon();
 
+	UFUNCTION(Server, Unreliable)
+	void Server_OnTriggerReload();
+
 	UFUNCTION(NetMulticast, Reliable)
 	void Multicast_ReloadWeapon(EWeaponType InType);
 
@@ -93,9 +97,9 @@ protected:
 	UPROPERTY(ReplicatedUsing = OnRep_EquippedWeaponId)
 	uint8 EquippedWeaponId = 0;
 
-	uint16 CurrentAmmo = 0;
+	uint16 CurrentWeaponAmmoInMag = 0;
 	UPROPERTY(Replicated)
-	uint16 ExtraAmmo = 0;
+	uint16 CurrentWeaponExtraAmmo = 0;
 
 	UPROPERTY(ReplicatedUsing = OnRep_WeaponInventory)
 	FWeaponInventory WeaponInventory;

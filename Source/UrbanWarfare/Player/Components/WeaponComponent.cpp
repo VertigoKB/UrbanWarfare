@@ -36,6 +36,7 @@ void UWeaponComponent::BeginPlay()
 		RegisterInputComponent->OnInputEquipRifle.BindUObject(this, &UWeaponComponent::Server_OnTriggerEquipRifle);
 		RegisterInputComponent->OnInputEquipPistol.BindUObject(this, &UWeaponComponent::Server_OnTriggerEquipPistol);
 		RegisterInputComponent->OnThrowWeapon.BindUObject(this, &UWeaponComponent::Server_OnTriggerThrowWeapon);
+		RegisterInputComponent->OnInputReload.BindUObject(this, &UWeaponComponent::Server_OnTriggerReload);
 	}
 
 	if (GetOwner()->HasAuthority())
@@ -75,13 +76,13 @@ bool UWeaponComponent::IsPlayerHaveThisWeaponType(const EWeaponType InType) cons
 		return false;
 }
 
-void UWeaponComponent::LootWeapon(const uint8 InWeaponIdNumber, const EWeaponType InType)
+void UWeaponComponent::LootWeapon(const FDroppedWeaponData& InData)
 {
-	WeaponInventory.SetItem(static_cast<uint8>(InType), InWeaponIdNumber);
+	WeaponInventory.SetItem(static_cast<uint8>(InData.WeaponType), InData.WeaponId, InData.AmmoInMag, InData.ExtraAmmo);
 	OnRep_WeaponInventory();
 
 	if (EquippedWeaponId == 0)
-		Server_EquipWeapon(InWeaponIdNumber, InType);
+		Server_EquipWeapon(InData.WeaponId, InData.WeaponType);
 }
 
 EWeaponType UWeaponComponent::GetEquippedWeaponType() const { return EquippedWeaponType; }
@@ -139,7 +140,7 @@ void UWeaponComponent::OnRep_EquippedWeaponId()
 	UWeaponDataAsset* TempWeaponData = GetWorld()->GetGameInstance()->GetSubsystem<UWeaponPreLoader>()->GetWeaponDataByWeaponId(EquippedWeaponId);
 	AttackInterval = TempWeaponData->RoundInterval;
 	Damage = TempWeaponData->Damage;
-	OnWeaponChange.Broadcast();
+	OnWeaponChange.Broadcast(EquippedWeaponId);
 
 	if (TempWeaponData)
 	{
@@ -262,6 +263,11 @@ void UWeaponComponent::Server_OnTriggerThrowWeapon_Implementation()
 		OnRep_EquippedWeaponId();
 		OnRep_EquippedWeaponType();
 	}
+}
+
+void UWeaponComponent::Server_OnTriggerReload()
+{
+
 }
 
 void UWeaponComponent::Multicast_ReloadWeapon_Implementation(EWeaponType InType)

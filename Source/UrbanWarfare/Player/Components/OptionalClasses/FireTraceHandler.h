@@ -16,8 +16,17 @@ class URBANWARFARE_API UFireTraceHandler : public UObject
 	
 public:
 	void ExternalInitialize(class APlayerBase* InRootOwner);
+	virtual void BeginDestroy() override;
 
+	bool AttackLineTrace();
 private:
 	UPROPERTY()
 	TObjectPtr<class APlayerBase> OwnerPawn;
+	UPROPERTY()
+	TObjectPtr<class UWorld> World;
+
+
+	FTimerHandle AutoFireHandle;
+
+	bool bAuthority = false;
 };

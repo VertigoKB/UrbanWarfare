@@ -69,6 +69,9 @@ protected:
 	EWeaponType ThisWeaponType = EWeaponType::UnArmed;
 	UPROPERTY(Replicated)
 	uint8 ThisWeaponIdNumber = 0;
+	UPROPERTY(Replicated)
+	uint16 AmmoInMag = 0;
+	uint16 ExtraAmmo = 0;
 
 	//UPROPERTY(ReplicatedUsing = OnRep_WeaponLocation)
 	//FVector_NetQuantize WeaponLocation;

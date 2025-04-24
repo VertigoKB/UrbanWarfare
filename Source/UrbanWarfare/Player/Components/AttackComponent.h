@@ -6,7 +6,7 @@
 #include "Components/ActorComponent.h"
 #include "AttackComponent.generated.h"
 
-DECLARE_DELEGATE(FOnFire)
+//DECLARE_DELEGATE(FOnFire)
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class URBANWARFARE_API UAttackComponent : public UActorComponent
@@ -46,7 +46,7 @@ private:
 	void OnRep_bSingleModeEffectFlag();
 
 public:
-	FOnFire OnFire;
+	//FOnFire OnFire;
 
 private:
 	UPROPERTY(ReplicatedUsing = OnRep_bAutoModeEffectFlag)

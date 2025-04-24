@@ -5,7 +5,7 @@
 #include "Kismet/GameplayStatics.h"
 
 #include "UrbanWarfare/Player/PlayerBase.h"
-#include "UrbanWarfare/Player/Components/AttackComponent.h"
+#include "UrbanWarfare/Player/Components/CombatComponent.h"
 #include "UrbanWarfare/Player/Components/WeaponComponent.h"
 #include "UrbanWarfare/Weapon/WeaponData/WeaponDataAsset.h"
 #include "UrbanWarfare/Frameworks/GameInstance/WeaponPreLoader.h"
@@ -53,10 +53,10 @@ void UGunShotPlayer::InitConstruct()
 		return;
 	}
 
-	AttackComponent = OwnerPawn->GetAttackComponent();
-	if (!AttackComponent)
+	CombatComponent = OwnerPawn->GetCombatComponent();
+	if (!CombatComponent)
 	{
-		LOG_EFUNC(TEXT("Initialization failed: AttackComponent. Retry:%d"), InitCount--);
+		LOG_EFUNC(TEXT("Initialization failed: CombatComponent. Retry:%d"), InitCount--);
 		return;
 	}
 
@@ -65,7 +65,8 @@ void UGunShotPlayer::InitConstruct()
 	World->GetTimerManager().ClearTimer(InitTimer);
 
 	WeaponComponent->OnWeaponChange.AddUObject(this, &UGunShotPlayer::OnWeaponChange);
-	AttackComponent->OnFire.BindUObject(this, &UGunShotPlayer::PlayGunShotSound);
+	CombatComponent->OnAttack.AddUObject(this, &UGunShotPlayer::PlayGunShotSound);
+	
 }
 
 void UGunShotPlayer::PlayGunShotSound()
@@ -73,7 +74,7 @@ void UGunShotPlayer::PlayGunShotSound()
 	UGameplayStatics::PlaySoundAtLocation(World, GunShotSound, OwnerPawn->GetActorLocation());
 }
 
-void UGunShotPlayer::OnWeaponChange()
+void UGunShotPlayer::OnWeaponChange(uint8 InWeaponId)
 {
 	uint8 WeaponId = WeaponComponent->GetEquippedWeaponId();
 	UWeaponDataAsset* CurrentWeaponData = World->GetGameInstance()->GetSubsystem<UWeaponPreLoader>()->GetWeaponDataByWeaponId(WeaponId);

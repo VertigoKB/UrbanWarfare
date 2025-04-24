@@ -121,6 +121,7 @@ void URegisterInputComponent::SetupEnhancedInput()
 		Input->BindAction(InputConfig->ThrowWeapon, ETriggerEvent::Started, this, &URegisterInputComponent::InputThrowWeapon);
 		Input->BindAction(InputConfig->Attack, ETriggerEvent::Started, this, &URegisterInputComponent::InputAttack);
 		Input->BindAction(InputConfig->Attack, ETriggerEvent::Completed, this, &URegisterInputComponent::InputCompleteAttack);
+		Input->BindAction(InputConfig->Reload, ETriggerEvent::Started, this, &URegisterInputComponent::InputReload);
 		Input->BindAction(InputConfig->Test, ETriggerEvent::Started, this, &URegisterInputComponent::InputTest);
 	}
 }
@@ -207,7 +208,7 @@ void URegisterInputComponent::InputThrowWeapon(const FInputActionValue& Value)
 
 void URegisterInputComponent::InputAttack(const FInputActionValue& Value)
 {
-	OnAttack.ExecuteIfBound();
+	OnInputAttack.ExecuteIfBound();
 }
 
 void URegisterInputComponent::InputCompleteAttack(const FInputActionValue& Value)
@@ -215,6 +216,10 @@ void URegisterInputComponent::InputCompleteAttack(const FInputActionValue& Value
 	OnCompleteAttack.ExecuteIfBound();
 }
 
+void URegisterInputComponent::InputReload(const FInputActionValue& Value)
+{
+	OnInputReload.ExecuteIfBound();
+}
 
 void URegisterInputComponent::TempTest()
 {

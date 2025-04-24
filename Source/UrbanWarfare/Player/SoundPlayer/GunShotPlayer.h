@@ -24,7 +24,7 @@ private:
 	UFUNCTION()
 	void PlayGunShotSound();
 	UFUNCTION()
-	void OnWeaponChange();
+	void OnWeaponChange(uint8 InWeaponId);
 
 private:
 	UPROPERTY()
@@ -34,7 +34,7 @@ private:
 	UPROPERTY()
 	TObjectPtr<class UWeaponComponent> WeaponComponent;
 	UPROPERTY()
-	TObjectPtr<class UAttackComponent> AttackComponent;
+	TObjectPtr<class UCombatComponent> CombatComponent;
 	UPROPERTY()
 	TObjectPtr<class UWeaponPreLoader> WeaponPreLoader;
 

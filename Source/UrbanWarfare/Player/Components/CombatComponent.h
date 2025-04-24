@@ -4,15 +4,17 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "UrbanWarfare/Common/CommonEnums.h"
 #include "CombatComponent.generated.h"
 
+DECLARE_MULTICAST_DELEGATE(FOnAttack)
 
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class URBANWARFARE_API UCombatComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
-public:	
+public:
 	UCombatComponent();
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
@@ -21,6 +23,7 @@ public:
 
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+	inline void SetbIsReloading(bool bFlag) { bIsReloading = bFlag; }
 protected:
 	virtual void BeginPlay() override;
 
@@ -29,27 +32,38 @@ private:
 	void OnSuccessfullyInitialize();
 
 	UFUNCTION()
-	void OnStartedAttack();
+	void Client_OnStartedInput();
 	UFUNCTION()
-	void OnCompleteAttack();
-	UFUNCTION()
-	void OnWeaponChange();
-
-	bool AttackLineTrace();
-	void SpawnMuzzleFlash();
-
-private:
+	void Client_OnCompleteInput();
 	UFUNCTION(Server, Reliable)
-	void Server_RequestAttack();
+	void Server_StopContinuousAttack();
+	UFUNCTION()
+	void OnRep_bAttackFlag();
+	UFUNCTION()
+	void OnWeaponChange(uint8 InWeaponId);
 
-	void Client_PerformAttack();
+	void ProcessContinuousAttack();
 
-	
+	UFUNCTION(Server, Reliable)
+	void Server_ExecuteAttack();
+	void ExecuteAttack();
+public:
+	FOnAttack OnAttack;
 
 private:
+	UPROPERTY(ReplicatedUsing = OnRep_bAttackFlag)
+	bool bAttackFlag = false;
 	UPROPERTY(Replicated)
-	bool bIsAttacking = false;
+	bool bIsReloading = false;
 
+	float RoundInterval = 0.1f;
+	float Damage = 0.f;
+
+	bool bIsNoAmmo = true;
+
+	EFiringMode FiringMode = EFiringMode::Single;
+
+	FTimerHandle RoundIntervalHandle;
 	FTimerHandle StartedInputHandle;
 
 private:
@@ -75,5 +89,5 @@ private:
 	bool bIsInitialized = false;
 	FTimerHandle InitHandle;
 	uint8 InitCount = 10;
-		
+
 };

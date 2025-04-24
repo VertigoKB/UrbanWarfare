@@ -12,12 +12,12 @@ void UMuzzleFlashSpawner::ExternalInitialize(APlayerBase* const InRootOwner)
 {
 	OwnerPawn = InRootOwner;
 	World = OwnerPawn->GetWorld();
+	OwnerPawn->GetWeaponComponent()->OnWeaponChange.AddUObject(this, &UMuzzleFlashSpawner::SetTargetComponent);
 }
 
-void UMuzzleFlashSpawner::SetTargetComponent()
+void UMuzzleFlashSpawner::SetTargetComponent(uint8 InWeaponId)
 {
-	uint8 EquippedWeaponNumber = OwnerPawn->GetWeaponComponent()->GetEquippedWeaponId();
-	UWeaponDataAsset* EquippedWeaponData = World->GetGameInstance()->GetSubsystem<UWeaponPreLoader>()->GetWeaponDataByWeaponId(EquippedWeaponNumber);
+	UWeaponDataAsset* EquippedWeaponData = World->GetGameInstance()->GetSubsystem<UWeaponPreLoader>()->GetWeaponDataByWeaponId(InWeaponId);
 
 	ParticleToPlay = EquippedWeaponData->MuzzleFlash;
 	ComponentToPlay = OwnerPawn->GetWeaponMesh();
@@ -26,7 +26,7 @@ void UMuzzleFlashSpawner::SetTargetComponent()
 void UMuzzleFlashSpawner::PlayMuzzleEffect()
 {
 	if (!ComponentToPlay || !ParticleToPlay)
-		SetTargetComponent();
+		SetTargetComponent(OwnerPawn->GetWeaponComponent()->GetEquippedWeaponId());
 
 	UGameplayStatics::SpawnEmitterAttached(ParticleToPlay, ComponentToPlay, FName("MuzzleSocket"),
 		FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::KeepRelativeOffset, true,

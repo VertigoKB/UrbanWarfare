@@ -17,7 +17,7 @@ class URBANWARFARE_API UMuzzleFlashSpawner : public UObject
 public:
 	void ExternalInitialize(class APlayerBase* const InRootOwner);
 
-	void SetTargetComponent();
+	void SetTargetComponent(uint8 InWeaponId);
 	void PlayMuzzleEffect();
 private:
 	UPROPERTY()
