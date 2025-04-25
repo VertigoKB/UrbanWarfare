@@ -39,6 +39,7 @@ public:
 
 	EWeaponType GetEquippedWeaponType() const;
 	uint8 GetEquippedWeaponId() const;
+	UAmmoHandler* GetAmmoHandler() const { return AmmoHandler; }
 	inline float GetCurrentDamage() const { return Damage; }
 	inline float GetCurrentAttackInterval() const { return AttackInterval; }
 
@@ -91,15 +92,14 @@ protected:
 	UPROPERTY()
 	TObjectPtr<class UWarfareAnim> OwnerThirdMeshAnim;
 
+	UPROPERTY()
+	TObjectPtr<class UAmmoHandler> AmmoHandler;
+
 	UPROPERTY(ReplicatedUsing = OnRep_EquippedWeaponType)
 	EWeaponType EquippedWeaponType = EWeaponType::UnArmed;
 
 	UPROPERTY(ReplicatedUsing = OnRep_EquippedWeaponId)
 	uint8 EquippedWeaponId = 0;
-
-	uint16 CurrentWeaponAmmoInMag = 0;
-	UPROPERTY(Replicated)
-	uint16 CurrentWeaponExtraAmmo = 0;
 
 	UPROPERTY(ReplicatedUsing = OnRep_WeaponInventory)
 	FWeaponInventory WeaponInventory;

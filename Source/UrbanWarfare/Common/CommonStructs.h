@@ -7,7 +7,7 @@
 #include "CommonStructs.generated.h"
 
 // This class does not need to be modified.
-USTRUCT(BlueprintType)
+USTRUCT()
 struct FDroppedWeaponData
 {
 	GENERATED_BODY()
@@ -15,6 +15,16 @@ struct FDroppedWeaponData
 public:
 	uint8 WeaponId = 0;
 	EWeaponType WeaponType = EWeaponType::UnArmed;
+	uint16 AmmoInMag = 0;
+	uint16 ExtraAmmo = 0;
+};
+
+USTRUCT()
+struct FWeaponAmmoData
+{
+	GENERATED_BODY()
+
+public:
 	uint16 AmmoInMag = 0;
 	uint16 ExtraAmmo = 0;
 };

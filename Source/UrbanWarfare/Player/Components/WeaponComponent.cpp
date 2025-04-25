@@ -10,6 +10,7 @@
 #include "UrbanWarfare/Player/PlayerBase.h"
 #include "UrbanWarfare/Player/WarfareAnim.h"
 #include "UrbanWarfare/Player/Components/RegisterInputComponent.h"
+#include "UrbanWarfare/Player/Components/OptionalClasses/AmmoHandler.h"
 #include "UrbanWarfare/Frameworks/GameInstance/WeaponPreLoader.h"
 #include "UrbanWarfare/Weapon/DropeedWeapon.h"
 #include "UrbanWarfare/Common/WarfareLogger.h"
@@ -37,6 +38,9 @@ void UWeaponComponent::BeginPlay()
 		RegisterInputComponent->OnInputEquipPistol.BindUObject(this, &UWeaponComponent::Server_OnTriggerEquipPistol);
 		RegisterInputComponent->OnThrowWeapon.BindUObject(this, &UWeaponComponent::Server_OnTriggerThrowWeapon);
 		RegisterInputComponent->OnInputReload.BindUObject(this, &UWeaponComponent::Server_OnTriggerReload);
+
+		AmmoHandler = NewObject<UAmmoHandler>();
+		AmmoHandler->ExternalInitialize(GetOwner<APlayerBase>(), this);
 	}
 
 	if (GetOwner()->HasAuthority())
@@ -65,7 +69,7 @@ void UWeaponComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 	DOREPLIFETIME(UWeaponComponent, WeaponInventory);
 	DOREPLIFETIME(UWeaponComponent, EquippedWeaponType);
 	DOREPLIFETIME(UWeaponComponent, EquippedWeaponId);
-	DOREPLIFETIME(UWeaponComponent, ExtraAmmo);
+	DOREPLIFETIME(UWeaponComponent, RefreshAmmoFlag);
 }
 
 bool UWeaponComponent::IsPlayerHaveThisWeaponType(const EWeaponType InType) const
@@ -87,6 +91,7 @@ void UWeaponComponent::LootWeapon(const FDroppedWeaponData& InData)
 
 EWeaponType UWeaponComponent::GetEquippedWeaponType() const { return EquippedWeaponType; }
 uint8 UWeaponComponent::GetEquippedWeaponId() const { return EquippedWeaponId; }
+UAmmoHandler* UWeaponComponent::GetAmmoHandler() const { return AmmoHandler; }
 
 bool UWeaponComponent::InitConstruct()
 {
@@ -169,6 +174,15 @@ void UWeaponComponent::OnRep_EquippedWeaponType()
 {
 	OnLocalPlayerEquipWeapon.ExecuteIfBound(EquippedWeaponType);
 
+	uint8 InventoryAmmoInMag = WeaponInventory.Items[static_cast<uint8>(EquippedWeaponType)].AmmoInMag;
+	uint8 InventoryExtraAmmo = WeaponInventory.Items[static_cast<uint8>(EquippedWeaponType)].ExtraAmmo;
+	
+	FWeaponAmmoData AmmoData;
+	AmmoData.AmmoInMag = InventoryAmmoInMag;
+	AmmoData.ExtraAmmo = InventoryExtraAmmo;
+
+	AmmoHandler->RefreshAmmoData(AmmoData);
+	AmmoHandler->RefreshCurrentWeaponType(EquippedWeaponType);
 }
 
 void UWeaponComponent::Server_EquipWeapon_Implementation(const uint8 InIdNumber, const EWeaponType InType)
@@ -265,7 +279,7 @@ void UWeaponComponent::Server_OnTriggerThrowWeapon_Implementation()
 	}
 }
 
-void UWeaponComponent::Server_OnTriggerReload()
+void UWeaponComponent::Server_OnTriggerReload_Implementation()
 {
 
 }

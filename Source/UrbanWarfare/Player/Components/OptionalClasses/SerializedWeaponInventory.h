@@ -16,7 +16,7 @@ struct FInventoryItem : public FFastArraySerializerItem
 	uint8 WeaponId = 0;
 
 	UPROPERTY()
-	uint16 RemainAmmoInMag = 0;
+	uint16 AmmoInMag = 0;
 
 	UPROPERTY()
 	uint16 ExtraAmmo = 0;
@@ -50,7 +50,7 @@ struct FWeaponInventory : public FFastArraySerializer
 		}
 	}
 
-	void SetItem(uint8 Index, uint8 TargetWeaponId, uint16 InRemainAmmoInMag = 0, uint16 InExtraAmmo = 0)
+	void SetItem(uint8 Index, uint8 TargetWeaponId, uint16 InAmmoInMag = 0, uint16 InExtraAmmo = 0)
 	{
 		if (!Items.IsValidIndex(Index))
 		{
@@ -61,7 +61,7 @@ struct FWeaponInventory : public FFastArraySerializer
 		if (Items[Index].WeaponId != TargetWeaponId)
 		{
 			Items[Index].WeaponId = TargetWeaponId;
-			Items[Index].RemainAmmoInMag = InRemainAmmoInMag;
+			Items[Index].AmmoInMag = InAmmoInMag;
 			Items[Index].ExtraAmmo = InExtraAmmo;
 			MarkItemDirty(Items[Index]);
 		}

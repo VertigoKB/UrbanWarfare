@@ -17,10 +17,18 @@ class URBANWARFARE_API UAmmoHud : public UObject
 public:
 	void ExternalInitialize(class UUserWidget* const InOwner, UWorld* const InWorld);
 
+protected:
+	virtual void BeginDestroy() override;
+
+
 private:
 	UPROPERTY()
 	TObjectPtr<class UMainWidget> MainWidget;
 	UPROPERTY()
 	TObjectPtr<UWorld> World;
+	UPROPERTY()
+	TObjectPtr<class UAmmoHandler> AmmoHandler;
+
+	FTimerHandle InitHandle;
 	
 };

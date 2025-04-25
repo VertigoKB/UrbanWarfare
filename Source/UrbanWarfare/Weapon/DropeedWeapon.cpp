@@ -129,7 +129,7 @@ void ADroppedWeapon::OnWeaponBeginOverlap(UPrimitiveComponent* OverlappedCompone
 				Data.AmmoInMag = AmmoInMag;
 				Data.ExtraAmmo = ExtraAmmo;
 				//https://chatgpt.com/g/g-f52QYAJK1-unreal-engine-5-expert/c/67ef85ee-24d8-8010-984b-cf9a670af542
-				OverlappedPlayer->GetWeaponComponent()->LootWeapon(ThisWeaponIdNumber, ThisWeaponType);
+				OverlappedPlayer->GetWeaponComponent()->LootWeapon(Data);
 				Destroy();
 			}
 		}

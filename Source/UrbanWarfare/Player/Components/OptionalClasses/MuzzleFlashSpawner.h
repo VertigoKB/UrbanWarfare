@@ -23,7 +23,7 @@ private:
 	UPROPERTY()
 	TObjectPtr<class APlayerBase> OwnerPawn;
 	UPROPERTY()
-	TObjectPtr<UWorld> World;
+	TWeakObjectPtr<UWorld> World;
 
 	UPROPERTY()
 	TObjectPtr<USkeletalMeshComponent> ComponentToPlay;
