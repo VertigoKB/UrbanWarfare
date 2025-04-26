@@ -105,7 +105,6 @@ void ADroppedWeapon::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 	DOREPLIFETIME(ADroppedWeapon, bIsWeaponIdSpecified);
 	DOREPLIFETIME(ADroppedWeapon, ThisWeaponIdNumber);
 	DOREPLIFETIME(ADroppedWeapon, ThisWeaponType);
-	//DOREPLIFETIME(ADroppedWeapon, WeaponLocation);
 }
 
 void ADroppedWeapon::OnWeaponBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
@@ -153,6 +152,8 @@ bool ADroppedWeapon::ExternalInitialize(const uint8 InIdNumber)
 	WeaponMesh->SetSkeletalMesh(TempWeaponData->WeaponMesh.Get());
 	ThisWeaponType = TempWeaponData->WeaponType;
 	ThisWeaponIdNumber = TempWeaponData->WeaponIdNumber;
+	AmmoInMag = TempWeaponData->LoadableAmmoPerMag;
+	ExtraAmmo = (TempWeaponData->MaxAmmo) - (TempWeaponData->LoadableAmmoPerMag);
 
 	SetupComponentsDroppedCollision();
 	WeaponMesh->SetSimulatePhysics(true);
@@ -178,6 +179,8 @@ bool ADroppedWeapon::InitializePlacedWeapon()
 	WeaponMesh->SetSkeletalMesh(TempWeaponData->WeaponMesh.Get());
 	ThisWeaponType = TempWeaponData->WeaponType;
 	ThisWeaponIdNumber = TempWeaponData->WeaponIdNumber;
+	AmmoInMag = TempWeaponData->LoadableAmmoPerMag;
+	ExtraAmmo = (TempWeaponData->MaxAmmo) - (TempWeaponData->LoadableAmmoPerMag);
 
 	SetupComponentsDroppedCollision();
 	WeaponMesh->SetSimulatePhysics(true);

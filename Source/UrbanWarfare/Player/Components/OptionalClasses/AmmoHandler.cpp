@@ -11,28 +11,40 @@ void UAmmoHandler::ExternalInitialize(APlayerBase* const InRootOwner, UWeaponCom
 	WeaponComponent = InOwnerComp;
 }
 
-void UAmmoHandler::RefreshAmmoData(const FWeaponAmmoData& InData)
+void UAmmoHandler::RefreshAmmoHandler(const FWeaponAmmoData& InData, const EWeaponType InType)
 {
 	CurrentAmmoInMag = InData.AmmoInMag;
 	CurrentExtraAmmo = InData.ExtraAmmo;
-}
 
-void UAmmoHandler::RefreshCurrentWeaponType(const EWeaponType InType)
-{
 	CurrentWeaponType = InType;
 
 	if (InType == EWeaponType::UnArmed)
-		OnEmptyHand.ExecuteIfBound();
+		OnEmptyHand.ExecuteIfBound(false);
+	else
+	{
+		OnEmptyHand.ExecuteIfBound(true);
+		OnUpdateAmmoInMag.ExecuteIfBound(CurrentAmmoInMag);
+		OnUpdateExtraAmmo.ExecuteIfBound(CurrentExtraAmmo);
+	}
 }
 
 void UAmmoHandler::Client_Shoot()
 {
 	if (!bIsNoAmmo)
 	{
-		CurrentAmmoInMag--;
+		OnUpdateAmmoInMag.ExecuteIfBound(--CurrentAmmoInMag);
 		if (CurrentAmmoInMag == 0)
 			bIsNoAmmo = true;
 	}
 	else
 		OnShotButNoAmmo.ExecuteIfBound();
+}
+
+FWeaponAmmoData UAmmoHandler::GetAmmoDAta() const
+{
+	FWeaponAmmoData Data;
+	Data.AmmoInMag = CurrentAmmoInMag;
+	Data.ExtraAmmo = CurrentExtraAmmo;
+
+	return Data;
 }

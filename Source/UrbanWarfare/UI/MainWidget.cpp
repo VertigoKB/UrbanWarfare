@@ -51,8 +51,7 @@ void UMainWidget::NativeConstruct()
 	WeaponHud = NewObject<UWeaponHud>();
 	WeaponHud->ExternalInitialize(ImageRifle, ImagePistol, GetWorld());
 
-	AmmoHud = NewObject<UAmmoHud>();
-	AmmoHud->ExternalInitialize(this, GetWorld());
+	
 
 	GetOwningPlayer<AWarfareController>()->OnPlayerSpawned.BindUObject(this, &UMainWidget::OnPlayerSpawned);
 
@@ -138,8 +137,12 @@ void UMainWidget::NativeDestruct()
 void UMainWidget::OnPlayerSpawned(APlayerBase* InPlayer)
 {
 	SetVisibility(ESlateVisibility::HitTestInvisible);
+
 	WeaponComponent = InPlayer->GetWeaponComponent();
 	WeaponComponent->OnInventoryChange.BindUObject(WeaponHud, &UWeaponHud::OnInventoryChange);
 	WeaponComponent->OnLocalPlayerEquipWeapon.BindUObject(WeaponHud, &UWeaponHud::OnEquipWeapon);
+
+	AmmoHud = NewObject<UAmmoHud>();
+	AmmoHud->ExternalInitialize(this, GetWorld(), WeaponComponent);
 }
  

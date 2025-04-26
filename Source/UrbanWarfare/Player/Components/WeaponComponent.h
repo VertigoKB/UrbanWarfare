@@ -39,7 +39,7 @@ public:
 
 	EWeaponType GetEquippedWeaponType() const;
 	uint8 GetEquippedWeaponId() const;
-	UAmmoHandler* GetAmmoHandler() const { return AmmoHandler; }
+	class UAmmoHandler* GetAmmoHandler() const;
 	inline float GetCurrentDamage() const { return Damage; }
 	inline float GetCurrentAttackInterval() const { return AttackInterval; }
 
@@ -86,11 +86,11 @@ protected:
 	UPROPERTY()
 	TObjectPtr<class URegisterInputComponent> RegisterInputComponent;
 
-	UPROPERTY()
-	TObjectPtr<class UWarfareAnim> OwnerTheMeshAnim;
+	//UPROPERTY()
+	//TObjectPtr<class UWarfareAnim> OwnerTheMeshAnim;
 
-	UPROPERTY()
-	TObjectPtr<class UWarfareAnim> OwnerThirdMeshAnim;
+	//UPROPERTY()
+	//TObjectPtr<class UWarfareAnim> OwnerThirdMeshAnim;
 
 	UPROPERTY()
 	TObjectPtr<class UAmmoHandler> AmmoHandler;

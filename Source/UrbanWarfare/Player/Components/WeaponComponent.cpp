@@ -69,7 +69,6 @@ void UWeaponComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 	DOREPLIFETIME(UWeaponComponent, WeaponInventory);
 	DOREPLIFETIME(UWeaponComponent, EquippedWeaponType);
 	DOREPLIFETIME(UWeaponComponent, EquippedWeaponId);
-	DOREPLIFETIME(UWeaponComponent, RefreshAmmoFlag);
 }
 
 bool UWeaponComponent::IsPlayerHaveThisWeaponType(const EWeaponType InType) const
@@ -97,34 +96,13 @@ bool UWeaponComponent::InitConstruct()
 {
 	bool bIsSuccess = false;
 
-	switch (true)
+	RegisterInputComponent = GetOwner<APlayerBase>()->GetRegInputComp();
+	if (!RegisterInputComponent)
 	{
-	case true:
-	default:
-		RegisterInputComponent = GetOwner<APlayerBase>()->GetRegInputComp();
-		if (!RegisterInputComponent)
-		{
-			LOG_EFUNC(TEXT("Cach failed: RegisterInputComponent"));
-			break;
-		}
-
-		OwnerTheMeshAnim = Cast<UWarfareAnim>(GetOwner<APlayerBase>()->GetTheMesh()->GetAnimInstance());
-		if (!OwnerTheMeshAnim)
-		{
-			LOG_EFUNC(TEXT("Cach failed: OwnerTheMeshAnim"));
-			break;
-		}
-
-		OwnerThirdMeshAnim = Cast<UWarfareAnim>(GetOwner<APlayerBase>()->GetThirdMesh()->GetAnimInstance());
-		if (!OwnerThirdMeshAnim)
-		{
-			LOG_EFUNC(TEXT("Cach failed: OwnerThirdMeshAnim"));
-			break;
-		}
-		
-		bIsSuccess = true;
-		break;
+		LOG_EFUNC(TEXT("Cach failed: RegisterInputComponent"));
 	}
+	else
+		bIsSuccess = true;
 
 	return bIsSuccess;
 }
@@ -174,15 +152,17 @@ void UWeaponComponent::OnRep_EquippedWeaponType()
 {
 	OnLocalPlayerEquipWeapon.ExecuteIfBound(EquippedWeaponType);
 
-	uint8 InventoryAmmoInMag = WeaponInventory.Items[static_cast<uint8>(EquippedWeaponType)].AmmoInMag;
-	uint8 InventoryExtraAmmo = WeaponInventory.Items[static_cast<uint8>(EquippedWeaponType)].ExtraAmmo;
-	
-	FWeaponAmmoData AmmoData;
-	AmmoData.AmmoInMag = InventoryAmmoInMag;
-	AmmoData.ExtraAmmo = InventoryExtraAmmo;
+	if (GetOwner<APlayerBase>()->IsLocallyControlled())
+	{
+		uint8 InventoryAmmoInMag = WeaponInventory.Items[static_cast<uint8>(EquippedWeaponType)].AmmoInMag;
+		uint8 InventoryExtraAmmo = WeaponInventory.Items[static_cast<uint8>(EquippedWeaponType)].ExtraAmmo;
 
-	AmmoHandler->RefreshAmmoData(AmmoData);
-	AmmoHandler->RefreshCurrentWeaponType(EquippedWeaponType);
+		FWeaponAmmoData AmmoData;
+		AmmoData.AmmoInMag = InventoryAmmoInMag;
+		AmmoData.ExtraAmmo = InventoryExtraAmmo;
+
+		AmmoHandler->RefreshAmmoHandler(AmmoData, EquippedWeaponType);
+	}
 }
 
 void UWeaponComponent::Server_EquipWeapon_Implementation(const uint8 InIdNumber, const EWeaponType InType)

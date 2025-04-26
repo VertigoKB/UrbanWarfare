@@ -10,7 +10,9 @@
 #include "AmmoHandler.generated.h"
 
 DECLARE_DELEGATE(FOnShotButNoAmmo)
-DECLARE_DELEGATE(FOnEmptyHand)
+DECLARE_DELEGATE_OneParam(FOnEmptyHand, bool)
+DECLARE_DELEGATE_OneParam(FOnUpdateAmmoInMag, uint16)
+DECLARE_DELEGATE_OneParam(FOnUpdateExtraAmmo, uint16)
 
 UCLASS()
 class URBANWARFARE_API UAmmoHandler : public UObject
@@ -20,14 +22,18 @@ class URBANWARFARE_API UAmmoHandler : public UObject
 public:
 	void ExternalInitialize(class APlayerBase* const InRootOwner, class UWeaponComponent* const InOwnerComp);
 
-	void RefreshAmmoData(const FWeaponAmmoData& InData);
-	void RefreshCurrentWeaponType(const EWeaponType InType);
+	void RefreshAmmoHandler(const FWeaponAmmoData& InData, const EWeaponType InType);
 
 	void Client_Shoot();
+
+	FWeaponAmmoData GetAmmoDAta() const;
 
 public:
 	FOnShotButNoAmmo OnShotButNoAmmo;
 	FOnEmptyHand OnEmptyHand;
+	FOnUpdateAmmoInMag OnUpdateAmmoInMag;
+	FOnUpdateExtraAmmo OnUpdateExtraAmmo;
+
 
 private:
 	uint16 CurrentAmmoInMag = 0;

@@ -15,11 +15,17 @@ class URBANWARFARE_API UAmmoHud : public UObject
 	GENERATED_BODY()
 	
 public:
-	void ExternalInitialize(class UUserWidget* const InOwner, UWorld* const InWorld);
+	void ExternalInitialize(class UUserWidget* const InOwner, UWorld* const InWorld, class UWeaponComponent* const InWeaponComp);
+	void OnSuccessfullyInitialize();
+	void InitializeAmmoHandler(class UWeaponComponent* const InWeaponComp);
 
 protected:
 	virtual void BeginDestroy() override;
 
+private:
+	void OnEmptyHand(bool bIsVisible);
+	void UpdateAmmoInMagText(uint16 InCurrentAmmo);
+	void UpdateExtraAmmoText(uint16 InExtraAmmo);
 
 private:
 	UPROPERTY()
@@ -29,6 +35,5 @@ private:
 	UPROPERTY()
 	TObjectPtr<class UAmmoHandler> AmmoHandler;
 
-	FTimerHandle InitHandle;
 	
 };
