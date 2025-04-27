@@ -11,6 +11,7 @@
 #include "UrbanWarfare/Player/Components/WeaponComponent.h"
 #include "UrbanWarfare/Player/Components/OptionalClasses/MuzzleFlashSpawner.h"
 #include "UrbanWarfare/Player/Components/OptionalClasses/FireTraceHandler.h"
+#include "UrbanWarfare/Player/Components/OptionalClasses/AmmoHandler.h"
 #include "UrbanWarfare/Frameworks/GameInstance/WeaponPreLoader.h"
 #include "UrbanWarfare/Frameworks/WarfareController.h"
 #include "UrbanWarfare/Common/WarfareLogger.h"
@@ -32,6 +33,7 @@ void UCombatComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 
 	DOREPLIFETIME(UCombatComponent, bAttackFlag);
 	DOREPLIFETIME(UCombatComponent, bIsReloading);
+	DOREPLIFETIME(UCombatComponent, bIsAmmoInMag);
 }
 
 void UCombatComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -39,6 +41,12 @@ void UCombatComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	Super::EndPlay(EndPlayReason);
 	GetWorld()->GetTimerManager().ClearAllTimersForObject(this);
 }
+
+void UCombatComponent::Server_SetbIsAmmoInMag_Implementation(bool InIsAmmoInMag)
+{
+	bIsAmmoInMag = InIsAmmoInMag;
+}
+
 
 // Called every frame
 void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -94,8 +102,6 @@ bool UCombatComponent::InitConstruct()
 	}
 
 	bAuthority = OwnerPawn->HasAuthority();
-	if (bAuthority && OwnerPawn->IsLocallyControlled())
-		bIsListen = true;
 
 	OwnerPlayerController = GetWorld()->GetFirstPlayerController();
 	if (!OwnerPlayerController)
@@ -115,6 +121,13 @@ bool UCombatComponent::InitConstruct()
 	if (!WeaponComponent)
 	{
 		LOG_EFUNC(TEXT("Initialization failed: WeaponComponent"));
+		return false;
+	}
+
+	AmmoHandler = WeaponComponent->GetAmmoHandler();
+	if (!AmmoHandler)
+	{
+		LOG_EFUNC(TEXT("Initialization failed: AmmoHandler"));
 		return false;
 	}
 
@@ -197,11 +210,12 @@ void UCombatComponent::Server_ExecuteAttack_Implementation()
 
 void UCombatComponent::ExecuteAttack()
 {
-	if (bIsReloading)
+	if (bIsReloading || !bIsAmmoInMag)
 		return;
 
 	MuzzleFlashSpawner->PlayMuzzleEffect();
 	if (bAuthority)
 		FireTraceHandler->AttackLineTrace();
+
 	OnAttack.Broadcast();
 }

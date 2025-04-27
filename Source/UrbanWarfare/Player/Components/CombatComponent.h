@@ -24,6 +24,12 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	inline void SetbIsReloading(bool bFlag) { bIsReloading = bFlag; }
+
+	inline bool GetbIsNoAmmoInMag() const { return bIsAmmoInMag; }
+	// Generally, it is called by AmmoHandler.
+	UFUNCTION(Server, Reliable)
+	void Server_SetbIsAmmoInMag(bool InIsAmmoInMag);
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -47,6 +53,7 @@ private:
 	UFUNCTION(Server, Reliable)
 	void Server_ExecuteAttack();
 	void ExecuteAttack();
+
 public:
 	FOnAttack OnAttack;
 
@@ -55,11 +62,12 @@ private:
 	bool bAttackFlag = false;
 	UPROPERTY(Replicated)
 	bool bIsReloading = false;
+	UPROPERTY(Replicated)
+	bool bIsAmmoInMag = false;
 
 	float RoundInterval = 0.1f;
 	float Damage = 0.f;
 
-	bool bIsNoAmmo = true;
 
 	EFiringMode FiringMode = EFiringMode::Single;
 
@@ -82,9 +90,10 @@ private:
 	TObjectPtr<class UMuzzleFlashSpawner> MuzzleFlashSpawner;
 	UPROPERTY()
 	TObjectPtr<class UFireTraceHandler> FireTraceHandler;
+	UPROPERTY()
+	TObjectPtr<class UAmmoHandler> AmmoHandler;
 
 	bool bAuthority = false;
-	bool bIsListen = false;
 
 	bool bIsInitialized = false;
 	FTimerHandle InitHandle;

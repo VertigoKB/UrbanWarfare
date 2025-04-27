@@ -41,6 +41,7 @@ void UWeaponComponent::BeginPlay()
 
 		AmmoHandler = NewObject<UAmmoHandler>();
 		AmmoHandler->ExternalInitialize(GetOwner<APlayerBase>(), this);
+
 	}
 
 	if (GetOwner()->HasAuthority())

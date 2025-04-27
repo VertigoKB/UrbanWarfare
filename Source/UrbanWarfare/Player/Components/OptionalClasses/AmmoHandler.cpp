@@ -3,12 +3,15 @@
 
 #include "AmmoHandler.h"
 #include "UrbanWarfare/Player/PlayerBase.h"
+#include "UrbanWarfare/Player/Components/CombatComponent.h"
 
 void UAmmoHandler::ExternalInitialize(APlayerBase* const InRootOwner, UWeaponComponent* const InOwnerComp)
 {
 	OwnerPawn = InRootOwner;
 	World = OwnerPawn->GetWorld();
 	WeaponComponent = InOwnerComp;
+	CombatComponent = OwnerPawn->GetCombatComponent();
+	CombatComponent->OnAttack.AddUObject(this, &UAmmoHandler::Client_Shoot);
 }
 
 void UAmmoHandler::RefreshAmmoHandler(const FWeaponAmmoData& InData, const EWeaponType InType)
@@ -17,6 +20,8 @@ void UAmmoHandler::RefreshAmmoHandler(const FWeaponAmmoData& InData, const EWeap
 	CurrentExtraAmmo = InData.ExtraAmmo;
 
 	CurrentWeaponType = InType;
+
+	IsAmmoRemaInInMag();
 
 	if (InType == EWeaponType::UnArmed)
 		OnEmptyHand.ExecuteIfBound(false);
@@ -30,14 +35,11 @@ void UAmmoHandler::RefreshAmmoHandler(const FWeaponAmmoData& InData, const EWeap
 
 void UAmmoHandler::Client_Shoot()
 {
-	if (!bIsNoAmmo)
+	if (IsAmmoRemaInInMag())
 	{
 		OnUpdateAmmoInMag.ExecuteIfBound(--CurrentAmmoInMag);
-		if (CurrentAmmoInMag == 0)
-			bIsNoAmmo = true;
+		IsAmmoRemaInInMag();
 	}
-	else
-		OnShotButNoAmmo.ExecuteIfBound();
 }
 
 FWeaponAmmoData UAmmoHandler::GetAmmoDAta() const
@@ -47,4 +49,19 @@ FWeaponAmmoData UAmmoHandler::GetAmmoDAta() const
 	Data.ExtraAmmo = CurrentExtraAmmo;
 
 	return Data;
+}
+
+bool UAmmoHandler::IsAmmoRemaInInMag()
+{
+	bool bFlag = false;
+
+	if (CurrentAmmoInMag > 0)
+		bFlag = true;
+
+	bool CombatCompFlag = CombatComponent->GetbIsNoAmmoInMag();
+
+	if (CombatCompFlag != bFlag)
+		CombatComponent->Server_SetbIsAmmoInMag(bFlag);
+
+	return bFlag;
 }

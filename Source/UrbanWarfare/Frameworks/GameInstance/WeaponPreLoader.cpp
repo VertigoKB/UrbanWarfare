@@ -71,7 +71,8 @@ UWeaponDataAsset* UWeaponPreLoader::GetWeaponDataByWeaponId(uint8 InNumber)
 	{
 		UWeaponDataAsset** ErrorData = WeaponDataMap.Find(1);
 		//UWeaponPreLoader에 잘못된 데이터가 요청되어 ID_1 무기가 반환됨.
-		ensure(false);
+		//ensure(false);
+		LOG_WARNFUNC(TEXT("존재하지 않는 무기 데이터가 요청되어 Num_1 무기가 반환됨. 요청번호: %d"), InNumber);
 		return *ErrorData;
 	}
 }

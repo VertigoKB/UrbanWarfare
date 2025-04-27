@@ -9,7 +9,6 @@
 #include "UrbanWarfare/Common/CommonStructs.h"
 #include "AmmoHandler.generated.h"
 
-DECLARE_DELEGATE(FOnShotButNoAmmo)
 DECLARE_DELEGATE_OneParam(FOnEmptyHand, bool)
 DECLARE_DELEGATE_OneParam(FOnUpdateAmmoInMag, uint16)
 DECLARE_DELEGATE_OneParam(FOnUpdateExtraAmmo, uint16)
@@ -28,18 +27,17 @@ public:
 
 	FWeaponAmmoData GetAmmoDAta() const;
 
+private:
+	bool IsAmmoRemaInInMag();
+
 public:
-	FOnShotButNoAmmo OnShotButNoAmmo;
 	FOnEmptyHand OnEmptyHand;
 	FOnUpdateAmmoInMag OnUpdateAmmoInMag;
 	FOnUpdateExtraAmmo OnUpdateExtraAmmo;
 
-
 private:
 	uint16 CurrentAmmoInMag = 0;
 	uint16 CurrentExtraAmmo = 0;
-
-	bool bIsNoAmmo = true;
 
 	EWeaponType CurrentWeaponType = EWeaponType::UnArmed;
 
@@ -48,6 +46,8 @@ private:
 	TObjectPtr<class APlayerBase> OwnerPawn;
 	UPROPERTY()
 	TObjectPtr<class UWeaponComponent> WeaponComponent;
+	UPROPERTY()
+	TObjectPtr<class UCombatComponent> CombatComponent;
 	UPROPERTY()
 	TObjectPtr<UWorld> World;
 	UPROPERTY()

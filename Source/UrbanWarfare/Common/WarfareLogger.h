@@ -26,8 +26,14 @@ DECLARE_LOG_CATEGORY_EXTERN(LogWarfare, Log, All);
 #define LOG_SIMPLE(Format, ...) \
 	UE_LOG(LogWarfare, Log, TEXT("%s"), *FString::Printf(Format, ##__VA_ARGS__))
 
+#define LOG_WARNSIMP(Format, ...) \
+	UE_LOG(LogWarfare, Warning, TEXT("%s"), *FString::Printf(Format, ##__VA_ARGS__))
+
 #define LOG_EFUNC(Format, ...) \
 	UE_LOG(LogWarfare, Log, TEXT("[%s_%d] %s"), TEXT(__FUNCTION__), __LINE__, *FString::Printf(Format, ##__VA_ARGS__))
+
+#define LOG_WARNFUNC(Format, ...) \
+	UE_LOG(LogWarfare, Warning, TEXT("[%s_%d] %s"), TEXT(__FUNCTION__), __LINE__, *FString::Printf(Format, ##__VA_ARGS__))
 
 #define LOG_NETINFO ((GetNetMode() == ENetMode::NM_Client) ? *FString::Printf(TEXT("CLIENT_%d"), GPlayInEditorID) : ((GetNetMode() == ENetMode::NM_Standalone) ? TEXT("STANDALONE") : TEXT("SERVER")))
 
