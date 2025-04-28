@@ -51,7 +51,7 @@ void UAmmoHandler::Client_Shoot()
 	}
 }
 
-FWeaponAmmoData UAmmoHandler::GetAmmoDAta() const
+FWeaponAmmoData UAmmoHandler::GetAmmoData() const
 {
 	FWeaponAmmoData Data;
 	Data.AmmoInMag = CurrentAmmoInMag;

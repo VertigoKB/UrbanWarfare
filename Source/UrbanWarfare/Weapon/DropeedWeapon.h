@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "UrbanWarfare/Common/CommonEnums.h"
+#include "UrbanWarfare/Common/CommonStructs.h"
 #include "DropeedWeapon.generated.h"
 
 UCLASS()
@@ -35,7 +36,7 @@ public:
 		const FHitResult& SweepResult);
 
 	// 외부 로직에서 이 클래스의 객체를 스폰 할 경우, 이 함수로 초기화를 진행해야 함.
-	bool ExternalInitialize(const uint8 InIdNumber);
+	bool ExternalInitialize(const uint8 InIdNumber, FWeaponAmmoData AmmoData);
 
 	class USkeletalMeshComponent* GetWeaponMesh() const;
 

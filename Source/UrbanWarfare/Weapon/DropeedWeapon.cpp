@@ -137,7 +137,7 @@ void ADroppedWeapon::OnWeaponBeginOverlap(UPrimitiveComponent* OverlappedCompone
 	}
 }
 
-bool ADroppedWeapon::ExternalInitialize(const uint8 InIdNumber)
+bool ADroppedWeapon::ExternalInitialize(const uint8 InIdNumber, FWeaponAmmoData AmmoData)
 {
 	if (bIsWeaponIdSpecified)
 	{
@@ -154,8 +154,9 @@ bool ADroppedWeapon::ExternalInitialize(const uint8 InIdNumber)
 	WeaponMesh->SetSkeletalMesh(TempWeaponData->WeaponMesh.Get());
 	ThisWeaponType = TempWeaponData->WeaponType;
 	ThisWeaponIdNumber = TempWeaponData->WeaponIdNumber;
-	AmmoInMag = TempWeaponData->LoadableAmmoPerMag;
-	ExtraAmmo = (TempWeaponData->MaxAmmo) - (TempWeaponData->LoadableAmmoPerMag);
+	
+	AmmoInMag = AmmoData.AmmoInMag;
+	ExtraAmmo = AmmoData.ExtraAmmo;
 
 	SetupComponentsDroppedCollision();
 	WeaponMesh->SetSimulatePhysics(true);

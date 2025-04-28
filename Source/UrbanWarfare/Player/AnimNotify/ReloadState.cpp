@@ -4,6 +4,7 @@
 #include "ReloadState.h"
 #include "UrbanWarfare/Player/PlayerBase.h"
 #include "UrbanWarfare/Player/Components/CombatComponent.h"
+#include "UrbanWarfare/Player/Components/WeaponComponent.h"
 #include "UrbanWarfare/Common/WarfareLogger.h"
 
 void UReloadState::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float TotalDuration, const FAnimNotifyEventReference& EventReference)
@@ -24,7 +25,15 @@ void UReloadState::NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimSequenceBase
 	if (APlayerBase* PlayerPawn = MeshComp->GetOwner<APlayerBase>())
 	{
 		if (PlayerPawn->HasAuthority())
+		{
 			PlayerPawn->GetCombatComponent()->SetbIsReloading(false);
+
+			if (PlayerPawn->IsControlledByLocal())
+				PlayerPawn->GetWeaponComponent()->Client_OnCompleteReload();
+		}
+		else
+			PlayerPawn->GetWeaponComponent()->Client_OnCompleteReload();
+		
 	}
 	else
 	{

@@ -37,6 +37,15 @@ public:
 	// 이 함수는 ADroppedWeapon에 의해 HasAuthority true 확인후 호출됨
 	void LootWeapon(const FDroppedWeaponData& InData);
 
+	// Call by ReloadState with authority.
+	void Client_OnCompleteReload();
+
+	UFUNCTION(Server, Reliable)
+	void Server_RequestReloadAmmo(uint16 InRemainAmmo);
+
+	UFUNCTION(Client, Reliable)
+	void Client_ApplyReloadAmmo(uint16 InMag, uint16 InExtra);
+
 	EWeaponType GetEquippedWeaponType() const;
 	uint8 GetEquippedWeaponId() const;
 	class UAmmoHandler* GetAmmoHandler() const;
@@ -68,11 +77,15 @@ private:
 	UFUNCTION(Server, Unreliable)
 	void Server_OnTriggerEquipPistol();
 
+	void Client_OnTriggeredThrowWeapon();
 	UFUNCTION(Server, Reliable)
-	void Server_OnTriggerThrowWeapon();
+	void Server_ExecuteThrowWeapon(uint16 InMag, uint16 InExtra);
 
-	UFUNCTION(Server, Unreliable)
-	void Server_OnTriggerReload();
+	void OnTriggeredReload();
+
+	UFUNCTION(Server, Reliable)
+	void Server_PlayReloadMontage();
+
 
 	UFUNCTION(NetMulticast, Reliable)
 	void Multicast_ReloadWeapon(EWeaponType InType);
@@ -94,6 +107,8 @@ protected:
 
 	UPROPERTY()
 	TObjectPtr<class UAmmoHandler> AmmoHandler;
+
+	bool bIsTriggeredReload = false;
 
 	UPROPERTY(ReplicatedUsing = OnRep_EquippedWeaponType)
 	EWeaponType EquippedWeaponType = EWeaponType::UnArmed;

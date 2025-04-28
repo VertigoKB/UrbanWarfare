@@ -36,8 +36,8 @@ void UWeaponComponent::BeginPlay()
 	{
 		RegisterInputComponent->OnInputEquipRifle.BindUObject(this, &UWeaponComponent::Server_OnTriggerEquipRifle);
 		RegisterInputComponent->OnInputEquipPistol.BindUObject(this, &UWeaponComponent::Server_OnTriggerEquipPistol);
-		RegisterInputComponent->OnThrowWeapon.BindUObject(this, &UWeaponComponent::Server_OnTriggerThrowWeapon);
-		RegisterInputComponent->OnInputReload.BindUObject(this, &UWeaponComponent::Server_OnTriggerReload);
+		RegisterInputComponent->OnThrowWeapon.BindUObject(this, &UWeaponComponent::Client_OnTriggeredThrowWeapon);
+		RegisterInputComponent->OnInputReload.BindUObject(this, &UWeaponComponent::OnTriggeredReload);
 
 		AmmoHandler = NewObject<UAmmoHandler>();
 		AmmoHandler->ExternalInitialize(GetOwner<APlayerBase>(), this);
@@ -86,6 +86,28 @@ void UWeaponComponent::LootWeapon(const FDroppedWeaponData& InData)
 
 	if (EquippedWeaponId == 0)
 		Server_EquipWeapon(InData.WeaponId, InData.WeaponType);
+}
+
+void UWeaponComponent::Client_OnCompleteReload()
+{
+	if (bIsTriggeredReload)
+	{
+		bIsTriggeredReload = false;
+		FWeaponAmmoData CurrentAmmoData = AmmoHandler->GetAmmoData();
+		uint16 RemainAmmo = CurrentAmmoData.AmmoInMag;
+		Server_RequestReloadAmmo(RemainAmmo);
+	}
+}
+
+void UWeaponComponent::Server_RequestReloadAmmo_Implementation(uint16 InRemainAmmo)
+{
+	//WeaponInventory.Items[static_cast<uint8>(EquippedWeaponType)].AmmoInMag
+	
+}
+
+void UWeaponComponent::Client_ApplyReloadAmmo_Implementation(uint16 InMag, uint16 InExtra)
+{
+
 }
 
 EWeaponType UWeaponComponent::GetEquippedWeaponType() const { return EquippedWeaponType; }
@@ -208,7 +230,13 @@ void UWeaponComponent::Server_OnTriggerEquipPistol_Implementation()
 	}
 }
 
-void UWeaponComponent::Server_OnTriggerThrowWeapon_Implementation()
+void UWeaponComponent::Client_OnTriggeredThrowWeapon()
+{
+	FWeaponAmmoData AmmoData = AmmoHandler->GetAmmoData();
+	Server_ExecuteThrowWeapon(AmmoData.AmmoInMag, AmmoData.ExtraAmmo);
+}
+
+void UWeaponComponent::Server_ExecuteThrowWeapon_Implementation(uint16 InMag, uint16 InExtra)
 {
 	if (EquippedWeaponId == 0)
 		return;
@@ -221,7 +249,10 @@ void UWeaponComponent::Server_OnTriggerThrowWeapon_Implementation()
 	FVector SpawnLocation = MyOwnerPawn->GetActorLocation() + FVector(0.f, 0.f, 50.f);
 	FRotator SpawnRotation = MyOwnerPawn->GetActorRotation();
 	ADroppedWeapon* DroppedWeapon = GetWorld()->SpawnActor<ADroppedWeapon>(ADroppedWeapon::StaticClass(), SpawnLocation, SpawnRotation, SpawnParams);
-	DroppedWeapon->ExternalInitialize(EquippedWeaponId);
+	FWeaponAmmoData InitAmmoData;
+	InitAmmoData.AmmoInMag = InMag;
+	InitAmmoData.ExtraAmmo = InExtra;
+	DroppedWeapon->ExternalInitialize(EquippedWeaponId, InitAmmoData);
 
 	FVector ForwardVector = MyOwnerPawn->GetActorForwardVector();
 	FVector UpVector = FVector::UpVector;
@@ -262,9 +293,16 @@ void UWeaponComponent::Server_OnTriggerThrowWeapon_Implementation()
 	}
 }
 
-void UWeaponComponent::Server_OnTriggerReload_Implementation()
+void UWeaponComponent::OnTriggeredReload()
 {
+	if (!bIsTriggeredReload)
+		Server_PlayReloadMontage();
+	bIsTriggeredReload = true;
+}
 
+void UWeaponComponent::Server_PlayReloadMontage_Implementation()
+{
+	Multicast_ReloadWeapon(EquippedWeaponType);
 }
 
 void UWeaponComponent::Multicast_ReloadWeapon_Implementation(EWeaponType InType)
