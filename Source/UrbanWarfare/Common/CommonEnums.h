@@ -36,3 +36,13 @@ enum class EFiringMode : uint8
 	Burst,
 	Manual
 };
+
+UENUM()
+enum class EMultiplayCase : uint8
+{
+	Unspecified,
+	Server_ListenHost,
+	Server_Proxy,
+	Client_LocalPlayer,
+	Client_Proxy
+};

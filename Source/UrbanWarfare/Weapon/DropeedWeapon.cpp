@@ -105,6 +105,8 @@ void ADroppedWeapon::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 	DOREPLIFETIME(ADroppedWeapon, bIsWeaponIdSpecified);
 	DOREPLIFETIME(ADroppedWeapon, ThisWeaponIdNumber);
 	DOREPLIFETIME(ADroppedWeapon, ThisWeaponType);
+	DOREPLIFETIME(ADroppedWeapon, AmmoInMag);
+	DOREPLIFETIME(ADroppedWeapon, ExtraAmmo);
 }
 
 void ADroppedWeapon::OnWeaponBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,

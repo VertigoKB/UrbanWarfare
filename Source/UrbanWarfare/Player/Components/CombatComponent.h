@@ -48,14 +48,17 @@ private:
 	UFUNCTION()
 	void OnWeaponChange(uint8 InWeaponId);
 
-	void ProcessContinuousAttack();
+	void IsServer_ProcessContinuousAttack();
 
 	UFUNCTION(Server, Reliable)
 	void Server_ExecuteAttack();
 	void ExecuteAttack();
+	void Server_PerformAttack();
+	void Client_PerformAttack();
 
 public:
 	FOnAttack OnAttack;
+	bool bOwnerIsListenHost = false;
 
 private:
 	UPROPERTY(ReplicatedUsing = OnRep_bAttackFlag)
@@ -78,8 +81,8 @@ private:
 	// Initialization Data
 	UPROPERTY()
 	TObjectPtr<class APlayerBase> OwnerPawn;
-	UPROPERTY()
-	TObjectPtr<class APlayerController> OwnerPlayerController;
+	//UPROPERTY()
+	//TObjectPtr<class APlayerController> OwnerPlayerController;
 	UPROPERTY()
 	TObjectPtr<class URegisterInputComponent> RegisterInputComponent;
 	UPROPERTY()
@@ -94,9 +97,11 @@ private:
 	TObjectPtr<class UAmmoHandler> AmmoHandler;
 
 	bool bAuthority = false;
+	bool bIsOwnerPawnControlledByHost = false;
 
 	bool bIsInitialized = false;
 	FTimerHandle InitHandle;
 	uint8 InitCount = 10;
+
 
 };

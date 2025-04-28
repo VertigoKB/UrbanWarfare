@@ -41,7 +41,6 @@ void UWeaponComponent::BeginPlay()
 
 		AmmoHandler = NewObject<UAmmoHandler>();
 		AmmoHandler->ExternalInitialize(GetOwner<APlayerBase>(), this);
-
 	}
 
 	if (GetOwner()->HasAuthority())
@@ -152,6 +151,9 @@ void UWeaponComponent::OnRep_EquippedWeaponId()
 void UWeaponComponent::OnRep_EquippedWeaponType()
 {
 	OnLocalPlayerEquipWeapon.ExecuteIfBound(EquippedWeaponType);
+
+	FName WhoIsThis = GetOwner()->GetFName();
+	ENetMode WatMode = GetWorld()->GetNetMode();
 
 	if (GetOwner<APlayerBase>()->IsLocallyControlled())
 	{

@@ -28,6 +28,7 @@ public:
 	FWeaponAmmoData GetAmmoDAta() const;
 
 private:
+	void OnSpecifiedMultiplayCase(EMultiplayCase InMultiplayCase);
 	bool IsAmmoRemaInInMag();
 
 public:
@@ -35,12 +36,15 @@ public:
 	FOnUpdateAmmoInMag OnUpdateAmmoInMag;
 	FOnUpdateExtraAmmo OnUpdateExtraAmmo;
 
+
 private:
 	uint16 CurrentAmmoInMag = 0;
 	uint16 CurrentExtraAmmo = 0;
 
 	EWeaponType CurrentWeaponType = EWeaponType::UnArmed;
 
+	bool bIsLocal = false;
+	EMultiplayCase OwnerMultiplayCase = EMultiplayCase::Unspecified;
 private:
 	UPROPERTY()
 	TObjectPtr<class APlayerBase> OwnerPawn;

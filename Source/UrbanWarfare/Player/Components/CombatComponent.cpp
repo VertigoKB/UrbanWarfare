@@ -53,7 +53,7 @@ void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	// ...
+	//LOG_SIMPLE(TEXT("Host: %d"), bOwnerIsListenHost)
 }
 
 
@@ -103,12 +103,12 @@ bool UCombatComponent::InitConstruct()
 
 	bAuthority = OwnerPawn->HasAuthority();
 
-	OwnerPlayerController = GetWorld()->GetFirstPlayerController();
-	if (!OwnerPlayerController)
-	{
-		LOG_EFUNC(TEXT("Initialization failed: OwnerPlayerController"));
-		return false;
-	}
+	//OwnerPlayerController = GetWorld()->GetFirstPlayerController();
+	//if (!OwnerPlayerController)
+	//{
+	//	LOG_EFUNC(TEXT("Initialization failed: OwnerPlayerController"));
+	//	return false;
+	//}
 
 	RegisterInputComponent = OwnerPawn->GetRegInputComp();
 	if (!RegisterInputComponent)
@@ -144,6 +144,8 @@ bool UCombatComponent::InitConstruct()
 
 void UCombatComponent::OnSuccessfullyInitialize()
 {
+	bIsOwnerPawnControlledByHost = OwnerPawn->IsListenHostControlled();
+
 	RegisterInputComponent->OnInputAttack.BindUObject(this, &UCombatComponent::Client_OnStartedInput);
 	RegisterInputComponent->OnCompleteAttack.BindUObject(this, &UCombatComponent::Client_OnCompleteInput);
 	WeaponComponent->OnWeaponChange.AddUObject(this, &UCombatComponent::OnWeaponChange);
@@ -175,8 +177,8 @@ void UCombatComponent::OnRep_bAttackFlag()
 {
 	if (bAttackFlag)
 	{
-		ExecuteAttack();
-		ProcessContinuousAttack();
+		Client_PerformAttack();
+		IsServer_ProcessContinuousAttack();
 	}
 	else
 		GetWorld()->GetTimerManager().ClearTimer(RoundIntervalHandle);
@@ -191,31 +193,54 @@ void UCombatComponent::OnWeaponChange(uint8 InWeaponId)
 	if (GetWorld()->GetTimerManager().IsTimerActive(RoundIntervalHandle))
 	{
 		GetWorld()->GetTimerManager().ClearTimer(RoundIntervalHandle);
-		ProcessContinuousAttack();
+		IsServer_ProcessContinuousAttack();
 	}
 }
 
-void UCombatComponent::ProcessContinuousAttack()
+void UCombatComponent::IsServer_ProcessContinuousAttack()
 {
-	GetWorld()->GetTimerManager().SetTimer(RoundIntervalHandle, this, &UCombatComponent::ExecuteAttack, RoundInterval, true);
+	if (bAuthority)
+		GetWorld()->GetTimerManager().SetTimer(RoundIntervalHandle, this, &UCombatComponent::Server_PerformAttack, RoundInterval, true);
+	else
+		GetWorld()->GetTimerManager().SetTimer(RoundIntervalHandle, this, &UCombatComponent::Client_PerformAttack, RoundInterval, true);
 }
 
 void UCombatComponent::Server_ExecuteAttack_Implementation()
 {
-	ExecuteAttack();
+	Server_PerformAttack();
 	bAttackFlag = true;
-	ProcessContinuousAttack();
-	OnRep_bAttackFlag(); // For Host
+	//OnRep_bAttackFlag(); // For Host
+	IsServer_ProcessContinuousAttack();
 }
 
-void UCombatComponent::ExecuteAttack()
+void UCombatComponent::Server_PerformAttack()
 {
 	if (bIsReloading || !bIsAmmoInMag)
+	{
+		bAttackFlag = false;
+		GetWorld()->GetTimerManager().ClearTimer(RoundIntervalHandle);
 		return;
+	}
 
 	MuzzleFlashSpawner->PlayMuzzleEffect();
-	if (bAuthority)
-		FireTraceHandler->AttackLineTrace();
-
+	FireTraceHandler->AttackLineTrace();
 	OnAttack.Broadcast();
+
+	if (bOwnerIsListenHost)
+		AmmoHandler->Client_Shoot();
+}
+
+void UCombatComponent::Client_PerformAttack()
+{
+	if (bIsReloading || !bIsAmmoInMag)
+	{
+		bAttackFlag = false;
+		GetWorld()->GetTimerManager().ClearTimer(RoundIntervalHandle);
+		return;
+	}
+
+	MuzzleFlashSpawner->PlayMuzzleEffect();
+	OnAttack.Broadcast();
+
+	AmmoHandler->Client_Shoot();
 }

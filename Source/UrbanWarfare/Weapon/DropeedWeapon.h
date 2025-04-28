@@ -71,6 +71,7 @@ protected:
 	uint8 ThisWeaponIdNumber = 0;
 	UPROPERTY(Replicated)
 	uint16 AmmoInMag = 0;
+	UPROPERTY(Replicated)
 	uint16 ExtraAmmo = 0;
 
 	//UPROPERTY(ReplicatedUsing = OnRep_WeaponLocation)

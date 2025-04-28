@@ -8,8 +8,11 @@
 
 #include "../AssetConfig/MeshConfig.h"
 #include "../AssetConfig/BlueprintConfig.h"
+#include "UrbanWarfare/Common/CommonEnums.h"
 
 #include "PlayerBase.generated.h"
+
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnspecifiedMultiplayCase, EMultiplayCase)
 
 UCLASS()
 class URBANWARFARE_API APlayerBase : public ACharacter
@@ -34,6 +37,11 @@ public:
 	class UCameraComponent* GetPlayerCamera() const;
 	class UBlueprintConfig* GetBlueprintConfig() const;
 	bool IsPlayerFalling() const;
+	void SetListenHostFlagByController(class AWarfareController* InController);
+	inline bool IsListenHostControlled() const { return bIsListenHost; }
+	void SetMultiplayCaseByController(const EMultiplayCase InMultiplayCase);
+	inline EMultiplayCase GetMultiplayCase() const { return MultiplayCase; }
+	inline bool IsControlledByLocal() const { return bIsLocal; }
 
 	void AttachWeaponMeshToRifle();
 	void AttachWeaponMeshToPistol();
@@ -67,7 +75,7 @@ protected:
 public:
 
 	//void SetupFirstPersonViewSocket();
-
+	FOnspecifiedMultiplayCase OnspecifiedMultiplayCase;
 
 public:
 	// Data Configs
@@ -118,6 +126,16 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Custom Components")
 	TObjectPtr<class UCombatComponent> CombatComponent;
+
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	EMultiplayCase MultiplayCase = EMultiplayCase::Unspecified;
+
+private:
+	bool bIsListenHost = false;
+	bool bIsLocal = false;
+
+
 public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void TestUrban();

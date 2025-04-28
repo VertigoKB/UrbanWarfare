@@ -32,6 +32,8 @@ public:
 
 	UFUNCTION(Client, Reliable)
 	void ClientRequestStopSequenceToHud();
+
+	inline bool IsListenServerHost() const { return bIsListenHost; }
 protected:
 	virtual void BeginPlay() override;
 	virtual void OnPossess(APawn* InPawn) override;
@@ -53,4 +55,5 @@ private:
 	UPROPERTY(ReplicatedUsing = OnRep_PlayerPawn)
 	TObjectPtr<class APlayerBase> PlayerPawn;
 
+	bool bIsListenHost = false;
 };

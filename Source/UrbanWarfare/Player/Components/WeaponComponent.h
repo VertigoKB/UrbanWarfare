@@ -123,6 +123,6 @@ public:
 	//EWeaponType DebugWeaponType = EWeaponType::UnArmed;
 	//UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	//uint8 DebugWeaponIdA = 0;
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	//uint8 DebugWeaponIdB = 0;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	uint8 DebugAmmo = 0;
 };

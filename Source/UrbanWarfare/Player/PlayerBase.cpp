@@ -15,6 +15,7 @@
 #include "Components/CombatComponent.h"
 #include "UrbanWarfare/Common/WarfareLogger.h"
 #include "UrbanWarfare/Frameworks/GameInstance/WeaponPreLoader.h"
+#include "UrbanWarfare/Frameworks/WarfareController.h"
 #include "UrbanWarfare/Weapon/WeaponData/WeaponDataAsset.h"
 
 
@@ -63,6 +64,25 @@ UCombatComponent* APlayerBase::GetCombatComponent() const { return CombatCompone
 UCameraComponent* APlayerBase::GetPlayerCamera() const { return TheCamera; }
 UBlueprintConfig* APlayerBase::GetBlueprintConfig() const { return BlueprintConfig; }
 bool APlayerBase::IsPlayerFalling() const { return TheMovement->IsFalling(); }
+
+void APlayerBase::SetListenHostFlagByController(AWarfareController* InController)
+{
+	if (HasAuthority() && InController->IsLocalController())
+		bIsListenHost = true;
+
+	GetCombatComponent()->bOwnerIsListenHost = true;
+}
+
+void APlayerBase::SetMultiplayCaseByController(const EMultiplayCase InMultiplayCase)
+{
+	MultiplayCase = InMultiplayCase;
+
+	if (MultiplayCase == EMultiplayCase::Server_ListenHost ||
+		MultiplayCase == EMultiplayCase::Client_LocalPlayer)
+		bIsLocal = true;
+
+	OnspecifiedMultiplayCase.Broadcast(MultiplayCase);
+}
 
 void APlayerBase::AttachWeaponMeshToRifle()
 {

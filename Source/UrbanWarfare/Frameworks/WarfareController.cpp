@@ -69,7 +69,11 @@ void AWarfareController::SpawnPlayer(ETeam InTeam, const FTransform& SpawnTrasfo
 	Possess(PlayerPawn);
 
 	if (IsLocalController())
+	{
+		PlayerPawn->SetListenHostFlagByController(this);
+		bIsListenHost = true;
 		OnRep_PlayerPawn();
+	}
 	
 }
 
@@ -104,4 +108,22 @@ void AWarfareController::OnUnPossess()
 void AWarfareController::OnRep_PlayerPawn()
 {
 	OnPlayerSpawned.ExecuteIfBound(PlayerPawn);
+
+	bool IsWorldHasAuthority = HasAuthority();
+	bool IsLocal = IsLocalController();
+
+	if (IsWorldHasAuthority)
+	{
+		if (IsLocal)
+			PlayerPawn->SetMultiplayCaseByController(EMultiplayCase::Server_ListenHost);
+		else
+			PlayerPawn->SetMultiplayCaseByController(EMultiplayCase::Server_Proxy);
+	}
+	else
+	{
+		if (IsLocal)
+			PlayerPawn->SetMultiplayCaseByController(EMultiplayCase::Client_LocalPlayer);
+		else
+			PlayerPawn->SetMultiplayCaseByController(EMultiplayCase::Client_Proxy);
+	}
 }
