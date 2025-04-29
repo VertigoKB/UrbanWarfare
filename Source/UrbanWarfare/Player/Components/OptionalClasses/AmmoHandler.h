@@ -26,6 +26,7 @@ public:
 	void Client_Shoot();
 
 	FWeaponAmmoData GetAmmoData() const;
+	void SetAmmoData(const FWeaponAmmoData InAmmoData);
 
 private:
 	void OnSpecifiedMultiplayCase(EMultiplayCase InMultiplayCase);

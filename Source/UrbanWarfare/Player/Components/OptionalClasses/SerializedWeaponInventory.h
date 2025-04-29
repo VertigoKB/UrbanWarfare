@@ -90,6 +90,32 @@ struct FWeaponInventory : public FFastArraySerializer
 			MarkItemDirty(Items[Index]);
 	}
 
+	void ModifyAmmo(uint8 Index, uint16 InAmmoInMag, uint16 InExtraAmmo)
+	{
+		if (!Items.IsValidIndex(Index))
+		{
+			LOG_SIMPLE(TEXT("FWeaponInventory SetItem failed: Invalid index %d"), Index);
+			return;
+		}
+
+		bool bDirty = false;
+
+		if (Items[Index].AmmoInMag != InAmmoInMag)
+		{
+			Items[Index].AmmoInMag = InAmmoInMag;
+			bDirty = true;
+		}
+
+		if (Items[Index].ExtraAmmo != InExtraAmmo)
+		{
+			Items[Index].ExtraAmmo = InExtraAmmo;
+			bDirty = true;
+		}
+
+		if (bDirty)
+			MarkItemDirty(Items[Index]);
+	}
+
 	// 서버에서 변경 사항을 클라이언트에 동기화할 때 호출되는 함수
 	bool NetDeltaSerialize(FNetDeltaSerializeInfo& DeltaParms)
 	{

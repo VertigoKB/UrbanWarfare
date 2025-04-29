@@ -67,15 +67,19 @@ private:
 	
 	//UFUNCTION()
 	//void OnRep_EquippedWeaponType();
-
+	UFUNCTION(Server, Reliable)
+	void Server_RequestModifyAmmo(const uint8 Index, const uint16 InMag, const uint16 InExtra);
+	
 	UFUNCTION(Server, Reliable)
 	void Server_EquipWeapon(const uint8 InIdNumber, const EWeaponType InType);
 
+	void OnTriggeredEquipRifle();
 	UFUNCTION(Server, Unreliable)
-	void Server_OnTriggerEquipRifle();
+	void Server_ExecuteEquipRifle();
 
+	void OnTriggeredEquipPistol();
 	UFUNCTION(Server, Unreliable)
-	void Server_OnTriggerEquipPistol();
+	void Server_ExecuteEquipPistol();
 
 	void Client_OnTriggeredThrowWeapon();
 	UFUNCTION(Server, Reliable)
@@ -125,6 +129,7 @@ private:
 
 	float Damage = 0.f;
 	float AttackInterval = 0.f;
+
 
 public:
 	//// Debug

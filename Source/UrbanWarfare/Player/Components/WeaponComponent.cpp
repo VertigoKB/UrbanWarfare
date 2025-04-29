@@ -34,8 +34,8 @@ void UWeaponComponent::BeginPlay()
 	
 	if (InitConstruct())
 	{
-		RegisterInputComponent->OnInputEquipRifle.BindUObject(this, &UWeaponComponent::Server_OnTriggerEquipRifle);
-		RegisterInputComponent->OnInputEquipPistol.BindUObject(this, &UWeaponComponent::Server_OnTriggerEquipPistol);
+		RegisterInputComponent->OnInputEquipRifle.BindUObject(this, &UWeaponComponent::OnTriggeredEquipRifle);
+		RegisterInputComponent->OnInputEquipPistol.BindUObject(this, &UWeaponComponent::OnTriggeredEquipPistol);
 		RegisterInputComponent->OnThrowWeapon.BindUObject(this, &UWeaponComponent::Client_OnTriggeredThrowWeapon);
 		RegisterInputComponent->OnInputReload.BindUObject(this, &UWeaponComponent::OnTriggeredReload);
 
@@ -93,9 +93,32 @@ void UWeaponComponent::Client_OnCompleteReload()
 	if (bIsTriggeredReload)
 	{
 		bIsTriggeredReload = false;
+
 		FWeaponAmmoData CurrentAmmoData = AmmoHandler->GetAmmoData();
-		uint16 RemainAmmo = CurrentAmmoData.AmmoInMag;
-		Server_RequestReloadAmmo(RemainAmmo);
+		uint16 RemainMag = CurrentAmmoData.AmmoInMag;
+		uint16 RemainExtra = CurrentAmmoData.ExtraAmmo;
+
+		UWeaponDataAsset* CurrentWeaponData = GetWorld()->GetGameInstance()->GetSubsystem<UWeaponPreLoader>()->GetWeaponDataByWeaponId(EquippedWeaponId);
+		uint16 LoadableInMag = CurrentWeaponData->LoadableAmmoPerMag;
+
+		uint16 RequiredAmount = LoadableInMag - RemainMag;
+
+		uint16 NewInMag = 0;
+		uint16 NewInExtra = 0;
+		if (RequiredAmount < RemainExtra)
+		{
+			NewInMag = RemainMag + RequiredAmount;
+			NewInExtra = RemainExtra - RequiredAmount;
+		}
+		else
+			NewInMag += RemainExtra;
+
+		FWeaponAmmoData NewAmmoData;
+		NewAmmoData.AmmoInMag = NewInMag;
+		NewAmmoData.ExtraAmmo = NewInExtra;
+
+		AmmoHandler->SetAmmoData(NewAmmoData);
+		Server_RequestModifyAmmo(static_cast<uint8>(EquippedWeaponType), NewInMag, NewInExtra);
 	}
 }
 
@@ -108,6 +131,11 @@ void UWeaponComponent::Server_RequestReloadAmmo_Implementation(uint16 InRemainAm
 void UWeaponComponent::Client_ApplyReloadAmmo_Implementation(uint16 InMag, uint16 InExtra)
 {
 
+}
+
+void UWeaponComponent::Server_RequestModifyAmmo_Implementation(const uint8 Index, const uint16 InAmmo, const uint16 InExtra)
+{
+	WeaponInventory.ModifyAmmo(Index, InAmmo, InExtra);
 }
 
 EWeaponType UWeaponComponent::GetEquippedWeaponType() const { return EquippedWeaponType; }
@@ -200,7 +228,18 @@ void UWeaponComponent::Server_EquipWeapon_Implementation(const uint8 InIdNumber,
 	Multicast_ReloadWeapon(InType);
 }
 
-void UWeaponComponent::Server_OnTriggerEquipRifle_Implementation()
+void UWeaponComponent::OnTriggeredEquipRifle()
+{
+	bIsTriggeredReload = false;
+	FWeaponAmmoData AmmoData = AmmoHandler->GetAmmoData();
+	uint16 ReaminAmmoInMag = AmmoData.AmmoInMag;
+	uint16 RemainExtraAmmo = AmmoData.ExtraAmmo;
+
+	Server_RequestModifyAmmo(static_cast<uint8>(EquippedWeaponType), ReaminAmmoInMag, RemainExtraAmmo);
+	Server_ExecuteEquipRifle();
+}
+
+void UWeaponComponent::Server_ExecuteEquipRifle_Implementation()
 {
 	uint8 TargetWeapon = WeaponInventory.Items[static_cast<uint8>(EWeaponType::Rifle)].WeaponId;
 
@@ -215,7 +254,18 @@ void UWeaponComponent::Server_OnTriggerEquipRifle_Implementation()
 	}
 }
 
-void UWeaponComponent::Server_OnTriggerEquipPistol_Implementation()
+void UWeaponComponent::OnTriggeredEquipPistol()
+{
+	bIsTriggeredReload = false;
+	FWeaponAmmoData AmmoData = AmmoHandler->GetAmmoData();
+	uint16 ReaminAmmoInMag = AmmoData.AmmoInMag;
+	uint16 RemainExtraAmmo = AmmoData.ExtraAmmo;
+
+	Server_RequestModifyAmmo(static_cast<uint8>(EquippedWeaponType), ReaminAmmoInMag, RemainExtraAmmo);
+	Server_ExecuteEquipPistol();
+}
+
+void UWeaponComponent::Server_ExecuteEquipPistol_Implementation()
 {
 	uint8 TargetWeapon = WeaponInventory.Items[static_cast<uint8>(EWeaponType::Pistol)].WeaponId;
 
@@ -232,6 +282,7 @@ void UWeaponComponent::Server_OnTriggerEquipPistol_Implementation()
 
 void UWeaponComponent::Client_OnTriggeredThrowWeapon()
 {
+	bIsTriggeredReload = false;
 	FWeaponAmmoData AmmoData = AmmoHandler->GetAmmoData();
 	Server_ExecuteThrowWeapon(AmmoData.AmmoInMag, AmmoData.ExtraAmmo);
 }

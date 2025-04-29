@@ -60,6 +60,16 @@ FWeaponAmmoData UAmmoHandler::GetAmmoData() const
 	return Data;
 }
 
+void UAmmoHandler::SetAmmoData(const FWeaponAmmoData InAmmoData)
+{
+	CurrentAmmoInMag = InAmmoData.AmmoInMag;
+	CurrentExtraAmmo = InAmmoData.ExtraAmmo;
+
+	OnUpdateAmmoInMag.ExecuteIfBound(CurrentAmmoInMag);
+	OnUpdateExtraAmmo.ExecuteIfBound(CurrentExtraAmmo);
+	IsAmmoRemaInInMag();
+}
+
 void UAmmoHandler::OnSpecifiedMultiplayCase(EMultiplayCase InMultiplayCase)
 {
 	OwnerMultiplayCase = InMultiplayCase;
