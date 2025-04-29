@@ -41,7 +41,16 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Blueprints|AnimMontage")
 	TObjectPtr<UAnimMontage> TerroristReloadRifle;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Blueprints|AnimMontage")
+	TObjectPtr<UAnimMontage> TerroristFirePistol;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Blueprints|AnimMontage")
+	TObjectPtr<UAnimMontage> TerroristFireRifle;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Blueprints|AnimMontage")
 	TObjectPtr<UAnimMontage> CounterTristReloadPistol;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Blueprints|AnimMontage")
 	TObjectPtr<UAnimMontage> CounterTristReloadRifle;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Blueprints|AnimMontage")
+	TObjectPtr<UAnimMontage> CounterTristFirePistol;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Blueprints|AnimMontage")
+	TObjectPtr<UAnimMontage> CounterTristFireRifle;
 };

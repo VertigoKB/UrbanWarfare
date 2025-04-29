@@ -26,7 +26,8 @@ public:
 
 	void PlayMontage_ReloadPistol();
 	void PlayMontage_ReloadRifle();
-
+	void PlayMontage_FirePistol();
+	void PlayMontage_FireRifle();
 protected:
 	UFUNCTION()
 	bool CacheAndInit();
@@ -50,6 +51,10 @@ protected:
 	TObjectPtr<UAnimMontage> MontageReloadPistol;
 	UPROPERTY()
 	TObjectPtr<UAnimMontage> MontageReloadRifle;
+	UPROPERTY()
+	TObjectPtr<UAnimMontage> MontageFirePistol;
+	UPROPERTY()
+	TObjectPtr<UAnimMontage> MontageFireRifle;
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "UrbanWarfare")

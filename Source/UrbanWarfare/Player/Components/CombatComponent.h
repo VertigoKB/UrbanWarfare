@@ -23,6 +23,7 @@ public:
 
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+	inline void SetLocalFlag(bool bFlag) { bOwnerIsLocal = bFlag; }
 	inline void SetbIsReloading(bool bFlag) { bIsReloading = bFlag; }
 
 	inline bool GetbIsNoAmmoInMag() const { return bIsAmmoInMag; }
@@ -84,6 +85,10 @@ private:
 	//UPROPERTY()
 	//TObjectPtr<class APlayerController> OwnerPlayerController;
 	UPROPERTY()
+	TObjectPtr<class UWarfareAnim> ThirdWarfareAnim;
+	UPROPERTY()
+	TObjectPtr<class UWarfareAnim> FirstWarfareAnim;
+	UPROPERTY()
 	TObjectPtr<class URegisterInputComponent> RegisterInputComponent;
 	UPROPERTY()
 	TObjectPtr<class UWeaponComponent> WeaponComponent;
@@ -98,6 +103,7 @@ private:
 
 	bool bAuthority = false;
 	bool bIsOwnerPawnControlledByHost = false;
+	bool bOwnerIsLocal = false;
 
 	bool bIsInitialized = false;
 	FTimerHandle InitHandle;

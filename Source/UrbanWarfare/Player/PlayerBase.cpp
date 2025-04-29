@@ -81,6 +81,7 @@ void APlayerBase::SetMultiplayCaseByController(const EMultiplayCase InMultiplayC
 		MultiplayCase == EMultiplayCase::Client_LocalPlayer)
 		bIsLocal = true;
 
+	CombatComponent->SetLocalFlag(bIsLocal);
 	OnspecifiedMultiplayCase.Broadcast(MultiplayCase);
 }
 

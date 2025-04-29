@@ -47,7 +47,7 @@ private:
 	bool bIsLocal = false;
 	EMultiplayCase OwnerMultiplayCase = EMultiplayCase::Unspecified;
 private:
-	UPROPERTY()
+
 	TObjectPtr<class APlayerBase> OwnerPawn;
 	UPROPERTY()
 	TObjectPtr<class UWeaponComponent> WeaponComponent;

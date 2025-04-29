@@ -7,6 +7,7 @@
 #include "GameFramework/PlayerController.h"
 
 #include "UrbanWarfare/Player/PlayerBase.h"
+#include "UrbanWarfare/Player/WarfareAnim.h"
 #include "UrbanWarfare/Player/Components/RegisterInputComponent.h"
 #include "UrbanWarfare/Player/Components/WeaponComponent.h"
 #include "UrbanWarfare/Player/Components/OptionalClasses/MuzzleFlashSpawner.h"
@@ -110,6 +111,22 @@ bool UCombatComponent::InitConstruct()
 	//	return false;
 	//}
 
+	UAnimInstance* FirstAnimInst = OwnerPawn->GetTheMesh()->GetAnimInstance();
+	FirstWarfareAnim = Cast<UWarfareAnim>(FirstAnimInst);
+	if (!FirstWarfareAnim)
+	{
+		LOG_EFUNC(TEXT("Initialization failed: FirstAnimInst"));
+		return false;
+	}
+
+	UAnimInstance* ThirdAnimInst = OwnerPawn->GetThirdMesh()->GetAnimInstance();
+	ThirdWarfareAnim = Cast<UWarfareAnim>(ThirdAnimInst);
+	if (!ThirdWarfareAnim)
+	{
+		LOG_EFUNC(TEXT("Initialization failed: WarfareAnim"));
+		return false;
+	}
+
 	RegisterInputComponent = OwnerPawn->GetRegInputComp();
 	if (!RegisterInputComponent)
 	{
@@ -155,7 +172,6 @@ void UCombatComponent::OnSuccessfullyInitialize()
 	FireTraceHandler = NewObject<UFireTraceHandler>();
 	FireTraceHandler->ExternalInitialize(GetOwner<APlayerBase>());
 }
-
 void UCombatComponent::Client_OnStartedInput()
 {
 	Server_ExecuteAttack();
@@ -226,6 +242,24 @@ void UCombatComponent::Server_PerformAttack()
 	FireTraceHandler->AttackLineTrace();
 	OnAttack.Broadcast();
 
+	//EWeaponType WeaponType = WeaponComponent->GetEquippedWeaponType();
+
+	//switch (WeaponType)
+	//{
+	//case EWeaponType::Pistol:
+	//	if (bOwnerIsLocal)
+	//		FirstWarfareAnim->PlayMontage_FirePistol();
+	//	else
+	//		ThirdWarfareAnim->PlayMontage_FirePistol();
+	//	break;
+	//case EWeaponType::Rifle:
+	//	if (bOwnerIsLocal)
+	//		FirstWarfareAnim->PlayMontage_FireRifle();
+	//	else
+	//		ThirdWarfareAnim->PlayMontage_FireRifle();
+	//	break;
+	//}
+
 	if (bOwnerIsListenHost)
 		AmmoHandler->Client_Shoot();
 }
@@ -243,4 +277,22 @@ void UCombatComponent::Client_PerformAttack()
 	OnAttack.Broadcast();
 
 	AmmoHandler->Client_Shoot();
+
+	//EWeaponType WeaponType = WeaponComponent->GetEquippedWeaponType();
+
+	//switch (WeaponType)
+	//{
+	//case EWeaponType::Pistol:
+	//	if (bOwnerIsLocal)
+	//		FirstWarfareAnim->PlayMontage_FirePistol();
+	//	else
+	//		ThirdWarfareAnim->PlayMontage_FirePistol();
+	//	break;
+	//case EWeaponType::Rifle:
+	//	if (bOwnerIsLocal)
+	//		FirstWarfareAnim->PlayMontage_FireRifle();
+	//	else
+	//		ThirdWarfareAnim->PlayMontage_FireRifle();
+	//	break;
+	//}
 }

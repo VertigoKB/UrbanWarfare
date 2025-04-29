@@ -68,6 +68,24 @@ void UWarfareAnim::PlayMontage_ReloadRifle()
 	Montage_Play(MontageReloadRifle);
 }
 
+void UWarfareAnim::PlayMontage_FirePistol()
+{
+	FName Who = this->GetFName();
+	ensure(MontageFirePistol);
+
+	Montage_Stop(0.f);
+	Montage_Play(MontageFirePistol);
+}
+
+void UWarfareAnim::PlayMontage_FireRifle()
+{
+	FName Who = this->GetFName();
+	ensure(MontageFireRifle);
+
+	Montage_Stop(0.f);
+	Montage_Play(MontageFireRifle);
+}
+
 bool UWarfareAnim::CacheAndInit()
 {
 	ThePlayer = Cast<APlayerBase>(TryGetPawnOwner());
@@ -77,15 +95,21 @@ bool UWarfareAnim::CacheAndInit()
 		return false;
 	}
 
+	UBlueprintConfig* BlueprintConfig = ThePlayer->GetBlueprintConfig();
+
 	if (ThePlayer->ActorHasTag("CounterTrist"))
 	{
-		MontageReloadPistol = ThePlayer->GetBlueprintConfig()->CounterTristReloadPistol;
-		MontageReloadRifle = ThePlayer->GetBlueprintConfig()->CounterTristReloadRifle;
+		MontageReloadPistol = BlueprintConfig->CounterTristReloadPistol;
+		MontageReloadRifle = BlueprintConfig->CounterTristReloadRifle;
+		MontageFirePistol = BlueprintConfig->CounterTristFirePistol;
+		MontageFireRifle = BlueprintConfig->CounterTristFireRifle;
 	}
 	else if (ThePlayer->ActorHasTag("Terrorist"))
 	{
-		MontageReloadPistol = ThePlayer->GetBlueprintConfig()->TerroristReloadPistol;
-		MontageReloadRifle = ThePlayer->GetBlueprintConfig()->TerroristReloadRifle;
+		MontageReloadPistol = BlueprintConfig->TerroristReloadPistol;
+		MontageReloadRifle = BlueprintConfig->TerroristReloadRifle;
+		MontageFirePistol = BlueprintConfig->TerroristFirePistol;
+		MontageFireRifle = BlueprintConfig->TerroristFireRifle;
 	}
 	else
 	{
