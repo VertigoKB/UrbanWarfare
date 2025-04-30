@@ -9,6 +9,13 @@
 
 DECLARE_MULTICAST_DELEGATE(FOnAttack)
 
+UENUM()
+enum class EBulletImpactType
+{
+	Player = 0,
+	Other
+};
+
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class URBANWARFARE_API UCombatComponent : public UActorComponent
 {
@@ -57,6 +64,9 @@ private:
 	void Server_PerformAttack();
 	void Client_PerformAttack();
 
+	UFUNCTION(NetMulticast, Unreliable)
+	void Multicast_PlayBulletImpact(EBulletImpactType InType, FVector_NetQuantize ImpactLocation, FVector_NetQuantizeNormal ImpactNormal);
+
 public:
 	FOnAttack OnAttack;
 	bool bOwnerIsListenHost = false;
@@ -95,6 +105,8 @@ private:
 	UPROPERTY()
 	TObjectPtr<class UWeaponPreLoader> WeaponPreLoader;
 	UPROPERTY()
+	TObjectPtr<class UImpactEffectLoader> ImpactEffectLoader;
+	UPROPERTY()
 	TObjectPtr<class UMuzzleFlashSpawner> MuzzleFlashSpawner;
 	UPROPERTY()
 	TObjectPtr<class UFireTraceHandler> FireTraceHandler;
@@ -109,5 +121,6 @@ private:
 	FTimerHandle InitHandle;
 	uint8 InitCount = 10;
 
+	friend class UFireTraceHandler;
 
 };

@@ -15,7 +15,7 @@ class URBANWARFARE_API UFireTraceHandler : public UObject
 	GENERATED_BODY()
 	
 public:
-	void ExternalInitialize(class APlayerBase* InRootOwner);
+	void ExternalInitialize(class APlayerBase* const InRootOwner, class UCombatComponent* const InComp);
 	virtual void BeginDestroy() override;
 
 	bool AttackLineTrace();
@@ -24,6 +24,8 @@ private:
 	TObjectPtr<class APlayerBase> OwnerPawn;
 	UPROPERTY()
 	TObjectPtr<class UWorld> World;
+	UPROPERTY()
+	TObjectPtr<class UCombatComponent> CombatComponent;
 
 
 	FTimerHandle AutoFireHandle;

@@ -5,6 +5,7 @@
 #include "Camera/PlayerCameraManager.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/PlayerController.h"
+#include "Kismet/GameplayStatics.h"
 
 #include "UrbanWarfare/Player/PlayerBase.h"
 #include "UrbanWarfare/Player/WarfareAnim.h"
@@ -14,6 +15,8 @@
 #include "UrbanWarfare/Player/Components/OptionalClasses/FireTraceHandler.h"
 #include "UrbanWarfare/Player/Components/OptionalClasses/AmmoHandler.h"
 #include "UrbanWarfare/Frameworks/GameInstance/WeaponPreLoader.h"
+#include "UrbanWarfare/Frameworks/GameInstance/ImpactEffectLoader.h"
+#include "UrbanWarfare/AssetConfig/ImpactEffectData.h"
 #include "UrbanWarfare/Frameworks/WarfareController.h"
 #include "UrbanWarfare/Common/WarfareLogger.h"
 
@@ -155,6 +158,13 @@ bool UCombatComponent::InitConstruct()
 		return false;
 	}
 
+	ImpactEffectLoader = GetWorld()->GetGameInstance()->GetSubsystem<UImpactEffectLoader>();
+	if (!ImpactEffectLoader)
+	{
+		LOG_EFUNC(TEXT("Initialization failed: ImpactEffectLoader"));
+		return false;
+	}
+
 	LOG_EFUNC(TEXT("Initialization success."));
 	return true;
 }
@@ -170,7 +180,7 @@ void UCombatComponent::OnSuccessfullyInitialize()
 	MuzzleFlashSpawner = NewObject<UMuzzleFlashSpawner>();
 	MuzzleFlashSpawner->ExternalInitialize(GetOwner<APlayerBase>());
 	FireTraceHandler = NewObject<UFireTraceHandler>();
-	FireTraceHandler->ExternalInitialize(GetOwner<APlayerBase>());
+	FireTraceHandler->ExternalInitialize(GetOwner<APlayerBase>(), this);
 }
 void UCombatComponent::Client_OnStartedInput()
 {
@@ -295,4 +305,37 @@ void UCombatComponent::Client_PerformAttack()
 	//		ThirdWarfareAnim->PlayMontage_FireRifle();
 	//	break;
 	//}
+}
+
+void UCombatComponent::Multicast_PlayBulletImpact_Implementation(EBulletImpactType InType, FVector_NetQuantize ImpactLocation, FVector_NetQuantizeNormal ImpactNormal)
+{
+	UImpactEffectData* EffectData = GetWorld()->GetGameInstance()->GetSubsystem<UImpactEffectLoader>()->GetImpactEffectData();
+	FTransform ParticleTransform;
+	ParticleTransform.SetLocation(FVector(ImpactLocation));
+	FQuat ImpactQuat = ImpactNormal.ToOrientationQuat();
+	ParticleTransform.SetRotation(ImpactQuat);
+	
+	switch (InType)
+	{
+	case EBulletImpactType::Player:
+	{
+		UParticleSystem* TargetParticle = EffectData->ParticleImpactBody;
+		USoundBase* TargetSound = EffectData->SoundImapctBody.Get();
+
+		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), TargetParticle, ParticleTransform,
+			true, EPSCPoolMethod::AutoRelease, true);
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), TargetSound, ImpactLocation);
+	}
+		break;
+	case EBulletImpactType::Other:
+	{
+		UParticleSystem* TargetParticle = EffectData->ParticleImpactEnv;
+		USoundBase* TargetSound = EffectData->SoundImpactEnv.Get();
+
+		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), TargetParticle, ParticleTransform,
+			true, EPSCPoolMethod::AutoRelease, true);
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), TargetSound, ImpactLocation);
+	}
+		break;
+	}
 }

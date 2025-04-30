@@ -8,12 +8,14 @@
 #include "DrawDebugHelpers.h"
 
 #include "UrbanWarfare/Player/PlayerBase.h"
+#include "UrbanWarfare/Player/Components/CombatComponent.h"
 
-void UFireTraceHandler::ExternalInitialize(APlayerBase* InRootOwner)
+void UFireTraceHandler::ExternalInitialize(APlayerBase* const InRootOwner, UCombatComponent* const InComp)
 {
 	OwnerPawn = InRootOwner;
 	bAuthority = OwnerPawn->HasAuthority();
 	World = OwnerPawn->GetWorld();
+	CombatComponent = InComp;
 }
 
 void UFireTraceHandler::BeginDestroy()
@@ -33,8 +35,17 @@ bool UFireTraceHandler::AttackLineTrace()
 	FCollisionQueryParams CollisionParams;
 	CollisionParams.AddIgnoredActor(OwnerPawn);
 
-	bool bHit = World->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECollisionChannel::ECC_Pawn, CollisionParams);
+	bool bHit = World->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECollisionChannel::ECC_GameTraceChannel2, CollisionParams);
 	DrawDebugLine(World, StartLocation, EndLocation, FColor::Red, false, 1.f);
+
+	if (bHit)
+	{
+		FVector_NetQuantizeNormal BulletDirection = (HitResult.TraceEnd - HitResult.TraceStart).GetSafeNormal();
+		if (HitResult.GetActor()->ActorHasTag(FName("Player")))
+			CombatComponent->Multicast_PlayBulletImpact(EBulletImpactType::Player, HitResult.ImpactPoint, BulletDirection);
+		else
+			CombatComponent->Multicast_PlayBulletImpact(EBulletImpactType::Other, HitResult.ImpactPoint, BulletDirection);
+	}
 
 	return bHit;
 }
