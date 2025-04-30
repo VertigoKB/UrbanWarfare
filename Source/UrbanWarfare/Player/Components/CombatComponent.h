@@ -79,6 +79,8 @@ private:
 	UPROPERTY(Replicated)
 	bool bIsAmmoInMag = false;
 
+	bool bIsFirstBullet = true;
+
 	float RoundInterval = 0.1f;
 	float Damage = 0.f;
 
@@ -92,8 +94,6 @@ private:
 	// Initialization Data
 	UPROPERTY()
 	TObjectPtr<class APlayerBase> OwnerPawn;
-	//UPROPERTY()
-	//TObjectPtr<class APlayerController> OwnerPlayerController;
 	UPROPERTY()
 	TObjectPtr<class UWarfareAnim> ThirdWarfareAnim;
 	UPROPERTY()

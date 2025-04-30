@@ -51,6 +51,8 @@ public:
 	class UAmmoHandler* GetAmmoHandler() const;
 	inline float GetCurrentDamage() const { return Damage; }
 	inline float GetCurrentAttackInterval() const { return AttackInterval; }
+	inline float GetVerticalRecoil() const { return VerticalRecoil; }
+	inline float GetHorizontalRecoil() const { return HorizontalRecoil; }
 
 private:
 
@@ -129,6 +131,8 @@ private:
 
 	float Damage = 0.f;
 	float AttackInterval = 0.f;
+	float HorizontalRecoil = 0.f;
+	float VerticalRecoil = 0.f;
 
 
 public:

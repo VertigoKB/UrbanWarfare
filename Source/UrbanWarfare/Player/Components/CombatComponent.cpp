@@ -107,13 +107,6 @@ bool UCombatComponent::InitConstruct()
 
 	bAuthority = OwnerPawn->HasAuthority();
 
-	//OwnerPlayerController = GetWorld()->GetFirstPlayerController();
-	//if (!OwnerPlayerController)
-	//{
-	//	LOG_EFUNC(TEXT("Initialization failed: OwnerPlayerController"));
-	//	return false;
-	//}
-
 	UAnimInstance* FirstAnimInst = OwnerPawn->GetTheMesh()->GetAnimInstance();
 	FirstWarfareAnim = Cast<UWarfareAnim>(FirstAnimInst);
 	if (!FirstWarfareAnim)
@@ -189,6 +182,7 @@ void UCombatComponent::Client_OnStartedInput()
 
 void UCombatComponent::Client_OnCompleteInput()
 {
+	bIsFirstBullet = true;
 	GetWorld()->GetTimerManager().ClearTimer(RoundIntervalHandle);
 	Server_StopContinuousAttack();
 }
@@ -271,7 +265,28 @@ void UCombatComponent::Server_PerformAttack()
 	//}
 
 	if (bOwnerIsListenHost)
+	{
 		AmmoHandler->Client_Shoot();
+
+		if (!bIsFirstBullet)
+		{
+			if (OwnerPawn->GetController())
+			{
+				float Vertical = FMath::FRandRange(0.f, WeaponComponent->GetVerticalRecoil());
+				float Horizontal = FMath::FRandRange(0.f, WeaponComponent->GetHorizontalRecoil());
+
+				if (FMath::RandBool())
+					OwnerPawn->AddControllerYawInput(Horizontal);
+				else
+					OwnerPawn->AddControllerYawInput(-Horizontal);
+
+				OwnerPawn->AddControllerPitchInput(-Vertical);
+			}
+		}
+
+		if (bIsFirstBullet)
+			bIsFirstBullet = false;
+	}
 }
 
 void UCombatComponent::Client_PerformAttack()
@@ -283,10 +298,27 @@ void UCombatComponent::Client_PerformAttack()
 		return;
 	}
 
+	if (!bIsFirstBullet)
+	{
+		if (OwnerPawn->GetController())
+		{
+			float Vertical = FMath::FRandRange(0.f, WeaponComponent->GetVerticalRecoil());
+			float Horizontal = FMath::FRandRange(0.f, WeaponComponent->GetHorizontalRecoil());
+
+			float HorDir = FMath::RandBool();
+
+			OwnerPawn->AddControllerYawInput(HorDir * Horizontal);
+			OwnerPawn->AddControllerPitchInput(-Vertical);
+		}
+	}
+
 	MuzzleFlashSpawner->PlayMuzzleEffect();
 	OnAttack.Broadcast();
 
 	AmmoHandler->Client_Shoot();
+
+	if (bIsFirstBullet)
+		bIsFirstBullet = false;
 
 	//EWeaponType WeaponType = WeaponComponent->GetEquippedWeaponType();
 

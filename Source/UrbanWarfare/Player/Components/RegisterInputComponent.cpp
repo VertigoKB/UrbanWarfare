@@ -223,5 +223,6 @@ void URegisterInputComponent::InputReload(const FInputActionValue& Value)
 
 void URegisterInputComponent::TempTest()
 {
-	TestAutoMove = true;
+	//PlayerPawn->AddControllerYawInput(50.f);
+	//TestAutoMove = true;
 }

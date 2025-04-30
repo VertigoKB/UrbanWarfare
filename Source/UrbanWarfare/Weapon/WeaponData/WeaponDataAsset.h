@@ -60,6 +60,12 @@ public:
 	UPROPERTY(EditDefaultsOnly)
 	float Damage;
 
+	UPROPERTY(EditDefaultsOnly, meta = (DisplayName = "좌우 반동 최대값"))
+	float HorizontalRecoil = 0.f;
+	UPROPERTY(EditDefaultsOnly, meta = (DisplayName = "상하 반동 최대값"))
+	float VerticalRecoil = 0.f;
+
+
 	float RoundInterval;
 	//FQuantizedFloat CompressedRPM;
 	//FQuantizedFloat CompressedDamage;
