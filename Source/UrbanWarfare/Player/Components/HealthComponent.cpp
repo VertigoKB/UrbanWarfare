@@ -52,11 +52,14 @@ void UHealthComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	CurrentHealth = MaxHealth;
-	CurrentArmor = MaxArmor;
+	if (GetOwner()->HasAuthority())
+	{
+		CurrentHealth = MaxHealth;
+		CurrentArmor = MaxArmor;
 
-	UiHealth = static_cast<int8>(MaxHealth);
-	UiArmor = static_cast<int8>(MaxArmor);
+		UiHealth = static_cast<int8>(MaxHealth);
+		UiArmor = static_cast<int8>(MaxArmor);
+	}
 }
 
 void UHealthComponent::OnRep_UiHealth()
