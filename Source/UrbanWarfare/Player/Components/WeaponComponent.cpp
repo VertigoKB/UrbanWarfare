@@ -113,7 +113,7 @@ void UWeaponComponent::Client_OnCompleteReload()
 				NewInExtra = RemainExtra - RequiredAmount;
 			}
 			else
-				NewInMag += RemainExtra;
+				NewInMag = RemainMag + RemainExtra;
 
 			FWeaponAmmoData NewAmmoData;
 			NewAmmoData.AmmoInMag = NewInMag;
