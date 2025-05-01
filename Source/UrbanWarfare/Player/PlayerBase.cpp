@@ -13,6 +13,7 @@
 #include "Components/PlayerSoundComponent.h"
 #include "Components/WeaponComponent.h"
 #include "Components/CombatComponent.h"
+#include "Components/HealthComponent.h"
 #include "UrbanWarfare/Common/WarfareLogger.h"
 #include "UrbanWarfare/Frameworks/GameInstance/WeaponPreLoader.h"
 #include "UrbanWarfare/Frameworks/WarfareController.h"
@@ -23,7 +24,7 @@
 APlayerBase::APlayerBase()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 	bReplicates = true;
 
 
@@ -61,6 +62,7 @@ USkeletalMeshComponent* APlayerBase::GetWeaponMesh() const { return WeaponMesh; 
 UWeaponComponent* APlayerBase::GetWeaponComponent() const { return WeaponComponent; }
 //UAttackComponent* APlayerBase::GetAttackComponent() const{ return AttackComponent; }
 UCombatComponent* APlayerBase::GetCombatComponent() const { return CombatComponent; }
+UHealthComponent* APlayerBase::GetHealthComponent() const { return HealthComponent; }
 UCameraComponent* APlayerBase::GetPlayerCamera() const { return TheCamera; }
 UBlueprintConfig* APlayerBase::GetBlueprintConfig() const { return BlueprintConfig; }
 bool APlayerBase::IsPlayerFalling() const { return TheMovement->IsFalling(); }
@@ -153,6 +155,15 @@ void APlayerBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifet
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 }
 
+float APlayerBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	float Damage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+
+	HealthComponent->OnDamage(Damage);
+
+	return Damage;
+}
+
 void APlayerBase::SetupBasicComponents()
 {
 	TheCapsule = GetCapsuleComponent();
@@ -209,12 +220,12 @@ void APlayerBase::SetupCustomComponents()
 
 	WeaponComponent = CreateDefaultSubobject<UWeaponComponent>(TEXT("WeaponComponent"));
 	WeaponComponent->SetIsReplicated(true);
-
-	//AttackComponent = CreateDefaultSubobject<UAttackComponent>(TEXT("AttackComponent"));
-	//AttackComponent->SetIsReplicated(true);
 	
 	CombatComponent = CreateDefaultSubobject<UCombatComponent>(TEXT("CombatComponent"));
 	CombatComponent->SetIsReplicated(true);
+
+	HealthComponent = CreateDefaultSubobject<UHealthComponent>(TEXT("HealthComponent"));
+	HealthComponent->SetIsReplicated(true);
 }
 
 void APlayerBase::SetupMesh()

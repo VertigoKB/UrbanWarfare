@@ -5,15 +5,18 @@
 #include "Components/Image.h"
 #include "Components/Overlay.h"
 #include "Components/TextBlock.h"
+#include "Components/ProgressBar.h"
 
 #include "MainWidgetElements/WeaponHud.h"
 #include "MainWidgetElements/AmmoHud.h"
+#include "MainWidgetElements/ValueBarHud.h"
 #include "UrbanWarfare/Player/Components/WeaponComponent.h"
+#include "UrbanWarfare/Player/Components/HealthComponent.h"
 #include "UrbanWarfare/Player/PlayerBase.h"
 #include "UrbanWarfare/Frameworks/WarfareController.h"
 #include "UrbanWarfare/Common/WarfareLogger.h"
 
-void UMainWidget::SetWidgetVisibility(EMainWidgetElem TargetWidget, ESlateVisibility InVisibility)
+void UMainWidget::SetWidgetVisibility(EMainWidgetElem TargetWidget, const ESlateVisibility InVisibility)
 {
 	if (UWidget** FoundWidget = WidgetsMap.Find(TargetWidget))
 	{
@@ -24,9 +27,10 @@ void UMainWidget::SetWidgetVisibility(EMainWidgetElem TargetWidget, ESlateVisibi
 			LOG_EFUNC(TEXT("요청된 위젯의 데이터가 없음."));
 		}
 	}
+
 }
 
-void UMainWidget::SetTextBlockContent(EMainWidgetElem TargetWidget, FText InContent)
+void UMainWidget::SetTextBlockContent(EMainWidgetElem TargetWidget, const FText InContent)
 {
 	if (UWidget** FoundWidget = WidgetsMap.Find(TargetWidget))
 	{
@@ -35,7 +39,25 @@ void UMainWidget::SetTextBlockContent(EMainWidgetElem TargetWidget, FText InCont
 			TargetTextComp->SetText(InContent);
 		else
 		{
-			LOG_EFUNC(TEXT("텍스트 블록을 찾는데 실패함."));
+			LOG_EFUNC(TEXT("요청된 위젯이 텍스트블록이 아님."));
+		}
+	}
+	else
+	{
+		LOG_EFUNC(TEXT("요청된 위젯의 데이터가 없음."));
+	}
+}
+
+void UMainWidget::SetProgressBarPercentValue(EMainWidgetElem TargetWidget, const float InValue)
+{
+	if (UWidget** FoundWidget = WidgetsMap.Find(TargetWidget))
+	{
+		UProgressBar* TargetBar = Cast<UProgressBar>(*FoundWidget);
+		if (TargetBar)
+			TargetBar->SetPercent(InValue);
+		else
+		{
+			LOG_EFUNC(TEXT("요청된 위젯이 프로그레스바가 아님."));
 		}
 	}
 	else
@@ -62,6 +84,10 @@ void UMainWidget::NativeConstruct()
 	WidgetsMap.Add(EMainWidgetElem::AmmoCondition, AmmoCondition);
 	WidgetsMap.Add(EMainWidgetElem::RemainAmmo, RemainAmmo);
 	WidgetsMap.Add(EMainWidgetElem::ExtraAmmo, ExtraAmmo);
+	WidgetsMap.Add(EMainWidgetElem::HealthBar, HealthBar);
+	WidgetsMap.Add(EMainWidgetElem::HealthValue, HealthValue);
+	WidgetsMap.Add(EMainWidgetElem::ArmorBar, ArmorBar);
+	WidgetsMap.Add(EMainWidgetElem::ArmorValue, ArmorValue);
 
 
 	//GetWorld()->GetTimerManager().SetTimer(InitHandle, FTimerDelegate::CreateLambda([this]() {
@@ -144,5 +170,8 @@ void UMainWidget::OnPlayerSpawned(APlayerBase* InPlayer)
 
 	AmmoHud = NewObject<UAmmoHud>();
 	AmmoHud->ExternalInitialize(this, GetWorld(), WeaponComponent);
+
+	ValueBarHud = NewObject<UValueBarHud>();
+	ValueBarHud->ExternalInitialize(this, GetWorld(), InPlayer->GetHealthComponent());
 }
  

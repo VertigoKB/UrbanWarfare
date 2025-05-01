@@ -175,7 +175,8 @@ void UWeaponComponent::OnRep_EquippedWeaponId()
 
 	UWeaponDataAsset* TempWeaponData = GetWorld()->GetGameInstance()->GetSubsystem<UWeaponPreLoader>()->GetWeaponDataByWeaponId(EquippedWeaponId);
 	AttackInterval = TempWeaponData->RoundInterval;
-	Damage = TempWeaponData->Damage;
+	CurrentHeadDamage = TempWeaponData->HeadDamage;
+	CurrentBodyDamage = TempWeaponData->BodyDamage;
 	HorizontalRecoil = TempWeaponData->HorizontalRecoil;
 	VerticalRecoil = TempWeaponData->VerticalRecoil;
 	OnWeaponChange.Broadcast(EquippedWeaponId);

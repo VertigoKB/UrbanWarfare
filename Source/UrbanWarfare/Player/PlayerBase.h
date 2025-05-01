@@ -34,6 +34,7 @@ public:
 	class UWeaponComponent* GetWeaponComponent() const;
 	//class UAttackComponent* GetAttackComponent() const;
 	class UCombatComponent* GetCombatComponent() const;
+	class UHealthComponent* GetHealthComponent() const;
 	class UCameraComponent* GetPlayerCamera() const;
 	class UBlueprintConfig* GetBlueprintConfig() const;
 	bool IsPlayerFalling() const;
@@ -61,6 +62,9 @@ public:
 	virtual void PostInitializeComponents() override;
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
+	// 보통 서버에서 호출됨. 리플리케이트할 값들을 수정바람.
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 
 protected:
 	UFUNCTION()
@@ -126,6 +130,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Custom Components")
 	TObjectPtr<class UCombatComponent> CombatComponent;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Custom Components")
+	TObjectPtr<class UHealthComponent> HealthComponent;
 
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)

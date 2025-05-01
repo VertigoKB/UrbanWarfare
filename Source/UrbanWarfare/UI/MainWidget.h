@@ -13,7 +13,11 @@ enum class EMainWidgetElem : uint8
 	ImagePistol,
 	AmmoCondition,
 	RemainAmmo,
-	ExtraAmmo
+	ExtraAmmo,
+	HealthBar,
+	HealthValue,
+	ArmorBar,
+	ArmorValue
 };
 
 class UImage;
@@ -27,8 +31,9 @@ class URBANWARFARE_API UMainWidget : public UUserWidget
 	GENERATED_BODY()
 
 public:
-	void SetWidgetVisibility(EMainWidgetElem TargetWidget, ESlateVisibility InVisibility);
-	void SetTextBlockContent(EMainWidgetElem TargetWidget, FText InContent);
+	void SetWidgetVisibility(EMainWidgetElem TargetWidget, const ESlateVisibility InVisibility);
+	void SetTextBlockContent(EMainWidgetElem TargetWidget, const FText InContent);
+	void SetProgressBarPercentValue(EMainWidgetElem TargetWidget, const float InValue);
 
 protected:
 	virtual void NativeConstruct() override;
@@ -72,6 +77,8 @@ private:
 	TObjectPtr<class UWeaponHud> WeaponHud;
 	UPROPERTY()
 	TObjectPtr<class UAmmoHud> AmmoHud;
+	UPROPERTY()
+	TObjectPtr<class UValueBarHud> ValueBarHud;
 
 	UPROPERTY()
 	TMap<EMainWidgetElem, UWidget*> WidgetsMap;

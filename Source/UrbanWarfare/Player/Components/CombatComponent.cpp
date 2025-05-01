@@ -208,7 +208,6 @@ void UCombatComponent::OnWeaponChange(uint8 InWeaponId)
 {
 	UWeaponDataAsset* EquippedWeaponData = GetWorld()->GetGameInstance()->GetSubsystem<UWeaponPreLoader>()->GetWeaponDataByWeaponId(InWeaponId);
 	RoundInterval = EquippedWeaponData->RoundInterval;
-	Damage = EquippedWeaponData->Damage;
 
 	if (GetWorld()->GetTimerManager().IsTimerActive(RoundIntervalHandle))
 	{

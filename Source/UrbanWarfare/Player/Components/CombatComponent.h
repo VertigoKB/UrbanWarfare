@@ -82,7 +82,6 @@ private:
 	bool bIsFirstBullet = true;
 
 	float RoundInterval = 0.1f;
-	float Damage = 0.f;
 
 
 	EFiringMode FiringMode = EFiringMode::Single;

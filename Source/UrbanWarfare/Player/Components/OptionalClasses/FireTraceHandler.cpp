@@ -9,6 +9,7 @@
 
 #include "UrbanWarfare/Player/PlayerBase.h"
 #include "UrbanWarfare/Player/Components/CombatComponent.h"
+#include "UrbanWarfare/Player/Components/WeaponComponent.h"
 
 void UFireTraceHandler::ExternalInitialize(APlayerBase* const InRootOwner, UCombatComponent* const InComp)
 {
@@ -16,6 +17,7 @@ void UFireTraceHandler::ExternalInitialize(APlayerBase* const InRootOwner, UComb
 	bAuthority = OwnerPawn->HasAuthority();
 	World = OwnerPawn->GetWorld();
 	CombatComponent = InComp;
+	WeaponComponent = OwnerPawn->GetWeaponComponent();
 }
 
 void UFireTraceHandler::BeginDestroy()
@@ -42,7 +44,19 @@ bool UFireTraceHandler::AttackLineTrace()
 	{
 		FVector_NetQuantizeNormal BulletDirection = (HitResult.TraceEnd - HitResult.TraceStart).GetSafeNormal();
 		if (HitResult.GetActor()->ActorHasTag(FName("Player")))
+		{
 			CombatComponent->Multicast_PlayBulletImpact(EBulletImpactType::Player, HitResult.ImpactPoint, BulletDirection);
+			if (HitResult.BoneName == FName("head"))
+			{
+				float Damage = WeaponComponent->GetCurrentHeadDamage();
+				UGameplayStatics::ApplyDamage(HitResult.GetActor(), Damage, OwnerPawn->GetController(), nullptr, nullptr);
+			}
+			else
+			{
+				float Damage = WeaponComponent->GetCurrentBodyDamage();
+				UGameplayStatics::ApplyDamage(HitResult.GetActor(), Damage, OwnerPawn->GetController(), nullptr, nullptr);
+			}
+		}
 		else
 			CombatComponent->Multicast_PlayBulletImpact(EBulletImpactType::Other, HitResult.ImpactPoint, BulletDirection);
 	}

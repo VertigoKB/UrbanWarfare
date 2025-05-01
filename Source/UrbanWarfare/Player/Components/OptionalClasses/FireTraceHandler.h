@@ -26,6 +26,8 @@ private:
 	TObjectPtr<class UWorld> World;
 	UPROPERTY()
 	TObjectPtr<class UCombatComponent> CombatComponent;
+	UPROPERTY()
+	TObjectPtr<class UWeaponComponent> WeaponComponent;
 
 
 	FTimerHandle AutoFireHandle;

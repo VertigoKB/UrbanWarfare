@@ -49,7 +49,8 @@ public:
 	EWeaponType GetEquippedWeaponType() const;
 	uint8 GetEquippedWeaponId() const;
 	class UAmmoHandler* GetAmmoHandler() const;
-	inline float GetCurrentDamage() const { return Damage; }
+	inline float GetCurrentHeadDamage() const { return CurrentHeadDamage; }
+	inline float GetCurrentBodyDamage() const { return CurrentBodyDamage; }
 	inline float GetCurrentAttackInterval() const { return AttackInterval; }
 	inline float GetVerticalRecoil() const { return VerticalRecoil; }
 	inline float GetHorizontalRecoil() const { return HorizontalRecoil; }
@@ -129,7 +130,8 @@ protected:
 
 private:
 
-	float Damage = 0.f;
+	float CurrentHeadDamage = 0.f;
+	float CurrentBodyDamage = 0.f;
 	float AttackInterval = 0.f;
 	float HorizontalRecoil = 0.f;
 	float VerticalRecoil = 0.f;

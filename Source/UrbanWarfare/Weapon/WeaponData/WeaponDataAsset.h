@@ -58,7 +58,10 @@ public:
 	float RoundPerMinute;
 
 	UPROPERTY(EditDefaultsOnly)
-	float Damage;
+	float HeadDamage;
+
+	UPROPERTY(EditDefaultsOnly)
+	float BodyDamage;
 
 	UPROPERTY(EditDefaultsOnly, meta = (DisplayName = "좌우 반동 최대값"))
 	float HorizontalRecoil = 0.f;
