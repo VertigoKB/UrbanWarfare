@@ -268,24 +268,26 @@ void UCombatComponent::Server_PerformAttack()
 	{
 		AmmoHandler->Client_Shoot();
 
-		if (!bIsFirstBullet)
+		if (OwnerPawn->GetController())
 		{
-			if (OwnerPawn->GetController())
-			{
-				float Vertical = FMath::FRandRange(0.f, WeaponComponent->GetVerticalRecoil());
-				float Horizontal = FMath::FRandRange(0.f, WeaponComponent->GetHorizontalRecoil());
+			float Vertical = FMath::FRandRange(0.f, WeaponComponent->GetVerticalRecoil());
+			float Horizontal = FMath::FRandRange(0.f, WeaponComponent->GetHorizontalRecoil());
 
-				if (FMath::RandBool())
-					OwnerPawn->AddControllerYawInput(Horizontal);
-				else
-					OwnerPawn->AddControllerYawInput(-Horizontal);
+			if (FMath::RandBool())
+				OwnerPawn->AddControllerYawInput(Horizontal);
+			else
+				OwnerPawn->AddControllerYawInput(-Horizontal);
 
-				OwnerPawn->AddControllerPitchInput(-Vertical);
-			}
+			OwnerPawn->AddControllerPitchInput(-Vertical);
+		}
+
+		/*if (!bIsFirstBullet)
+		{
+			
 		}
 
 		if (bIsFirstBullet)
-			bIsFirstBullet = false;
+			bIsFirstBullet = false;*/
 	}
 }
 
@@ -298,27 +300,30 @@ void UCombatComponent::Client_PerformAttack()
 		return;
 	}
 
-	if (!bIsFirstBullet)
+	if (OwnerPawn->GetController())
 	{
-		if (OwnerPawn->GetController())
-		{
-			float Vertical = FMath::FRandRange(0.f, WeaponComponent->GetVerticalRecoil());
-			float Horizontal = FMath::FRandRange(0.f, WeaponComponent->GetHorizontalRecoil());
+		float Vertical = FMath::FRandRange(0.f, WeaponComponent->GetVerticalRecoil());
+		float Horizontal = FMath::FRandRange(0.f, WeaponComponent->GetHorizontalRecoil());
 
-			float HorDir = FMath::RandBool();
+		float HorDir = FMath::RandBool();
 
-			OwnerPawn->AddControllerYawInput(HorDir * Horizontal);
-			OwnerPawn->AddControllerPitchInput(-Vertical);
-		}
+		OwnerPawn->AddControllerYawInput(HorDir * Horizontal);
+		OwnerPawn->AddControllerPitchInput(-Vertical);
 	}
+
+
+	/*if (!bIsFirstBullet)
+	{
+		
+	}*/
 
 	MuzzleFlashSpawner->PlayMuzzleEffect();
 	OnAttack.Broadcast();
 
 	AmmoHandler->Client_Shoot();
 
-	if (bIsFirstBullet)
-		bIsFirstBullet = false;
+	/*if (bIsFirstBullet)
+		bIsFirstBullet = false;*/
 
 	//EWeaponType WeaponType = WeaponComponent->GetEquippedWeaponType();
 

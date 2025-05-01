@@ -22,6 +22,7 @@ void UReloadState::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBa
 
 void UReloadState::NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference)
 {
+
 	if (APlayerBase* PlayerPawn = MeshComp->GetOwner<APlayerBase>())
 	{
 		if (PlayerPawn->HasAuthority())

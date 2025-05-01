@@ -4,6 +4,8 @@
 #include "PlayerBehaviorComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetMathLibrary.h"
+
+#include "UrbanWarfare/Player/Components/CombatComponent.h"
 #include "../PlayerBase.h"
 #include "RegisterInputComponent.h"
 #include "../../Common/WarfareLogger.h"
@@ -99,10 +101,16 @@ bool UPlayerBehaviorComponent::InitConstruct()
 	if (!PlayerMovement)
 		return false;
 
+	CombatComponent = ThePlayer->GetCombatComponent();
+	if (!CombatComponent)
+		return false;
+
 	RegInputComp->OnInputCrouch.BindUObject(this, &UPlayerBehaviorComponent::TriggerCrouch);
 	RegInputComp->OnInputWalk.BindUObject(this, &UPlayerBehaviorComponent::TriggerWalk);
 	RegInputComp->OnInputJump.BindUObject(this, &UPlayerBehaviorComponent::TriggerJump);
 	RegInputComp->OnInputLook.BindUObject(this, &UPlayerBehaviorComponent::TriggerLook);
+
+	CombatComponent->OnAttack.AddUObject(this, &UPlayerBehaviorComponent::TriggerLook);
 
 	return true;
 }

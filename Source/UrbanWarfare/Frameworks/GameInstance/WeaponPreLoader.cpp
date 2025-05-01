@@ -62,17 +62,25 @@ bool UWeaponPreLoader::LoadWeaponDataAsset()
 
 UWeaponDataAsset* UWeaponPreLoader::GetWeaponDataByWeaponId(uint8 InNumber)
 {
-	if (WeaponDataMap.Contains(InNumber))
+	if (this)
 	{
-		UWeaponDataAsset** TargetData = WeaponDataMap.Find(InNumber);
-		return *TargetData;
+		if (WeaponDataMap.Contains(InNumber))
+		{
+			UWeaponDataAsset** TargetData = WeaponDataMap.Find(InNumber);
+			return *TargetData;
+		}
+		else
+		{
+			UWeaponDataAsset** ErrorData = WeaponDataMap.Find(1);
+			//UWeaponPreLoader에 잘못된 데이터가 요청되어 ID_1 무기가 반환됨.
+			//ensure(false);
+			LOG_WARNFUNC(TEXT("존재하지 않는 무기 데이터가 요청되어 Num_1 무기가 반환됨. 요청번호: %d"), InNumber);
+			return *ErrorData;
+		}
 	}
 	else
 	{
-		UWeaponDataAsset** ErrorData = WeaponDataMap.Find(1);
-		//UWeaponPreLoader에 잘못된 데이터가 요청되어 ID_1 무기가 반환됨.
-		//ensure(false);
-		LOG_WARNFUNC(TEXT("존재하지 않는 무기 데이터가 요청되어 Num_1 무기가 반환됨. 요청번호: %d"), InNumber);
-		return *ErrorData;
+		LOG_WARNFUNC(TEXT("월드가 삭제되어 무기 데이터를 제공할 수 없음. 요청번호: %d"), InNumber);
+		return nullptr;
 	}
 }

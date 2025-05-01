@@ -99,26 +99,29 @@ void UWeaponComponent::Client_OnCompleteReload()
 		uint16 RemainExtra = CurrentAmmoData.ExtraAmmo;
 
 		UWeaponDataAsset* CurrentWeaponData = GetWorld()->GetGameInstance()->GetSubsystem<UWeaponPreLoader>()->GetWeaponDataByWeaponId(EquippedWeaponId);
-		uint16 LoadableInMag = CurrentWeaponData->LoadableAmmoPerMag;
-
-		uint16 RequiredAmount = LoadableInMag - RemainMag;
-
-		uint16 NewInMag = 0;
-		uint16 NewInExtra = 0;
-		if (RequiredAmount < RemainExtra)
+		if (CurrentWeaponData)
 		{
-			NewInMag = RemainMag + RequiredAmount;
-			NewInExtra = RemainExtra - RequiredAmount;
+			uint16 LoadableInMag = CurrentWeaponData->LoadableAmmoPerMag;
+
+			uint16 RequiredAmount = LoadableInMag - RemainMag;
+
+			uint16 NewInMag = 0;
+			uint16 NewInExtra = 0;
+			if (RequiredAmount < RemainExtra)
+			{
+				NewInMag = RemainMag + RequiredAmount;
+				NewInExtra = RemainExtra - RequiredAmount;
+			}
+			else
+				NewInMag += RemainExtra;
+
+			FWeaponAmmoData NewAmmoData;
+			NewAmmoData.AmmoInMag = NewInMag;
+			NewAmmoData.ExtraAmmo = NewInExtra;
+
+			AmmoHandler->SetAmmoData(NewAmmoData);
+			Server_RequestModifyAmmo(static_cast<uint8>(EquippedWeaponType), NewInMag, NewInExtra);
 		}
-		else
-			NewInMag += RemainExtra;
-
-		FWeaponAmmoData NewAmmoData;
-		NewAmmoData.AmmoInMag = NewInMag;
-		NewAmmoData.ExtraAmmo = NewInExtra;
-
-		AmmoHandler->SetAmmoData(NewAmmoData);
-		Server_RequestModifyAmmo(static_cast<uint8>(EquippedWeaponType), NewInMag, NewInExtra);
 	}
 }
 
