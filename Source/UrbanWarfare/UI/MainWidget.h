@@ -16,6 +16,11 @@ enum class EMainWidgetElem : uint8
 	ExtraAmmo
 };
 
+class UImage;
+class UOverlay;
+class UTextBlock;
+class UProgressBar;
+
 UCLASS()
 class URBANWARFARE_API UMainWidget : public UUserWidget
 {
@@ -36,19 +41,31 @@ private:
 private:
 	// WeaponHud
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<class UImage> ImageRifle;
+	TObjectPtr<UImage> ImageRifle;
 
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<class UImage> ImagePistol;
+	TObjectPtr<UImage> ImagePistol;
 
 private:
 	// AmmoHud
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<class UOverlay> AmmoCondition;
+	TObjectPtr<UOverlay> AmmoCondition;
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<class UTextBlock> RemainAmmo;
+	TObjectPtr<UTextBlock> RemainAmmo;
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<class UTextBlock> ExtraAmmo;
+	TObjectPtr<UTextBlock> ExtraAmmo;
+
+private:
+	// Health And Armor
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UTextBlock> HealthValue;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UProgressBar> HealthBar;
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UTextBlock> ArmorValue;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UProgressBar> ArmorBar;
 
 private:
 	UPROPERTY()
