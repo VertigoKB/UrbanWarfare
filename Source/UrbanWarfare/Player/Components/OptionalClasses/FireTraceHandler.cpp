@@ -48,12 +48,12 @@ bool UFireTraceHandler::AttackLineTrace()
 			CombatComponent->Multicast_PlayBulletImpact(EBulletImpactType::Player, HitResult.ImpactPoint, BulletDirection);
 			if (HitResult.BoneName == FName("head"))
 			{
-				float Damage = 10.f;//WeaponComponent->GetCurrentHeadDamage();
+				float Damage = WeaponComponent->GetCurrentHeadDamage();
 				UGameplayStatics::ApplyDamage(HitResult.GetActor(), Damage, OwnerPawn->GetController(), nullptr, nullptr);
 			}
 			else
 			{
-				float Damage = 10.f;//WeaponComponent->GetCurrentBodyDamage();
+				float Damage = WeaponComponent->GetCurrentBodyDamage();
 				UGameplayStatics::ApplyDamage(HitResult.GetActor(), Damage, OwnerPawn->GetController(), nullptr, nullptr);
 			}
 		}

@@ -251,8 +251,13 @@ void UWeaponComponent::Server_ExecuteEquipRifle_Implementation()
 
 	if (TargetWeapon != 0 && TargetWeapon != EquippedWeaponId)
 	{
+		UWeaponDataAsset* TempWeaponData = GetWorld()->GetGameInstance()->GetSubsystem<UWeaponPreLoader>()->GetWeaponDataByWeaponId(TargetWeapon);
+
 		EquippedWeaponId = TargetWeapon;
 		EquippedWeaponType = EWeaponType::Rifle;
+
+		CurrentHeadDamage = TempWeaponData->HeadDamage;
+		CurrentBodyDamage = TempWeaponData->BodyDamage;
 
 		OnRep_EquippedWeaponId();
 		OnRep_EquippedWeaponType();
@@ -277,8 +282,13 @@ void UWeaponComponent::Server_ExecuteEquipPistol_Implementation()
 
 	if (TargetWeapon != 0 && TargetWeapon != EquippedWeaponId)
 	{
+		UWeaponDataAsset* TempWeaponData = GetWorld()->GetGameInstance()->GetSubsystem<UWeaponPreLoader>()->GetWeaponDataByWeaponId(TargetWeapon);
+
 		EquippedWeaponId = TargetWeapon;
 		EquippedWeaponType = EWeaponType::Pistol;
+
+		CurrentHeadDamage = TempWeaponData->HeadDamage;
+		CurrentBodyDamage = TempWeaponData->BodyDamage;
 
 		OnRep_EquippedWeaponId();
 		OnRep_EquippedWeaponType();

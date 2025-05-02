@@ -25,6 +25,7 @@ public:
 	inline float GetCurrentArmor() const { return CurrentArmor; }
 	inline float GetMaxHealth() const { return MaxHealth; }
 	inline float GetMaxArmor() const { return MaxArmor; }
+	inline void SetLocalHostFlag() { bIsLocalHost = true; }
 
 	void OnDamage(const float InDamage);
 protected:
@@ -47,6 +48,8 @@ private:
 
 	float MaxHealth = 100.f;
 	float MaxArmor = 100.f;
+
+	bool bIsLocalHost = false;
 
 	UPROPERTY(ReplicatedUsing = OnRep_UiHealth)
 	int8 UiHealth = 0;

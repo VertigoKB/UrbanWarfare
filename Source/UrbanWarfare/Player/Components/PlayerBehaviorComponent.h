@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "OPtionalClasses/SerializedMovementState.h"
+#include "UrbanWarfare/Common/CommonEnums.h"
 #include "PlayerBehaviorComponent.generated.h"
 
 
@@ -29,6 +30,7 @@ public:
 	virtual void InitializeComponent() override;
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
 private:
 	UFUNCTION()
 	bool InitConstruct();

@@ -37,6 +37,9 @@ void UPlayerBehaviorComponent::BeginPlay()
 			GetWorld()->GetTimerManager().ClearTimer(InitTimer);
 			MovementState.Reserve(5);
 			MovementState.AddState(EMovementState::Running);
+
+			if (ThePlayer->IsControlledByLocal())
+				CombatComponent->OnAttack.AddUObject(this, &UPlayerBehaviorComponent::TriggerLook);
 		}
 		else
 		{
@@ -86,7 +89,6 @@ void UPlayerBehaviorComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProper
 	DOREPLIFETIME(UPlayerBehaviorComponent, CurrentSpeed)
 	DOREPLIFETIME(UPlayerBehaviorComponent, AimDirection)
 }
-
 bool UPlayerBehaviorComponent::InitConstruct()
 {
 	ThePlayer = Cast<APlayerBase>(GetOwner());
@@ -109,8 +111,6 @@ bool UPlayerBehaviorComponent::InitConstruct()
 	RegInputComp->OnInputWalk.BindUObject(this, &UPlayerBehaviorComponent::TriggerWalk);
 	RegInputComp->OnInputJump.BindUObject(this, &UPlayerBehaviorComponent::TriggerJump);
 	RegInputComp->OnInputLook.BindUObject(this, &UPlayerBehaviorComponent::TriggerLook);
-
-	CombatComponent->OnAttack.AddUObject(this, &UPlayerBehaviorComponent::TriggerLook);
 
 	return true;
 }

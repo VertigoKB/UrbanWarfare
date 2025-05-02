@@ -26,24 +26,37 @@ void UHealthComponent::OnDamage(const float InDamage)
 
 	if (CurrentArmor > 0)
 	{
-		float Absorbable = InDamage * 0.5f;
+		float Absorbable = InDamage * 0.55f;
 		float ArmorDamage = FMath::Min(CurrentArmor, Absorbable);
 
 		CurrentArmor -= ArmorDamage;
-		RemainingDamage -= ArmorDamage;
+		RemainingDamage -= ArmorDamage * 1.2f;
 
 		UiArmor = FMath::CeilToInt(FMath::Clamp(CurrentArmor, 0.f, MaxArmor));
+
+		if (bIsLocalHost)
+			OnRep_UiArmor();
 	}
 	else
+	{
 		UiArmor = 0;
+		if (bIsLocalHost)
+			OnRep_UiArmor();
+	}
 
 	CurrentHealth -= RemainingDamage;
 
 	if (CurrentHealth > 0)
+	{
 		UiHealth = FMath::CeilToInt(FMath::Clamp(CurrentHealth, 0.f, MaxHealth));
+		if (bIsLocalHost)
+			OnRep_UiHealth();
+	}
 	else
 	{
 		UiHealth = 0;
+		if (bIsLocalHost)
+			OnRep_UiHealth();
 		//사망 처리 구현 필요
 	}
 }
