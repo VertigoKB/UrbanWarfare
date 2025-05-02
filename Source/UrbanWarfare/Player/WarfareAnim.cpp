@@ -70,7 +70,6 @@ void UWarfareAnim::PlayMontage_ReloadRifle()
 
 void UWarfareAnim::PlayMontage_FirePistol()
 {
-	FName Who = this->GetFName();
 	ensure(MontageFirePistol);
 
 	Montage_Stop(0.f);
@@ -79,11 +78,16 @@ void UWarfareAnim::PlayMontage_FirePistol()
 
 void UWarfareAnim::PlayMontage_FireRifle()
 {
-	FName Who = this->GetFName();
 	ensure(MontageFireRifle);
 
 	Montage_Stop(0.f);
 	Montage_Play(MontageFireRifle);
+}
+
+void UWarfareAnim::PlayMontage_Death()
+{
+	Montage_Stop(0.f);
+	Montage_Play(MontageDeath);
 }
 
 bool UWarfareAnim::CacheAndInit()
@@ -103,6 +107,7 @@ bool UWarfareAnim::CacheAndInit()
 		MontageReloadRifle = BlueprintConfig->CounterTristReloadRifle;
 		MontageFirePistol = BlueprintConfig->CounterTristFirePistol;
 		MontageFireRifle = BlueprintConfig->CounterTristFireRifle;
+		MontageDeath = BlueprintConfig->CounterTristDeath;
 	}
 	else if (ThePlayer->ActorHasTag("Terrorist"))
 	{
@@ -110,6 +115,7 @@ bool UWarfareAnim::CacheAndInit()
 		MontageReloadRifle = BlueprintConfig->TerroristReloadRifle;
 		MontageFirePistol = BlueprintConfig->TerroristFirePistol;
 		MontageFireRifle = BlueprintConfig->TerroristFireRifle;
+		MontageDeath = BlueprintConfig->TerroristDeath;
 	}
 	else
 	{

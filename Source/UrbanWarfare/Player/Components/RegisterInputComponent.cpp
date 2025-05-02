@@ -3,6 +3,7 @@
 
 #include "RegisterInputComponent.h"
 #include "UrbanWarfare/Common/WarfareLogger.h"
+#include "UrbanWarfare/Player/Components/HealthComponent.h"
 #include "../PlayerBase.h"
 
 // Sets default values for this component's properties
@@ -77,10 +78,21 @@ void URegisterInputComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	GetWorld()->GetTimerManager().ClearTimer(InitTimer);
 }
 
+void URegisterInputComponent::OnDeathFlagChange(bool bFlag)
+{
+	bIsDeath = bFlag;
+}
+
 bool URegisterInputComponent::CachAndInit()
 {
 	PlayerPawn = Cast<APlayerBase>(GetOwner());
 	if (!PlayerPawn)
+		return false;
+
+	HealthComponent = PlayerPawn->GetHealthComponent();
+	if (HealthComponent)
+		HealthComponent->OnDeathFlagChange.BindUObject(this, &URegisterInputComponent::OnDeathFlagChange);
+	else
 		return false;
 
 	MyController = Cast<APlayerController>(PlayerPawn->GetController());
@@ -98,6 +110,8 @@ bool URegisterInputComponent::CachAndInit()
 		InitCount = 10;
 		return false;
 	}
+
+
 
 	return true;
 }
@@ -128,9 +142,12 @@ void URegisterInputComponent::SetupEnhancedInput()
 
 void URegisterInputComponent::InputMove(const FInputActionValue& Value)
 {
-	FVector2D Input = Value.Get<FVector2D>();
+	if (!bIsDeath)
+	{
+		FVector2D Input = Value.Get<FVector2D>();
 
-	TempMove(Input);
+		TempMove(Input);
+	}
 }
 
 void URegisterInputComponent::TempMove(FVector2D Input)
@@ -153,33 +170,39 @@ void URegisterInputComponent::InputLook(const FInputActionValue& Value)
 {
 	FVector2D Input = Value.Get<FVector2D>();
 
-	PlayerPawn->AddControllerYawInput(Input.X);
-	PlayerPawn->AddControllerPitchInput(-Input.Y);
+	if (!bIsDeath)
+	{
+		PlayerPawn->AddControllerYawInput(Input.X);
+		PlayerPawn->AddControllerPitchInput(-Input.Y);
 
-	OnInputLook.ExecuteIfBound();
+		OnInputLook.ExecuteIfBound();
+	}
 }
 
 void URegisterInputComponent::InputCrouch(const FInputActionValue& Value)
 {
 	bool Input = Value.Get<bool>();
 
-	OnInputCrouch.ExecuteIfBound(Input);
+	if (!bIsDeath)
+		OnInputCrouch.ExecuteIfBound(Input);
 }
 
 void URegisterInputComponent::InputWalk(const FInputActionValue& Value)
 {
 	bool Input = Value.Get<bool>();
 
-	OnInputWalk.ExecuteIfBound(Input);
+	if (!bIsDeath)
+		OnInputWalk.ExecuteIfBound(Input);
 }
 
 void URegisterInputComponent::InputJump(const FInputActionValue& Value)
 {
 	bool Input = Value.Get<bool>();
 
-	if(!PlayerPawn->IsPlayerFalling())
+	if (!bIsDeath)
 	{
-		OnInputJump.ExecuteIfBound(Input);
+		if (!PlayerPawn->IsPlayerFalling())
+			OnInputJump.ExecuteIfBound(Input);
 	}
 }
 
@@ -192,33 +215,39 @@ void URegisterInputComponent::InputTest(const FInputActionValue& Value)
 void URegisterInputComponent::InputEquipRifle(const FInputActionValue& Value)
 {
 	//LOG_SIMPLE(TEXT("OnEquipRifle"));
-	OnInputEquipRifle.ExecuteIfBound();
+	if (!bIsDeath)
+		OnInputEquipRifle.ExecuteIfBound();
 }
 
 void URegisterInputComponent::InputEquipPistol(const FInputActionValue& Value)
 {
 	//LOG_SIMPLE(TEXT("OnEquipPistol"));
-	OnInputEquipPistol.ExecuteIfBound();
+	if (!bIsDeath)
+		OnInputEquipPistol.ExecuteIfBound();
 }
 
 void URegisterInputComponent::InputThrowWeapon(const FInputActionValue& Value)
 {
-	OnThrowWeapon.ExecuteIfBound();
+	if (!bIsDeath)
+		OnThrowWeapon.ExecuteIfBound();
 }
 
 void URegisterInputComponent::InputAttack(const FInputActionValue& Value)
 {
-	OnInputAttack.ExecuteIfBound();
+	if (!bIsDeath)
+		OnInputAttack.ExecuteIfBound();
 }
 
 void URegisterInputComponent::InputCompleteAttack(const FInputActionValue& Value)
 {
-	OnCompleteAttack.ExecuteIfBound();
+	if (!bIsDeath)
+		OnCompleteAttack.ExecuteIfBound();
 }
 
 void URegisterInputComponent::InputReload(const FInputActionValue& Value)
 {
-	OnInputReload.ExecuteIfBound();
+	if (!bIsDeath)
+		OnInputReload.ExecuteIfBound();
 }
 
 void URegisterInputComponent::TempTest()

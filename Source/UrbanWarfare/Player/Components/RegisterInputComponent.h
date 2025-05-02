@@ -40,6 +40,9 @@ public:
 
 protected:
 	UFUNCTION()
+	void OnDeathFlagChange(bool bFlag);
+
+	UFUNCTION()
 	bool CachAndInit();
 	UFUNCTION()
 	void SetupEnhancedInput();
@@ -75,6 +78,8 @@ protected:
 	TObjectPtr<class APlayerBase> PlayerPawn;
 	UPROPERTY()
 	TObjectPtr<APlayerController> MyController;
+	UPROPERTY()
+	TObjectPtr<class UHealthComponent> HealthComponent;
 
 public:
 	FOnInputCrouch OnInputCrouch;
@@ -96,6 +101,8 @@ public:
 	bool bInitFlag = false;
 
 private:
+	bool bIsDeath = false;
+
 	bool TestAutoMove = false;
 
 	uint8 InitCount = 1;

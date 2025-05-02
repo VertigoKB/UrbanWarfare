@@ -31,6 +31,7 @@ public:
 	/*class USkeletalMeshComponent* GetRifleMesh() const;
 	class USkeletalMeshComponent* GetPistolMesh() const;*/
 	class USkeletalMeshComponent* GetWeaponMesh() const;
+	class UCapsuleComponent* GetRootCapsule() const;
 	class UWeaponComponent* GetWeaponComponent() const;
 	//class UAttackComponent* GetAttackComponent() const;
 	class UCombatComponent* GetCombatComponent() const;

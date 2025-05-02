@@ -28,6 +28,9 @@ public:
 	void PlayMontage_ReloadRifle();
 	void PlayMontage_FirePistol();
 	void PlayMontage_FireRifle();
+	void PlayMontage_Death();
+
+	inline void SetDeathFlag(bool bFlag) { bIsDead = bFlag; }
 protected:
 	UFUNCTION()
 	bool CacheAndInit();
@@ -55,6 +58,8 @@ protected:
 	TObjectPtr<UAnimMontage> MontageFirePistol;
 	UPROPERTY()
 	TObjectPtr<UAnimMontage> MontageFireRifle;
+	UPROPERTY()
+	TObjectPtr<UAnimMontage> MontageDeath;
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "UrbanWarfare")
@@ -74,6 +79,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "UrbanWarfare")
 	float AimDirection = 0.f;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "UrbanWarfare")
+	bool bIsDead = false;
 
 	bool bInitFlag = false;
 	FTimerHandle InitTimer;

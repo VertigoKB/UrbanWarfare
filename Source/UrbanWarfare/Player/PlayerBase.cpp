@@ -59,6 +59,7 @@ UPlayerSoundComponent* APlayerBase::GetSoundPlayer() const { return PlayerSoundC
 USkeletalMeshComponent* APlayerBase::GetTheMesh() const { return TheMesh; }
 USkeletalMeshComponent* APlayerBase::GetThirdMesh() const { return TheThirdMesh; }
 USkeletalMeshComponent* APlayerBase::GetWeaponMesh() const { return WeaponMesh; }
+UCapsuleComponent* APlayerBase::GetRootCapsule() const { return TheCapsule; }
 UWeaponComponent* APlayerBase::GetWeaponComponent() const { return WeaponComponent; }
 //UAttackComponent* APlayerBase::GetAttackComponent() const{ return AttackComponent; }
 UCombatComponent* APlayerBase::GetCombatComponent() const { return CombatComponent; }
@@ -162,7 +163,7 @@ float APlayerBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEven
 {
 	float Damage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 
-	HealthComponent->OnDamage(Damage);
+	HealthComponent->Server_OnDamage(Damage);
 
 	return Damage;
 }
