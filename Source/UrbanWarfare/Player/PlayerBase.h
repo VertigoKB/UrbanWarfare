@@ -44,6 +44,7 @@ public:
 	void SetMultiplayCaseByController(const EMultiplayCase InMultiplayCase);
 	inline EMultiplayCase GetMultiplayCase() const { return MultiplayCase; }
 	inline bool IsControlledByLocal() const { return bIsLocal; }
+	inline ETeam GetTeam() const { return MyTeam; }
 
 	void AttachWeaponMeshToRifle();
 	void AttachWeaponMeshToPistol();
@@ -143,6 +144,8 @@ private:
 	bool bIsListenHost = false;
 	bool bIsLocal = false;
 
+
+	ETeam MyTeam = ETeam::CounterTrist;
 
 public:
 	UFUNCTION(BlueprintImplementableEvent)

@@ -27,6 +27,8 @@ public:
 
 	void RequestSpawnPlayer(ETeam InTeam, class AWarfareController* InController);
 
+	const FTransform& GetSpawnPointTransformWithRandomIndex(const ETeam InTeam) const;
+
 private:
 	bool InitConstruct();
 

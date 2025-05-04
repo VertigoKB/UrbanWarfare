@@ -10,6 +10,7 @@
 #include "MainWidgetElements/WeaponHud.h"
 #include "MainWidgetElements/AmmoHud.h"
 #include "MainWidgetElements/ValueBarHud.h"
+#include "MainWidgetElements/TeamScoreHud.h"
 #include "UrbanWarfare/Player/Components/WeaponComponent.h"
 #include "UrbanWarfare/Player/Components/HealthComponent.h"
 #include "UrbanWarfare/Player/PlayerBase.h"
@@ -88,6 +89,10 @@ void UMainWidget::NativeConstruct()
 	WidgetsMap.Add(EMainWidgetElem::HealthValue, HealthValue);
 	WidgetsMap.Add(EMainWidgetElem::ArmorBar, ArmorBar);
 	WidgetsMap.Add(EMainWidgetElem::ArmorValue, ArmorValue);
+	WidgetsMap.Add(EMainWidgetElem::GoalScore, GoalScore);
+	WidgetsMap.Add(EMainWidgetElem::TerroristScore, TerroristScore);
+	WidgetsMap.Add(EMainWidgetElem::CounterTristScore, CounterTristScore);
+	
 
 
 	//GetWorld()->GetTimerManager().SetTimer(InitHandle, FTimerDelegate::CreateLambda([this]() {
@@ -173,5 +178,8 @@ void UMainWidget::OnPlayerSpawned(APlayerBase* InPlayer)
 
 	ValueBarHud = NewObject<UValueBarHud>();
 	ValueBarHud->ExternalInitialize(this, GetWorld(), InPlayer->GetHealthComponent());
+
+	TeamScoreHud = NewObject<UTeamScoreHud>();
+	TeamScoreHud->ExternalInitialize(this, GetWorld());
 }
  

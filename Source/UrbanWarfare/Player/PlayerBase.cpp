@@ -8,6 +8,7 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/CapsuleComponent.h"
 
+#include "WarfareAnim.h"
 #include "Components/RegisterInputComponent.h"
 #include "Components/PlayerBehaviorComponent.h"
 #include "Components/PlayerSoundComponent.h"
@@ -17,6 +18,7 @@
 #include "UrbanWarfare/Common/WarfareLogger.h"
 #include "UrbanWarfare/Frameworks/GameInstance/WeaponPreLoader.h"
 #include "UrbanWarfare/Frameworks/WarfareController.h"
+#include "UrbanWarfare/Frameworks/WarfareGameState.h"
 #include "UrbanWarfare/Weapon/WeaponData/WeaponDataAsset.h"
 
 
@@ -119,7 +121,9 @@ void APlayerBase::BeginPlay()
 
 		WeaponMesh->AttachToComponent(TheThirdMesh, Rules, FName("RifleSocket"));
 	}
-	
+
+	if (this->ActorHasTag(FName("Terrorist")))
+		MyTeam = ETeam::Terrorist;
 }
 
 void APlayerBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -159,11 +163,32 @@ void APlayerBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifet
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 }
 
+// Server
 float APlayerBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	float Damage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 
-	HealthComponent->Server_OnDamage(Damage);
+	bool bIsDead = false;
+
+	HealthComponent->Server_OnDamage(Damage, bIsDead);
+
+	if (bIsDead)
+	{
+		AWarfareController* WarfareConroller = Cast<AWarfareController>(EventInstigator);
+		ETeam EnemyTeam = WarfareConroller->GetMyTeam();
+
+		AWarfareGameState* WorldGameState = GetWorld()->GetGameState<AWarfareGameState>();
+
+		switch (EnemyTeam)
+		{
+		case ETeam::CounterTrist:
+			WorldGameState->Server_AddCounterTristScore();
+			break;
+		case ETeam::Terrorist:
+			WorldGameState->Server_AddTerroristScore();
+			break;
+		}
+	}
 
 	return Damage;
 }

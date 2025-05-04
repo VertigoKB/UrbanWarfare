@@ -34,6 +34,7 @@ public:
 	void ClientRequestStopSequenceToHud();
 
 	inline bool IsListenServerHost() const { return bIsListenHost; }
+	inline ETeam GetMyTeam() const { return MyTeam; }
 protected:
 	virtual void BeginPlay() override;
 	virtual void OnPossess(APawn* InPawn) override;
@@ -56,4 +57,7 @@ private:
 	TObjectPtr<class APlayerBase> PlayerPawn;
 
 	bool bIsListenHost = false;
+
+	UPROPERTY(Replicated)
+	ETeam MyTeam = ETeam::None;
 };

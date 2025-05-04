@@ -27,9 +27,10 @@ public:
 	inline float GetCurrentArmor() const { return CurrentArmor; }
 	inline float GetMaxHealth() const { return MaxHealth; }
 	inline float GetMaxArmor() const { return MaxArmor; }
+	inline bool IsPlayerDead() const { return bIsDeath; }
 	inline void SetLocalHostFlag() { bIsLocalHost = true; }
 
-	void Server_OnDamage(const float InDamage);
+	void Server_OnDamage(const float InDamage, bool& OutIsDead);
 protected:
 	virtual void BeginPlay() override;
 	

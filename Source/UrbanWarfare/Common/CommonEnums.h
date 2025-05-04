@@ -7,7 +7,8 @@
 UENUM()
 enum class ETeam : uint8
 {
-	Terrorist = 0,
+	None = 0,
+	Terrorist,
 	CounterTrist
 };
 

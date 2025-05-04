@@ -17,7 +17,10 @@ enum class EMainWidgetElem : uint8
 	HealthBar,
 	HealthValue,
 	ArmorBar,
-	ArmorValue
+	ArmorValue,
+	GoalScore,
+	TerroristScore,
+	CounterTristScore
 };
 
 class UImage;
@@ -73,12 +76,24 @@ private:
 	TObjectPtr<UProgressBar> ArmorBar;
 
 private:
+	// Team Score
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UTextBlock> GoalScore;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UTextBlock> TerroristScore;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UTextBlock> CounterTristScore;
+	
+
+private:
 	UPROPERTY()
 	TObjectPtr<class UWeaponHud> WeaponHud;
 	UPROPERTY()
 	TObjectPtr<class UAmmoHud> AmmoHud;
 	UPROPERTY()
 	TObjectPtr<class UValueBarHud> ValueBarHud;
+	UPROPERTY()
+	TObjectPtr<class UTeamScoreHud> TeamScoreHud;
 
 	UPROPERTY()
 	TMap<EMainWidgetElem, UWidget*> WidgetsMap;

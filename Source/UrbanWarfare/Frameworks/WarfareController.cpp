@@ -20,6 +20,7 @@ void AWarfareController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& O
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(AWarfareController, PlayerPawn);
+	DOREPLIFETIME(AWarfareController, MyTeam);
 }
 
 UBlueprintConfig* AWarfareController::GetBlueprintConfig() { return BlueprintConfig; }
@@ -31,6 +32,7 @@ void AWarfareController::SelectTeam(ETeam InTeam)
 	if (HasAuthority())
 	{
 		ClientRequestStopSequenceToHud();
+		MyTeam = InTeam;
 		GetWorld()->GetAuthGameMode<AWarfareGameMode>()->GetPlayerSpawnerComponent()->RequestSpawnPlayer(InTeam, this);
 	}
 	else

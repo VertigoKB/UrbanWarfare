@@ -4,7 +4,10 @@
 #include "UrbanWarfare/Player/PlayerBase.h"
 #include "UrbanWarfare/Player/WarfareAnim.h"
 #include "UrbanWarfare/Player/Components/RegisterInputComponent.h"
+#include "UrbanWarfare/Frameworks/Components/PlayerSpawnerComponent.h"
+#include "UrbanWarfare/Frameworks/WarfareGameMode.h"
 #include "UrbanWarfare/Common/WarfareLogger.h"
+#include "UrbanWarfare/Common/CommonEnums.h"
 
 UHealthComponent::UHealthComponent()
 {
@@ -34,8 +37,11 @@ void UHealthComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 	DOREPLIFETIME(UHealthComponent, bIsDeath);
 }
 
-void UHealthComponent::Server_OnDamage(const float InDamage)
+void UHealthComponent::Server_OnDamage(const float InDamage, bool& OutIsDead)
 {
+	if (bIsDeath)
+		return;
+
 	float RemainingDamage = InDamage;
 
 	if (CurrentArmor > 0)
@@ -68,6 +74,8 @@ void UHealthComponent::Server_OnDamage(const float InDamage)
 	}
 	else
 	{
+		OutIsDead = true;
+
 		UiHealth = 0;
 		if (bIsLocalHost)
 			OnRep_UiHealth();
@@ -143,7 +151,12 @@ void UHealthComponent::OnRep_bIsDeath()
 	if (bIsInitSuccess)
 	{
 		if (GetWorld()->GetTimerManager().IsTimerActive(OnRepDeathHandle))
-			GetWorld()->GetTimerManager().ClearTimer(OnRepDeathHandle);
+		{
+			if (FirstAnimInst->IsAnyMontagePlaying())
+				GetWorld()->GetTimerManager().ClearTimer(OnRepDeathHandle);
+			else
+				return;
+		}
 
 		OnDeathFlagChange.ExecuteIfBound(bIsDeath);
 		FirstAnimInst->SetDeathFlag(bIsDeath);
@@ -153,25 +166,63 @@ void UHealthComponent::OnRep_bIsDeath()
 		{
 			FirstAnimInst->PlayMontage_Death();
 			ThirdAnimInst->PlayMontage_Death();
+			//OwnerPawn->GetRootCapsule()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		}
 		else
 		{
 			// 리스폰
+			FirstAnimInst->StopAllMontages(0.f);
+			ThirdAnimInst->StopAllMontages(0.f);
+			//OwnerPawn->GetRootCapsule()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 		}
 	}
 	else
-	{
-		if (GetWorld())
-		{
-			if (!(GetWorld()->GetTimerManager().IsTimerActive(OnRepDeathHandle)))
-				GetWorld()->GetTimerManager().SetTimer(OnRepDeathHandle, this, &UHealthComponent::OnRep_bIsDeath, 0.1f, true);
-		}
-	}
+		GetWorld()->GetTimerManager().SetTimer(OnRepDeathHandle, this, &UHealthComponent::OnRep_bIsDeath, 0.1f, true);
+	
 }
 
 void UHealthComponent::Server_OnRespawnQue()
 {
+	float RespawnDelay = 5.f;
 
+	if (GetWorld())
+		GetWorld()->GetTimerManager().SetTimer(Respawnhandle, FTimerDelegate::CreateLambda([this]() {
+
+		FTransform SpawnTransform;
+
+		if (GetWorld())
+		{
+			if (OwnerPawn->ActorHasTag(FName("CounterTrist")))
+			{
+				SpawnTransform = GetWorld()->GetAuthGameMode<AWarfareGameMode>()->GetPlayerSpawnerComponent()->
+					GetSpawnPointTransformWithRandomIndex(ETeam::CounterTrist);
+			}
+			else
+			{
+				SpawnTransform = GetWorld()->GetAuthGameMode<AWarfareGameMode>()->GetPlayerSpawnerComponent()->
+					GetSpawnPointTransformWithRandomIndex(ETeam::Terrorist);
+			}
+
+			OwnerPawn->SetActorLocation(SpawnTransform.GetLocation());
+			OwnerPawn->SetActorRotation(SpawnTransform.GetRotation());
+			
+			bIsDeath = false;
+			OnRep_bIsDeath();
+
+			CurrentArmor = MaxArmor;
+			CurrentHealth = MaxHealth;
+
+			UiHealth = static_cast<int8>(MaxHealth);
+			UiArmor = static_cast<int8>(MaxArmor);
+
+			if (bIsLocalHost)
+			{
+				OnRep_UiHealth();
+				OnRep_UiArmor();
+			}
+		}
+
+			}), RespawnDelay, false);
 }
 
 void UHealthComponent::Server_TempRespawn_Implementation()
