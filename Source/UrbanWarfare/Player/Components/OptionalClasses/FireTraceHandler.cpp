@@ -38,7 +38,7 @@ bool UFireTraceHandler::AttackLineTrace()
 	CollisionParams.AddIgnoredActor(OwnerPawn);
 
 	bool bHit = World->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECollisionChannel::ECC_GameTraceChannel2, CollisionParams);
-	DrawDebugLine(World, StartLocation, EndLocation, FColor::Red, false, 1.f);
+	//DrawDebugLine(World, StartLocation, EndLocation, FColor::Red, false, 1.f);
 
 	if (bHit)
 	{

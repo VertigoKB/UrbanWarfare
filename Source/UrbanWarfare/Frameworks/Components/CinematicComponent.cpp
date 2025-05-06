@@ -28,6 +28,9 @@ void UCinematicComponent::BeginPlay()
 	Super::BeginPlay();
 
 	// ...
+
+	UWorld* World = GetWorld();
+
 	InitConstruct();
 
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACineCameraActor::StaticClass(), SceneCameras);

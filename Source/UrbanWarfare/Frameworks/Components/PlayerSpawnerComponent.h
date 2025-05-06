@@ -45,5 +45,6 @@ private:
 
 	uint8 CounterTristPointsCount = 0;
 	uint8 TerroristPointsCount = 0;
+
 		
 };
