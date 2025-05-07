@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Subsystems/GameInstanceSubsystem.h"
+#include "Engine/StreamableManager.h"
 #include "WeaponPreLoader.generated.h"
 
 /**
@@ -19,6 +20,7 @@ public:
 	virtual void Deinitialize() override;
 
 	bool LoadWeaponDataAsset();
+	void OnWeaponDataLoaded(FPrimaryAssetId LoadedAssetId);
 
 	class UWeaponDataAsset* GetWeaponDataByWeaponId(uint8 InNumber);
 
@@ -26,5 +28,7 @@ public:
 	TMap<uint8, UWeaponDataAsset*> WeaponDataMap;
 
 	bool bIsLoadSuccess = false;
+
+	FStreamableManager StreamableManager;
 
 };

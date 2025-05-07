@@ -9,6 +9,7 @@
 #include "UrbanWarfare/Frameworks/WarfareHud.h"
 #include "UrbanWarfare/Frameworks/WarfareGameMode.h"
 #include "UrbanWarfare/Player/PlayerBase.h"
+#include "UrbanWarfare/Player/Components/WeaponComponent.h"
 #include "UrbanWarfare/Common/WarfareLogger.h"
 
 AWarfareController::AWarfareController()
@@ -69,6 +70,7 @@ void AWarfareController::SpawnPlayer(ETeam InTeam, const FTransform& SpawnTrasfo
 
 
 	Possess(PlayerPawn);
+	PlayerPawn->GetWeaponComponent()->Server_OnSpawn();
 
 	if (IsLocalController())
 	{

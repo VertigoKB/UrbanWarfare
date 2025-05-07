@@ -54,40 +54,49 @@ void UWarfareAnim::NativeUpdateAnimation(float DeltaSeconds)
 
 void UWarfareAnim::PlayMontage_ReloadPistol()
 {
-	ensure(MontageReloadPistol);
-
-	Montage_Stop(0.f);
-	Montage_Play(MontageReloadPistol);
+	if (MontageReloadPistol)
+	{
+		Montage_Stop(0.f);
+		Montage_Play(MontageReloadPistol);
+	}
 }
 
 void UWarfareAnim::PlayMontage_ReloadRifle()
 {
-	ensure(MontageReloadRifle);
 
-	Montage_Stop(0.f);
-	Montage_Play(MontageReloadRifle);
+	if (MontageReloadRifle)
+	{
+		Montage_Stop(0.f);
+		Montage_Play(MontageReloadRifle);
+	}
 }
 
 void UWarfareAnim::PlayMontage_FirePistol()
 {
-	ensure(MontageFirePistol);
-
-	Montage_Stop(0.f);
-	Montage_Play(MontageFirePistol);
+	if (MontageFirePistol)
+	{
+		Montage_Stop(0.f);
+		Montage_Play(MontageFirePistol);
+	}
 }
 
 void UWarfareAnim::PlayMontage_FireRifle()
 {
-	ensure(MontageFireRifle);
+	if (MontageFireRifle)
+	{
+		Montage_Stop(0.f);
+		Montage_Play(MontageFireRifle);
+	}
 
-	Montage_Stop(0.f);
-	Montage_Play(MontageFireRifle);
 }
 
 void UWarfareAnim::PlayMontage_Death()
 {
-	Montage_Stop(0.f);
-	Montage_Play(MontageDeath);
+	if (MontageDeath)
+	{
+		Montage_Stop(0.f);
+		Montage_Play(MontageDeath);
+	}
 }
 
 bool UWarfareAnim::CacheAndInit()

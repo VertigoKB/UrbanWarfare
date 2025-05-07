@@ -3,7 +3,6 @@
 
 #include "WeaponPreLoader.h"
 #include "Engine/AssetManager.h"
-#include "Engine/StreamableManager.h"
 
 #include "UrbanWarfare/Weapon/WeaponData/WeaponDataAsset.h"
 #include "UrbanWarfare/Common/WarfareLogger.h"
@@ -14,13 +13,7 @@ void UWeaponPreLoader::Initialize(FSubsystemCollectionBase& Collection)
 
 	WeaponDataMap.Reserve(5);
 
-	for (uint8 i = 0; i < 10; i++)
-	{
-		bIsLoadSuccess = LoadWeaponDataAsset();
-		if (bIsLoadSuccess)
-			break;
-	}
-	
+	LoadWeaponDataAsset();
 }
 
 void UWeaponPreLoader::Deinitialize()
@@ -35,29 +28,68 @@ bool UWeaponPreLoader::LoadWeaponDataAsset()
 	TArray<FPrimaryAssetId> Assets;
 	Manager.GetPrimaryAssetIdList(TEXT("Weapon"), Assets);
 
-	FSoftObjectPtr AssetPtr;
-
-	for (const auto& Iter : Assets)
+	for (const auto& AssetId : Assets)
 	{
-		AssetPtr = Manager.GetPrimaryAssetPath(Iter);
-		if (AssetPtr.IsPending())
-			AssetPtr.LoadSynchronous();
-		
-
-		UWeaponDataAsset* WeaponData = Cast<UWeaponDataAsset>(AssetPtr.Get());
-		if (!WeaponData)
-		{
-			LOG_SIMPLE(TEXT("UWeaponPreLoader failed to load"));
-			return false;
-		}
-		WeaponData->InitiallizeValues();
-		WeaponData->WeaponMesh.LoadSynchronous();
-
-		WeaponDataMap.Add(WeaponData->WeaponIdNumber, WeaponData);
+		Manager.LoadPrimaryAsset(
+			AssetId,
+			TArray<FName>{},
+			FStreamableDelegate::CreateUObject(
+				this,
+				&UWeaponPreLoader::OnWeaponDataLoaded,
+				AssetId
+			)
+		);
 	}
+
+	//FSoftObjectPtr AssetPtr;
+
+	//for (const auto& Iter : Assets)
+	//{
+	//	AssetPtr = Manager.GetPrimaryAssetPath(Iter);
+	//	if (AssetPtr.IsPending())
+	//		AssetPtr.LoadSynchronous();
+	//	
+
+	//	UWeaponDataAsset* WeaponData = Cast<UWeaponDataAsset>(AssetPtr.Get());
+	//	if (!WeaponData)
+	//	{
+	//		LOG_SIMPLE(TEXT("UWeaponPreLoader failed to load"));
+	//		return false;
+	//	}
+	//	WeaponData->InitiallizeValues();
+	//	WeaponData->WeaponMesh.LoadSynchronous();
+
+	//	WeaponDataMap.Add(WeaponData->WeaponIdNumber, WeaponData);
+	//}
 
 	LOG_SIMPLE(TEXT("UWeaponPreLoader Load Success"));
 	return true;
+}
+
+void UWeaponPreLoader::OnWeaponDataLoaded(FPrimaryAssetId LoadedAssetId)
+{
+	UAssetManager& Manager = UAssetManager::Get();
+	UObject* LoadedObject = Manager.GetPrimaryAssetObject(LoadedAssetId);
+
+	UWeaponDataAsset* LoadedData = Cast<UWeaponDataAsset>(LoadedObject);
+
+	if (LoadedData)
+	{
+		LoadedData->InitiallizeValues();
+		
+		if (LoadedData->WeaponMesh.IsPending())
+		{
+			StreamableManager.RequestAsyncLoad(
+				LoadedData->WeaponMesh.ToSoftObjectPath(),
+				[]() {}
+			);
+		}
+
+		WeaponDataMap.Add(LoadedData->WeaponIdNumber, LoadedData);
+	}
+
+
+	
 }
 
 UWeaponDataAsset* UWeaponPreLoader::GetWeaponDataByWeaponId(uint8 InNumber)

@@ -4,6 +4,7 @@
 #include "UrbanWarfare/Player/PlayerBase.h"
 #include "UrbanWarfare/Player/WarfareAnim.h"
 #include "UrbanWarfare/Player/Components/RegisterInputComponent.h"
+#include "UrbanWarfare/Player/Components/WeaponComponent.h"
 #include "UrbanWarfare/Frameworks/Components/PlayerSpawnerComponent.h"
 #include "UrbanWarfare/Frameworks/WarfareGameMode.h"
 #include "UrbanWarfare/Common/WarfareLogger.h"
@@ -220,6 +221,8 @@ void UHealthComponent::Server_OnRespawnQue()
 				OnRep_UiHealth();
 				OnRep_UiArmor();
 			}
+
+			OwnerPawn->GetWeaponComponent()->Server_OnSpawn();
 		}
 
 			}), RespawnDelay, false);

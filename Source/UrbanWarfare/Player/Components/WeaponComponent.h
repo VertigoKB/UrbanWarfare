@@ -40,11 +40,7 @@ public:
 	// Call by ReloadState with authority.
 	void Client_OnCompleteReload();
 
-	UFUNCTION(Server, Reliable)
-	void Server_RequestReloadAmmo(uint16 InRemainAmmo);
-
-	UFUNCTION(Client, Reliable)
-	void Client_ApplyReloadAmmo(uint16 InMag, uint16 InExtra);
+	void Server_OnSpawn();
 
 	EWeaponType GetEquippedWeaponType() const;
 	uint8 GetEquippedWeaponId() const;

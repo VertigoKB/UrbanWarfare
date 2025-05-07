@@ -125,15 +125,48 @@ void UWeaponComponent::Client_OnCompleteReload()
 	}
 }
 
-void UWeaponComponent::Server_RequestReloadAmmo_Implementation(uint16 InRemainAmmo)
+void UWeaponComponent::Server_OnSpawn()
 {
-	//WeaponInventory.Items[static_cast<uint8>(EquippedWeaponType)].AmmoInMag
+
+	FTimerHandle Handle;
+	GetWorld()->GetTimerManager().SetTimer(Handle, FTimerDelegate::CreateLambda([this]() {
+
+		ETeam Team = GetOwner<APlayerBase>()->GetTeam();
+
+		uint8 RifleId = 0;
+		uint8 PistolId = 3;
+
+		switch (Team)
+		{
+		case ETeam::CounterTrist:
+			RifleId = 2;
+			break;
+		case ETeam::Terrorist:
+			RifleId = 1;
+			break;
+		}
+
+		UWeaponDataAsset* RifleData = GetWorld()->GetGameInstance()->GetSubsystem<UWeaponPreLoader>()->GetWeaponDataByWeaponId(RifleId);
+		UWeaponDataAsset* PistolData = GetWorld()->GetGameInstance()->GetSubsystem<UWeaponPreLoader>()->GetWeaponDataByWeaponId(PistolId);
+
+		uint16 RifleLoadableAmmo = RifleData->LoadableAmmoPerMag;
+		uint16 RifleAmmoInMag = RifleLoadableAmmo;
+		uint16 RifleExtraAmmo = (RifleData->MaxAmmo) - RifleLoadableAmmo;
+
+		uint16 PistolLoadableAmmo = PistolData->LoadableAmmoPerMag;
+		uint16 PistolAmmoInMag = PistolLoadableAmmo;
+		uint16 PistolExtraAmmo = (PistolData->MaxAmmo) - PistolLoadableAmmo;
+
+		WeaponInventory.SetItem(static_cast<uint8>(EWeaponType::Rifle), RifleId, RifleAmmoInMag, RifleExtraAmmo);
+		WeaponInventory.SetItem(static_cast<uint8>(EWeaponType::Pistol), PistolId, PistolAmmoInMag, PistolExtraAmmo);
+		OnRep_WeaponInventory();
+
+		Server_EquipWeapon(RifleId, EWeaponType::Rifle);
+
+
+		}), 0.1f, false);
+
 	
-}
-
-void UWeaponComponent::Client_ApplyReloadAmmo_Implementation(uint16 InMag, uint16 InExtra)
-{
-
 }
 
 void UWeaponComponent::Server_RequestModifyAmmo_Implementation(const uint8 Index, const uint16 InAmmo, const uint16 InExtra)
