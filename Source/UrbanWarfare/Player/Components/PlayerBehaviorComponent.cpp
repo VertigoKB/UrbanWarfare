@@ -27,19 +27,20 @@ void UPlayerBehaviorComponent::BeginPlay()
 
 	//SetComponentTickEnabled(false);
 
-	GetWorld()->GetTimerManager().SetTimer(InitTimer, FTimerDelegate::CreateLambda([this]() {
+	GetWorld()->GetTimerManager().SetTimer(InitTimer, FTimerDelegate::CreateLambda([=,this]() {
 
 		bInitFlag = InitConstruct();
 
 		if (bInitFlag)
 		{
-			//SetComponentTickEnabled(true);
-			GetWorld()->GetTimerManager().ClearTimer(InitTimer);
+
 			MovementState.Reserve(5);
 			MovementState.AddState(EMovementState::Running);
 
 			if (ThePlayer->IsControlledByLocal())
 				CombatComponent->OnAttack.AddUObject(this, &UPlayerBehaviorComponent::TriggerLook);
+
+			GetWorld()->GetTimerManager().ClearTimer(InitTimer);
 		}
 		else
 		{
@@ -50,7 +51,8 @@ void UPlayerBehaviorComponent::BeginPlay()
 			{
 				LOG_EFUNC(TEXT("Unable to initialize. Process end."));
 				SetActive(false);
-				GetWorld()->GetTimerManager().ClearTimer(InitTimer);
+				if (GetWorld())
+					GetWorld()->GetTimerManager().ClearTimer(InitTimer);
 			}
 		}
 
@@ -112,7 +114,27 @@ bool UPlayerBehaviorComponent::InitConstruct()
 	RegInputComp->OnInputJump.BindUObject(this, &UPlayerBehaviorComponent::TriggerJump);
 	RegInputComp->OnInputLook.BindUObject(this, &UPlayerBehaviorComponent::TriggerLook);
 
+	MovementState = FMovementStateArray();
+
 	return true;
+}
+
+void UPlayerBehaviorComponent::OnSuccessInitialize()
+{
+
+	FTimerHandle Handle;
+	GetWorld()->GetTimerManager().SetTimer(Handle, FTimerDelegate::CreateLambda([this]() {
+
+
+		if (!this)
+		{
+			LOG_SIMPLE(TEXT("Null pointer! Line 3"));
+		}
+
+
+
+		}), 0.1f, false);
+
 }
 
 void UPlayerBehaviorComponent::OnRep_MovementState()

@@ -26,13 +26,6 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Class|UI")
 	TSubclassOf<UUserWidget> MainWidget;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Class|Player")
-	TSubclassOf<class APlayerBase> CounterTrist;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Class|Player")
-	TSubclassOf<class APlayerBase> Terrorist;
-
-
-
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Blueprints|Audio")
 	TObjectPtr<USoundBase> FootStepsSound;
 

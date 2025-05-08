@@ -64,7 +64,7 @@ public:
 			if (Items[i].State == StateToRemove)
 			{
 				Items.RemoveAt(i);
-				MarkArrayDirty(); // 배열 변경 감지
+				MarkArrayDirty();
 				break;
 			}
 		}
@@ -85,7 +85,6 @@ public:
 		return Items.Contains(FMovementStateEntry{ State });
 	}
 
-	// 서버에서 변경 사항을 클라이언트에 동기화할 때 호출되는 함수
 	bool NetDeltaSerialize(FNetDeltaSerializeInfo& DeltaParms)
 	{
 		return FFastArraySerializer::FastArrayDeltaSerialize<FMovementStateEntry, FMovementStateArray>(Items, DeltaParms, *this);
@@ -93,7 +92,6 @@ public:
 
 };
 
-// 네트워크 복제 활성화 매크로
 template<>
 struct TStructOpsTypeTraits<FMovementStateArray> : public TStructOpsTypeTraitsBase2<FMovementStateArray>
 {

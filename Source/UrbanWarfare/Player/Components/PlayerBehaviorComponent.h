@@ -35,6 +35,7 @@ private:
 	UFUNCTION()
 	bool InitConstruct();
 
+	void OnSuccessInitialize();
 protected:
 	UFUNCTION()
 	void OnRep_MovementState();

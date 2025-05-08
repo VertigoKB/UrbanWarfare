@@ -39,6 +39,7 @@ bool UWeaponPreLoader::LoadWeaponDataAsset()
 	Manager.GetPrimaryAssetIdList(TEXT("Weapon"), Assets);
 
 	for (const auto& AssetId : Assets)
+
 	{
 		Manager.LoadPrimaryAsset(
 			AssetId,

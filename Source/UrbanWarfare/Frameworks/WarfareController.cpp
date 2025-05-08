@@ -22,9 +22,9 @@ void AWarfareController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& O
 
 	DOREPLIFETIME(AWarfareController, PlayerPawn);
 	DOREPLIFETIME(AWarfareController, MyTeam);
+	DOREPLIFETIME(AWarfareController, bLetClientShowMounse);
 }
 
-UBlueprintConfig* AWarfareController::GetBlueprintConfig() { return BlueprintConfig; }
 APlayerBase* AWarfareController::GetPlayerPawn() { return PlayerPawn; }
 void AWarfareController::SetPlayerPawn(APlayerBase* InPlayerPawn) { PlayerPawn = InPlayerPawn; }
 
@@ -50,16 +50,13 @@ void AWarfareController::SpawnPlayer(ETeam InTeam, const FTransform& SpawnTrasfo
 {
 	TSubclassOf<APlayerBase> PlayerType = nullptr;
 
-	if (!BlueprintConfig)
-		return;
-
 	switch (InTeam)
 	{
 	case ETeam::Terrorist:
-		PlayerType = BlueprintConfig->Terrorist;
+		PlayerType = Terrorist;
 		break;
 	case ETeam::CounterTrist:
-		PlayerType = BlueprintConfig->CounterTrist;
+		PlayerType = CounterTrist;
 		break;
 	}
 
@@ -78,7 +75,8 @@ void AWarfareController::SpawnPlayer(ETeam InTeam, const FTransform& SpawnTrasfo
 		bIsListenHost = true;
 		OnRep_PlayerPawn();
 	}
-	
+
+	bLetClientShowMounse = false;
 }
 
 void AWarfareController::ClientRequestStopSequenceToHud_Implementation()
@@ -90,13 +88,11 @@ void AWarfareController::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (!BlueprintConfig)
-	{
-		LOG_NULL(BlueprintConfig);
-	}
-
 	FInputModeUIOnly InputMode;
 	SetInputMode(InputMode);
+
+	if (HasAuthority())
+		bLetClientShowMounse = true;
 }
 
 void AWarfareController::OnPossess(APawn* InPawn)
@@ -130,4 +126,9 @@ void AWarfareController::OnRep_PlayerPawn()
 		else
 			PlayerPawn->SetMultiplayCaseByController(EMultiplayCase::Client_Proxy);
 	}
+}
+
+void AWarfareController::OnRep_bLetClientShowMouns()
+{
+	bShowMouseCursor = bLetClientShowMounse;
 }

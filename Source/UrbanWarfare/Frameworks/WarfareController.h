@@ -44,13 +44,20 @@ private:
 	UFUNCTION()
 	void OnRep_PlayerPawn();
 
+	UFUNCTION()
+	void OnRep_bLetClientShowMouns();
+
 public:
 	FOnPlayerSpawned OnPlayerSpawned;
 
 protected:
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<class APlayerBase> CounterTrist;
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<class APlayerBase> Terrorist;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TObjectPtr<class UBlueprintConfig> BlueprintConfig;
+	UPROPERTY(ReplicatedUsing = OnRep_bLetClientShowMouns)
+	bool bLetClientShowMounse = true;
 
 private:
 	UPROPERTY(ReplicatedUsing = OnRep_PlayerPawn)
