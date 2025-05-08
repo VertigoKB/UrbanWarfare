@@ -5,7 +5,6 @@
 #include "CoreMinimal.h"
 #include "Engine/DataAsset.h"
 #include "UrbanWarfare/Common/CommonEnums.h"
-#include "UrbanWarfare/Common/QuantizedFloat.h"
 #include "WeaponDataAsset.generated.h"
 
 /**

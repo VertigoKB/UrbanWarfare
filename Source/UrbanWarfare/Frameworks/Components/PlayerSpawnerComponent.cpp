@@ -65,7 +65,7 @@ const FTransform& UPlayerSpawnerComponent::GetSpawnPointTransformWithRandomIndex
 { 
 	if (!bInitFlag)
 	{
-		//LOG_EFUNC(TEXT("ÃÊ±âÈ­°¡ ¿Ï·áµÇÁö ¾Ê¾Æ Identity TransformÀÌ ¹ÝÈ¯µÊ"));
+		//LOG_EFUNC(TEXT("ï¿½Ê±ï¿½È­ï¿½ï¿½ ï¿½Ï·ï¿½ï¿½ï¿½ï¿½ ï¿½Ê¾ï¿½ Identity Transformï¿½ï¿½ ï¿½ï¿½È¯ï¿½ï¿½"));
 		return FTransform::Identity;
 	}
 
@@ -85,7 +85,6 @@ const FTransform& UPlayerSpawnerComponent::GetSpawnPointTransformWithRandomIndex
 	}
 	}
 
-	//LOG_EFUNC(TEXT("¿¹¿Ü°¡ ¹ß»ýÇÏ¿© Identity TransformÀÌ ¹ÝÈ¯µÊ"));
 	return FTransform::Identity;
 
 }

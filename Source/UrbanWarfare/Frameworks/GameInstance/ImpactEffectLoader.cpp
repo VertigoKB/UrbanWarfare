@@ -11,14 +11,27 @@ void UImpactEffectLoader::Initialize(FSubsystemCollectionBase& Collection)
 {
 	Super::Initialize(Collection);
 
-	OnCompleteLoad_A.BindLambda([this]() {
-		bCompleteA = true;
-		CheckAsyncLoadComplete();
-		});
-	OnCompleteLoad_B.BindLambda([this]() {
-		bCompleteB = true;
-		CheckAsyncLoadComplete();
-		});
+	if (GetWorld())
+	{
+		FTimerHandle Handle;
+		GetWorld()->GetTimerManager().SetTimer(Handle, FTimerDelegate::CreateLambda([this]() {
+
+
+			OnCompleteLoad_A.BindLambda([this]() {
+				bCompleteA = true;
+				CheckAsyncLoadComplete();
+				});
+			OnCompleteLoad_B.BindLambda([this]() {
+				bCompleteB = true;
+				CheckAsyncLoadComplete();
+				});
+
+
+			LoadEffectData();
+
+			}), 0.12f, false);
+	}
+
 	//OnCompleteLoad_C.BindLambda([this]() {
 	//	bCompleteC = true;
 	//	CheckAsyncLoadComplete();
@@ -28,7 +41,6 @@ void UImpactEffectLoader::Initialize(FSubsystemCollectionBase& Collection)
 	//	CheckAsyncLoadComplete();
 	//	});
 
-	LoadEffectData();
 }
 
 void UImpactEffectLoader::Deinitialize()

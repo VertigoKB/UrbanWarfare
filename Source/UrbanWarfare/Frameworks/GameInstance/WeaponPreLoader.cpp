@@ -11,9 +11,19 @@ void UWeaponPreLoader::Initialize(FSubsystemCollectionBase& Collection)
 {
 	Super::Initialize(Collection);
 
-	WeaponDataMap.Reserve(5);
+	if (GetWorld())
+	{
+		FTimerHandle Handle;
+		GetWorld()->GetTimerManager().SetTimer(Handle, FTimerDelegate::CreateLambda([this]() {
 
-	LoadWeaponDataAsset();
+			WeaponDataMap.Reserve(5);
+
+			LoadWeaponDataAsset();
+
+			}), 0.1f, false);
+	}
+
+
 }
 
 void UWeaponPreLoader::Deinitialize()
